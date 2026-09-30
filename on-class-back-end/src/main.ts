@@ -7,6 +7,13 @@ async function bootstrap() {
     instrument: ObserveInstrument,
   });
 
+  // Habilita o CORS para permitir requisições do Angular (http://localhost:4200)
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   // Ativa o pipe global de validação para processar os DTOs
   app.useGlobalPipes(
     new ValidationPipe({
