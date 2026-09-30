@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { NotificacoesService } from './notificacoes.service.js';
 import { CreateNotificacaoDto } from './dto/criate-notificacao.dto.js';
 
@@ -27,4 +27,8 @@ export class NotificacoesController {
   async buscarPorId(@Param('id') id: string) {
     return this.notificacoesService.buscarPorId(id);
   }
+  @Patch(':id/status')
+async atualizarStatus(@Param('id') id: string, @Body('status') status: string) {
+  return this.notificacoesService.atualizarStatus(id, status);
+}
 }
