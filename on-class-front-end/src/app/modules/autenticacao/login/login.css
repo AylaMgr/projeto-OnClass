@@ -1,0 +1,229 @@
+:host {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+.login-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #0d1642;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.login-card {
+  background-color: #ebf1f5;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 32px 32px 32px;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -15px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.logo-badge {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 8px;
+}
+
+.brand-title {
+  color: #2b52dd;
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.brand-subtitle {
+  font-size: 8px;
+  font-weight: 700;
+  color: #1a233d;
+  letter-spacing: 0.8px;
+  margin: 4px 0 0 0;
+  line-height: 1.2;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0d1642;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.profile-group {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.profile-card {
+  flex: 1;
+  height: 90px;
+  background: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.3;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(43, 82, 221, 0.12);
+}
+
+.profile-card.active {
+  background: #eef2ff;
+  border-color: #3b66f5;
+  color: #0d1642;
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.input-field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.input-field input[type="text"] {
+  width: 100%;
+  height: 38px;
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0 14px;
+  font-size: 13px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-field input[type="text"]:focus {
+  border-color: #3b66f5;
+}
+
+/* Caixa do campo de Senha - Borda inicial transparente como o campo de E-mail */
+.password-box {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  height: 38px;
+  padding: 0 10px 0 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+/* Foco na senha: ativa a borda azul apenas ao focar/digitar */
+.password-box.focused {
+  border-color: #3b66f5;
+}
+
+.password-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  padding: 0;
+}
+
+.eye-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Botão Entrar */
+.btn-submit {
+  width: 100%;
+  height: 42px;
+  background-color: #4f73ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #3b62f5;
+}
+
+/* Botão em Estado Invalido/Cinza */
+.btn-submit:disabled {
+  background-color: #cccccc;
+  color: #888888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.forgot-password {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: #1f2937;
+}
+
+.forgot-password a {
+  color: #2b52dd;
+  text-decoration: underline;
+  font-weight: 600;
+}
