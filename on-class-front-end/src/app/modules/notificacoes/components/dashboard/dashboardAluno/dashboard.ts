@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CriarNotificacao } from '../criar-notificacao/criar-notificacao';
-import { NotificacoesService, Notificacao } from '../../services/notificacoes';
+import { CriarNotificacao } from '../../criar-notificacao/criar-notificacao';
+import { NotificacoesService, Notificacao } from '../../../services/notificacoes';
 
 @Component({
   selector: 'app-dashboard',
