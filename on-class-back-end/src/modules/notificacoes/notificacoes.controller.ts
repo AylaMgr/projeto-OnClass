@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { NotificacoesService } from './notificacoes.service.js';
 import { CreateNotificacaoDto } from './dto/criate-notificacao.dto.js';
 
@@ -15,7 +15,16 @@ export class NotificacoesController {
 
   @Get('recentes')
   async listarRecentes() {
-    const alunoIdMock = '2024001234';
-    return this.notificacoesService.listarPorAluno(alunoIdMock);
+    return this.notificacoesService.listarRecentes();
+  }
+
+  @Get('aluno/:alunoId')
+  async listarPorAluno(@Param('alunoId') alunoId: string) {
+    return this.notificacoesService.listarPorAluno(alunoId);
+  }
+
+  @Get(':id')
+  async buscarPorId(@Param('id') id: string) {
+    return this.notificacoesService.buscarPorId(id);
   }
 }

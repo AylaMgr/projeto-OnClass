@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateNotificacaoDto } from './dto/criate-notificacao.dto.js';
 import { PrismaService } from '../../common/prisma/prisma.service.js';
 
@@ -34,5 +34,24 @@ export class NotificacoesService {
       where: { alunoId },
       orderBy: { dataEnvio: 'desc' },
     });
+  }
+
+  async listarRecentes() {
+    return this.prisma.notificacao.findMany({
+      take: 10,
+      orderBy: { dataEnvio: 'desc' },
+    });
+  }
+
+  async buscarPorId(id: string) {
+    const notificacao = await this.prisma.notificacao.findUnique({
+      where: { id },
+    });
+
+    if (!notificacao) {
+      throw new NotFoundException(`Notificação com o ID ${id} não foi encontrada.`);
+    }
+
+    return notificacao;
   }
 }
