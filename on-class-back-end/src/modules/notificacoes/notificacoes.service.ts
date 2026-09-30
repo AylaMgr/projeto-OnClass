@@ -42,6 +42,17 @@ export class NotificacoesService {
       orderBy: { dataEnvio: 'desc' },
     });
   }
+  async atualizarStatus(id: string, status: string) {
+  const notificacao = await this.prisma.notificacao.findUnique({ where: { id } });
+  if (!notificacao) {
+    throw new NotFoundException(`Notificação com o ID ${id} não foi encontrada.`);
+  }
+
+  return this.prisma.notificacao.update({
+    where: { id },
+    data: { status },
+  });
+}
 
   async buscarPorId(id: string) {
     const notificacao = await this.prisma.notificacao.findUnique({
