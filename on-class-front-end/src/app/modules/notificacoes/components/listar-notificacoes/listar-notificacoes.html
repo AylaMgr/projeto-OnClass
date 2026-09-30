@@ -1,0 +1,35 @@
+<div class="historico-container">
+  <h2>Minhas Notificações de Ausência</h2>
+
+  <div *ngIf="carregando" class="loading">
+    A carregar histórico...
+  </div>
+
+  <div *ngIf="erro" class="alert error">
+    {{ erro }}
+  </div>
+
+  <div *ngIf="!carregando && notificacoes.length === 0" class="empty-state">
+    Nenhuma notificação encontrada.
+  </div>
+
+  <div *ngIf="!carregando && notificacoes.length > 0" class="lista-cards">
+    <div *ngFor="let item of notificacoes" class="card-notificacao">
+      <div class="card-header">
+        <span class="motivo-tag">{{ item.motivo }}</span>
+        <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+          {{ item.status || 'PENDENTE' }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <p><strong>Período:</strong> {{ item.dataInicio | date:'dd/MM/yyyy' }} até {{ item.dataFim | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Descrição:</strong> {{ item.descricao }}</p>
+      </div>
+
+      <div class="card-footer" *ngIf="item.dataEnvio">
+        <small>Enviado em: {{ item.dataEnvio | date:'dd/MM/yyyy HH:mm' }}</small>
+      </div>
+    </div>
+  </div>
+</div>
