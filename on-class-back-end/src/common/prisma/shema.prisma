@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Notificacao {
+  id                   String   @id @default(uuid())
+  alunoId             String
+  tipo                 String   @default("AUSENCIA_INFORMAL")
+  motivo               String
+  dataInicio           String
+  dataFim              String
+  descricao            String
+  declaracaoVeracidade Boolean  @default(true)
+  status               String   @default("Pendente")
+  administrador        String   @default("Pendente")
+  dataEnvio            DateTime @default(now())
+
+  @@map("notificacoes")
+}
+
+model Atestado {
+  id            String   @id @default(uuid())
+  alunoId       String
+  medico        String?
+  crm           String?
+  cid           String?
+  dataInicio    String?
+  diasAfastado  Int?
+  status        String   @default("PENDENTE_ANALISE")
+  analiseGemini String?
+  criadoEm      DateTime @default(now())
+
+  @@map("atestados")
+}
