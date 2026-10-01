@@ -1,0 +1,154 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.dashboard-container {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  padding: 24px;
+  background-color: #f4f6f9;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.banner-card {
+  background-color: #002b66;
+  color: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+}
+
+.banner-card h2 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+}
+
+.banner-card p {
+  margin: 0 0 16px 0;
+  color: #e0e6ed;
+}
+
+.btn-primary {
+  background-color: #0066ff;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.side-panel {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  height: fit-content;
+}
+
+.upload-area {
+  border: 2px dashed #0066ff;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #f0f7ff;
+  cursor: pointer;
+}
+
+.upload-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.btn-submit {
+  width: 100%;
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-top: 16px;
+  cursor: pointer;
+}
+
+.btn-submit:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.recentes-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header h3 {
+  margin: 0;
+}
+
+.filtros-status {
+  display: flex;
+  gap: 8px;
+}
+
+.filtros-status button {
+  background-color: #eef2f7;
+  border: 1px solid #dcdfe6;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #555;
+}
+
+.filtros-status button.ativo {
+  background-color: #0066ff;
+  color: #ffffff;
+  border-color: #0066ff;
+  font-weight: bold;
+}
+
+.tabela-notificacoes {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-notificacoes th, .tabela-notificacoes td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.empty-row {
+  text-align: center;
+  color: #888;
+  padding: 20px !important;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-pendente { background-color: #fff3cd; color: #856404; }
+.status-aprovado { background-color: #d4edda; color: #155724; }
+.status-rejeitado { background-color: #f8d7da; color: #721c24; }

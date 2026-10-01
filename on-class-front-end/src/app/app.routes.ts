@@ -1,20 +1,39 @@
 import { Routes } from '@angular/router';
+
+// Autenticação
 import { LoginComponent } from './modules/autenticacao/login/login';
 
-// Imports dos dashboards específicos
-import { Dashboard } from './modules/notificacoes/components/dashboard/dashboardAluno/dashboard';
-import { DashboardS } from './modules/notificacoes/components/dashboard/dashboardSec/dashboardS';
-// import { DashboardP } from './modules/dashboard/dashboardProf/dashboardP'; // Quando implementar o do professor
+// Aluno
+import { Dashboard } from './modules/aluno/dashboardAluno/dashboard';
+import { SolicitacoesStatus } from './modules/aluno/solicitacoesStatus/solicitacoesStatus';
+
+// Professor
+import { DashboardP } from './modules/professor/dashboardProf/dashboardP';
+import { SolicitacoesP } from './modules/professor/solicitacoesProf/solicitacoesP';
+
+// Secretaria
+import { DashboardS } from './modules/secretaria/dashboardSec/dashboardS';
+import { SolicitacoesSec } from './modules/secretaria/solicitacoesSec/solicitacoesS';
+import { AnalisesManuais } from './modules/secretaria/analisesManuais/analisesManuais';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
 
-  // Rotas por perfil
-  { path: 'dashboard-aluno', component: Dashboard },
-  { path: 'dashboard-secretaria', component: DashboardS },
-  // { path: 'dashboard-professor', component: DashboardP },
+  // Rotas do Aluno
+  { path: 'aluno/dashboard', component: Dashboard },
+  { path: 'aluno/solicitacao/:id', component: SolicitacoesStatus },
 
-  // Redirecionamento genérico (opcional, pode apontar para o aluno ou secretaria)
-  { path: 'dashboard', redirectTo: 'dashboard-aluno', pathMatch: 'full' }
+  // Rotas do Professor
+  { path: 'professor/dashboard', component: DashboardP },
+  { path: 'professor/solicitacao/:id', component: SolicitacoesP },
+
+  // Rotas da Secretaria
+  { path: 'secretaria/dashboard', component: DashboardS },
+  { path: 'secretaria/recebidos', component: SolicitacoesSec },
+  { path: 'secretaria/analises-manuais', component: AnalisesManuais },
+
+  // Redirecionamentos
+  { path: 'dashboard-aluno', redirectTo: 'aluno/dashboard', pathMatch: 'full' },
+  { path: 'dashboard-secretaria', redirectTo: 'secretaria/dashboard', pathMatch: 'full' }
 ];

@@ -1,0 +1,77 @@
+<div class="dashboard-container">
+  <!-- COLUNA DA ESQUERDA -->
+  <div class="main-content">
+    <div class="banner-card">
+      <h2>Falta médica ou imprevisto?</h2>
+      <p>Envie justificativas e atestados digitalmente e notifique a escola em minutos.</p>
+      <button class="btn-primary" (click)="toggleFormulario()">
+        {{ mostrarFormulario ? '← Voltar para Atestado' : '⊕ Enviar Nova Justificativa' }}
+      </button>
+    </div>
+
+    <div class="recentes-section">
+      <div class="section-header">
+        <h3>Acompanhamentos Recentemente</h3>
+        
+        <!-- Filtros de Status -->
+        <div class="filtros-status">
+          <button [class.ativo]="filtroStatus === 'TODOS'" (click)="filtrarPorStatus('TODOS')">Todos</button>
+          <button [class.ativo]="filtroStatus === 'PENDENTE'" (click)="filtrarPorStatus('PENDENTE')">Pendentes</button>
+          <button [class.ativo]="filtroStatus === 'APROVADO'" (click)="filtrarPorStatus('APROVADO')">Aprovados</button>
+          <button [class.ativo]="filtroStatus === 'REJEITADO'" (click)="filtrarPorStatus('REJEITADO')">Rejeitados</button>
+        </div>
+      </div>
+
+      <table class="tabela-notificacoes">
+        <thead>
+          <tr>
+            <th>Administrador</th>
+            <th>Motivo</th>
+            <th>Data de Envio</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of notificacoesPaginadas">
+            <td>{{ item.administrador || 'IA' }}</td>
+            <td>{{ item.motivo }}</td>
+            <td>{{ item.dataEnvio | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                {{ item.status || 'Pendente' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="notificacoesFiltradas.length === 0">
+            <td colspan="4" class="empty-row">Nenhuma notificação encontrada com o filtro selecionado.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Controlo de Paginação -->
+      <div class="paginacao" *ngIf="notificacoesFiltradas.length > 0">
+        <button (click)="mudarPagina(paginaAtual - 1)" [disabled]="paginaAtual === 1">Anterior</button>
+        <span>Página {{ paginaAtual }} de {{ totalPaginas }}</span>
+        <button (click)="mudarPagina(paginaAtual + 1)" [disabled]="paginaAtual === totalPaginas">Próxima</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLUNA DA DIREITA -->
+  <div class="side-panel">
+    <div *ngIf="!mostrarFormulario" class="upload-box">
+      <div class="upload-area" (click)="fileInput.click()">
+        <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,.pdf" hidden />
+        <div class="upload-icon">☁️</div>
+        <p><strong>Anexar Atestado (PDF/Imagem)</strong></p>
+        <span>Arraste ou clique para enviar</span>
+        <small *ngIf="arquivoAtestado"><br>Ficheiro: {{ arquivoAtestado.name }}</small>
+      </div>
+      <button class="btn-submit" [disabled]="!arquivoAtestado">Enviar</button>
+    </div>
+
+    <div *ngIf="mostrarFormulario" class="form-panel">
+      <app-criar-notificacao></app-criar-notificacao>
+    </div>
+  </div>
+</div>
