@@ -1,64 +1,181 @@
-<div class="form-container">
-  <h3 class="form-title">Enviar Notificação de Ausência</h3>
+<div class="criar-notificacao-container">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="student-form">
+    
+    <!-- Alertas -->
+    <div *ngIf="sucesso" class="alert alert-success">
+      Notificação enviada com sucesso!
+    </div>
+    <div *ngIf="erro" class="alert alert-error">
+      {{ erro }}
+    </div>
 
-  <div *ngIf="sucesso" class="success-message">
-    Notificação enviada com sucesso!
-  </div>
-
-  <div *ngIf="erro" class="error-message">
-    {{ erro }}
-  </div>
-
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Dropdown de Motivo -->
     <div class="form-group">
-      <label>Motivo</label>
-      <select class="form-control" formControlName="motivo">
-        <option value="" disabled selected>Selecione um motivo</option>
-        <option value="PROBLEMA DE SAÚDE LEVE">PROBLEMA DE SAÚDE LEVE</option>
-        <option value="IMPREVISTO PESSOAL">IMPREVISTO PESSOAL</option>
-        <option value="CONSULTA MÉDICA">CONSULTA MÉDICA</option>
-        <option value="OUTRO">OUTRO</option>
-      </select>
-    </div>
+      <label class="form-label">Motivo da Ausência</label>
+      
+      <div class="custom-dropdown-wrapper">
+        <button 
+          type="button" 
+          class="custom-dropdown-btn" 
+          [class.active]="menuMotivoAberto"
+          [class.invalid]="form.get('motivo')?.invalid && form.get('motivo')?.touched"
+          (click)="alternarMenuMotivo()">
+          <span>{{ form.get('motivo')?.value || 'Selecione o motivo' }}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
 
-    <div class="row-dates">
-      <div class="form-group">
-        <label>Início</label>
-        <input 
-          type="date" 
-          class="form-control" 
-          formControlName="dataInicio" 
-          [max]="form.get('dataFim')?.value" 
-        />
+        <div class="custom-dropdown-menu" *ngIf="menuMotivoAberto">
+          <div 
+            *ngFor="let opcao of opcoesMotivo" 
+            class="custom-dropdown-option"
+            [class.active]="opcao === form.get('motivo')?.value"
+            (click)="selecionarMotivo(opcao)">
+            {{ opcao }}
+          </div>
+        </div>
       </div>
+      <span class="error-msg" *ngIf="form.get('motivo')?.invalid && form.get('motivo')?.touched">
+        Por favor, selecione um motivo.
+      </span>
+    </div>
+
+    <!-- Linha de Datas com Calendário Personalizado -->
+    <div class="form-row">
+      <!-- Data de Início -->
       <div class="form-group">
-        <label>Fim</label>
-        <input 
-          type="date" 
-          class="form-control" 
-          formControlName="dataFim" 
-          [min]="form.get('dataInicio')?.value" 
-        />
+        <label class="form-label">Data de Início</label>
+        <div class="custom-dropdown-wrapper">
+          <button 
+            type="button" 
+            class="custom-dropdown-btn"
+            [class.active]="campoDataAberto === 'inicio'"
+            [class.invalid]="form.get('dataInicio')?.invalid && form.get('dataInicio')?.touched"
+            (click)="abrirCalendario('inicio')">
+            <span>{{ formatarDataExibicao(form.get('dataInicio')?.value) }}</span>
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </button>
+
+          <!-- Popup Calendário para Data de Início -->
+          <div class="custom-calendar-popup" *ngIf="campoDataAberto === 'inicio'">
+            <div class="calendar-header">
+              <button type="button" class="nav-btn" (click)="mudarMes(-1)">&lsaquo;</button>
+              <span class="month-title">{{ nomeMesAnoAtual }}</span>
+              <button type="button" class="nav-btn" (click)="mudarMes(1)">&rsaquo;</button>
+            </div>
+            
+            <div class="calendar-weekdays">
+              <span *ngFor="let dia of diasSemana">{{ dia }}</span>
+            </div>
+
+            <div class="calendar-days-grid">
+              <button 
+                type="button"
+                *ngFor="let item of diasCalendario"
+                class="day-btn"
+                [class.out-month]="item.outromes"
+                [class.today]="item.hoje"
+                [class.selected]="item.selecionado"
+                (click)="selecionarDia(item)">
+                {{ item.diaNumero }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <span class="error-msg" *ngIf="form.get('dataInicio')?.invalid && form.get('dataInicio')?.touched">
+          Data de início é obrigatória.
+        </span>
+      </div>
+
+      <!-- Data de Término -->
+      <div class="form-group">
+        <label class="form-label">Data de Término</label>
+        <div class="custom-dropdown-wrapper">
+          <button 
+            type="button" 
+            class="custom-dropdown-btn"
+            [class.active]="campoDataAberto === 'fim'"
+            [class.invalid]="form.get('dataFim')?.invalid && form.get('dataFim')?.touched"
+            (click)="abrirCalendario('fim')">
+            <span>{{ formatarDataExibicao(form.get('dataFim')?.value) }}</span>
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </button>
+
+          <!-- Popup Calendário para Data de Término -->
+          <div class="custom-calendar-popup" *ngIf="campoDataAberto === 'fim'">
+            <div class="calendar-header">
+              <button type="button" class="nav-btn" (click)="mudarMes(-1)">&lsaquo;</button>
+              <span class="month-title">{{ nomeMesAnoAtual }}</span>
+              <button type="button" class="nav-btn" (click)="mudarMes(1)">&rsaquo;</button>
+            </div>
+            
+            <div class="calendar-weekdays">
+              <span *ngFor="let dia of diasSemana">{{ dia }}</span>
+            </div>
+
+            <div class="calendar-days-grid">
+              <button 
+                type="button"
+                *ngFor="let item of diasCalendario"
+                class="day-btn"
+                [class.out-month]="item.outromes"
+                [class.today]="item.hoje"
+                [class.selected]="item.selecionado"
+                (click)="selecionarDia(item)">
+                {{ item.diaNumero }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <span class="error-msg" *ngIf="form.get('dataFim')?.hasError('required') && form.get('dataFim')?.touched">
+          Data de término é obrigatória.
+        </span>
+        <span class="error-msg" *ngIf="form.get('dataFim')?.hasError('dataInvalida')">
+          A data final não pode ser anterior à inicial.
+        </span>
       </div>
     </div>
 
-    <!-- Mensagem de erro caso a data final seja menor que a inicial -->
-    <div *ngIf="form.get('dataFim')?.hasError('dataInvalida')" class="error-message" style="margin-top: 8px;">
-      A data de fim não pode ser anterior à data de início.
+    <!-- Descrição -->
+    <div class="form-group">
+      <label class="form-label" for="descricao">Descrição / Observações</label>
+      <textarea 
+        id="descricao" 
+        formControlName="descricao"
+        class="form-control textarea-control" 
+        [class.invalid]="form.get('descricao')?.invalid && form.get('descricao')?.touched"
+        rows="4" 
+        placeholder="Informe os detalhes adicionais sobre a ausência..."></textarea>
+      <span class="error-msg" *ngIf="form.get('descricao')?.invalid && form.get('descricao')?.touched">
+        A descrição deve conter pelo menos 10 caracteres.
+      </span>
     </div>
 
-    <div class="form-group" style="margin-top: 12px;">
-      <label>Descrição / Justificação</label>
-      <textarea class="form-control" rows="3" formControlName="descricao" placeholder="Descreva o motivo (mínimo 10 caracteres)..."></textarea>
+    <!-- Declaração -->
+    <div class="form-group checkbox-group">
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="declaracaoVeracidade" />
+        <span>Declaro que as informações fornecidas são verdadeiras.</span>
+      </label>
+      <span class="error-msg" *ngIf="form.get('declaracaoVeracidade')?.invalid && form.get('declaracaoVeracidade')?.touched">
+        Você precisa aceitar a declaração para prosseguir.
+      </span>
     </div>
 
-    <div class="checkbox-group">
-      <input type="checkbox" id="declaracaoVeracidade" formControlName="declaracaoVeracidade" />
-      <label for="declaracaoVeracidade">Declaro que as informações fornecidas são verdadeiras.</label>
+    <!-- Botão de Envio -->
+    <div class="form-actions">
+      <button type="submit" class="submit-btn">Enviar Notificação</button>
     </div>
-
-    <button type="submit" class="btn-enviar" [disabled]="form.invalid">
-      Enviar Notificação
-    </button>
   </form>
 </div>
