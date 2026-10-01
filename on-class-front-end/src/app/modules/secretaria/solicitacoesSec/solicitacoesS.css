@@ -1,0 +1,252 @@
+.secretaria-page {
+  background-color: #f0f4f9;
+  min-height: 100vh;
+  padding: 16px 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Header Superior Azul Escuro */
+.top-header {
+  background-color: #002255;
+  border-radius: 12px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 34, 85, 0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-back {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.header-titles h1 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.header-titles span {
+  font-size: 11px;
+  color: #a0aec0;
+}
+
+.header-search input {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  width: 260px;
+  font-size: 12px;
+  text-align: center;
+  outline: none;
+  color: #2d3748;
+}
+
+.header-search input::placeholder {
+  color: #a0aec0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-btn, .avatar-btn {
+  background: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #002255;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.icon-btn:hover, .avatar-btn:hover {
+  opacity: 0.9;
+}
+
+/* Barra de Filtros */
+.filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filter-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.filter-select select {
+  background-color: #e2e8f0;
+  border: none;
+  border-radius: 16px;
+  padding: 6px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4a5568;
+  cursor: pointer;
+  outline: none;
+  text-transform: uppercase;
+}
+
+/* Card Principal */
+.content-card {
+  background-color: #e8f0f8;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+/* Navegação por Abas */
+.tabs-navigation {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #cbd5e0;
+  padding-bottom: 8px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  color: #718096;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: #002255;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.tab-btn.active {
+  color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Lista de Cards de Solicitação */
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.request-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.request-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.request-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.matricula {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.data-hora {
+  font-size: 11px;
+  color: #a0aec0;
+}
+
+.aluno-nome {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 2px 0;
+}
+
+.solicitacao-tipo {
+  font-size: 12px;
+  color: #718096;
+  margin: 0;
+}
+
+/* Status Tags */
+.status-tag {
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+}
+
+.status-rejeitada {
+  background-color: #fde8e8;
+  color: #e53e3e;
+}
+
+.status-pendente {
+  background-color: #feefc3;
+  color: #b45309;
+}
+
+.status-analise {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.status-aprovada {
+  background-color: #def7ec;
+  color: #03543f;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #718096;
+  font-size: 14px;
+}
