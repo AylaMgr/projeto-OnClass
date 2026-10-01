@@ -13,3 +13,4 @@ projeto-OnClass/
 ├── on-class-front-end/   # Aplicação Web (Angular 17+ Standalone Components)
 ├── on-class-back-end/    # API REST & Banco de Dados (Node.js / Prisma ORM)
 └── README.md             # Visão geral da solução
+...
