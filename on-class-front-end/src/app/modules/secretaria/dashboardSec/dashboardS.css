@@ -393,3 +393,16 @@
   color: #3b66f5;
   background-color: #eef2ff;
 }
+.link-ver-todos {
+  color: #2563eb; /* Azul primário */
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.link-ver-todos:hover {
+  color: #1d4ed8; /* Azul um pouco mais escuro no hover */
+  text-decoration: underline;
+}

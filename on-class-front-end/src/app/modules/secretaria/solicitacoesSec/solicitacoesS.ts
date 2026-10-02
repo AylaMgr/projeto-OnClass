@@ -1,15 +1,21 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
-export interface SolicitacaoItem {
+// Interface com TODOS os campos suportados (incluindo matricula, alunoNome e motivo)
+export interface Solicitacao {
   id: string;
-  matricula: string;
-  dataHora: string;
-  aluno: string;
-  tipo: string;
-  status: 'Pendente' | 'Em Análise' | 'Aprovada' | 'Rejeitada';
-  categoria: 'recentes' | 'manuais';
+  numMatricula?: string;
+  matricula?: string;
+  dataHora?: string;
+  aluno?: string;
+  alunoNome?: string;
+  tipo?: string;
+  motivo?: string;
+  turno?: string;
+  turma?: string;
+  status: string;
 }
 
 @Component({
@@ -17,95 +23,108 @@ export interface SolicitacaoItem {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './solicitacoesS.html',
-  styleUrl: './solicitacoesS.css',
-  encapsulation: ViewEncapsulation.None
+  styleUrl: './solicitacoesS.css'
 })
 export class SolicitacoesSec implements OnInit {
-  abaAtiva: 'recentes' | 'manuais' = 'recentes';
-
-  // Filtros selecionados
+  termoPesquisa: string = '';
   filtroTurno: string = '';
-  filtroOrdem: string = 'recente';
+  filtroOrdem: string = 'recentes';
   filtroTurma: string = '';
-  termoBuscaMatricula: string = '';
 
-  // Lista mock de solicitações
-  solicitacoes: SolicitacaoItem[] = [
+  // Método para resetar todos os filtros e a barra de pesquisa
+  limparFiltros(): void {
+    this.termoPesquisa = '';
+    this.filtroTurno = '';
+    this.filtroOrdem = 'recentes';
+    this.filtroTurma = '';
+    this.aplicarFiltros();
+  }
+
+  // Lista mock mapeada com ambos os nomes de campos para evitar erros no HTML
+  todasSolicitacoes: Solicitacao[] = [
     {
       id: '1',
-      matricula: 'Nº 2024001234',
-      dataHora: 'Hoje, 14:32',
+      numMatricula: '2024001234',
+      matricula: '2024001234',
+      dataHora: '14b, 11:22',
       aluno: 'Mariana Souza Santos',
-      tipo: 'Solicitação de Abono: Atestado de Casamento',
-      status: 'Pendente',
-      categoria: 'recentes'
+      alunoNome: 'Mariana Souza Santos',
+      tipo: 'Solicitação de Abono: Atestado de Comparecimento',
+      motivo: 'Solicitação de Abono: Atestado de Comparecimento',
+      turno: 'Manhã',
+      turma: 'INFO1',
+      status: 'Sujeito'
     },
     {
       id: '2',
-      matricula: 'Nº 2024001990',
-      dataHora: 'Ontem, 09:15',
+      numMatricula: '2024001990',
+      matricula: '2024001990',
+      dataHora: 'Ontem, 08:15',
       aluno: 'Pedro Henrique Alencar',
+      alunoNome: 'Pedro Henrique Alencar',
       tipo: 'Segunda Chamada: Exame Final Física',
-      status: 'Em Análise',
-      categoria: 'recentes'
+      motivo: 'Segunda Chamada: Exame Final Física',
+      turno: 'Tarde',
+      turma: 'ADM2',
+      status: 'Sujeito'
     },
     {
       id: '3',
-      matricula: 'Nº 2024001002',
-      dataHora: '08 Nov 2026',
+      numMatricula: '2024001552',
+      matricula: '2024001552',
+      dataHora: '07 Nov, 20:01',
       aluno: 'Clara Regina Mota',
+      alunoNome: 'Clara Regina Mota',
       tipo: 'Ajuste de Matrícula: Tópicos Especiais',
-      status: 'Rejeitada',
-      categoria: 'recentes'
-    },
-    {
-      id: '4',
-      matricula: 'Nº 2024001552',
-      dataHora: '07 Nov 2026',
-      aluno: 'Lucas Bezerra da Silva',
-      tipo: 'Solicitação de Abono: Atestado Médico',
-      status: 'Aprovada',
-      categoria: 'recentes'
-    },
-    {
-      id: '5',
-      matricula: 'Nº 2024003310',
-      dataHora: '06 Nov 2026',
-      aluno: 'Gabriela Vasconcelos',
-      tipo: 'Validação Manual de Horas Complementares',
-      status: 'Em Análise',
-      categoria: 'manuais'
-    },
-    {
-      id: '6',
-      matricula: 'Nº 2024004412',
-      dataHora: '05 Nov 2026',
-      aluno: 'Rodrigo Alves Mendes',
-      tipo: 'Revisão Manual de Histórico Escolar',
-      status: 'Pendente',
-      categoria: 'manuais'
+      motivo: 'Ajuste de Matrícula: Tópicos Especiais',
+      turno: 'Noite',
+      turma: 'INFO2',
+      status: 'Sujeito'
     }
   ];
 
-  ngOnInit(): void {}
+  solicitacoesFiltradas: Solicitacao[] = [];
 
-  mudarAba(aba: 'recentes' | 'manuais'): void {
-    this.abaAtiva = aba;
-  }
+  constructor(private readonly router: Router) {}
 
-  get solicitacoesFiltradas(): SolicitacaoItem[] {
-    return this.solicitacoes.filter(item => {
-      const pertenceAba = item.categoria === this.abaAtiva;
-      const atendeMatricula = this.termoBuscaMatricula 
-        ? item.matricula.toLowerCase().includes(this.termoBuscaMatricula.toLowerCase()) || 
-          item.aluno.toLowerCase().includes(this.termoBuscaMatricula.toLowerCase())
-        : true;
-
-      return pertenceAba && atendeMatricula;
-    });
+  ngOnInit(): void {
+    this.aplicarFiltros();
   }
 
   voltarDash(): void {
-    history.back();
+    this.router.navigate(['/secretaria/dashboard']);
+  }
+
+  getStatusClass(status: string): string {
+    if (!status) return '';
+    const st = status.toLowerCase();
+    if (st.includes('aguardando') || st.includes('sujeito')) return 'aguardando';
+    if (st.includes('aprovado') || st.includes('deferido')) return 'aprovado';
+    if (st.includes('recusado') || st.includes('indeferido')) return 'recusado';
+    return st;
+  }
+
+  aplicarFiltros(): void {
+    let resultado = [...this.todasSolicitacoes];
+
+    if (this.termoPesquisa.trim() !== '') {
+      const termo = this.termoPesquisa.toLowerCase();
+      resultado = resultado.filter(s =>
+        (s.aluno && s.aluno.toLowerCase().includes(termo)) ||
+        (s.alunoNome && s.alunoNome.toLowerCase().includes(termo)) ||
+        (s.matricula && s.matricula.toLowerCase().includes(termo)) ||
+        (s.numMatricula && s.numMatricula.toLowerCase().includes(termo))
+      );
+    }
+
+    if (this.filtroTurno) {
+      resultado = resultado.filter(s => s.turno === this.filtroTurno);
+    }
+
+    if (this.filtroTurma) {
+      resultado = resultado.filter(s => s.turma === this.filtroTurma);
+    }
+
+    this.solicitacoesFiltradas = resultado;
   }
 }
