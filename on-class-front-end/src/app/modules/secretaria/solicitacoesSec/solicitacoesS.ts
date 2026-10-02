@@ -1,130 +1,122 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
-// Interface com TODOS os campos suportados (incluindo matricula, alunoNome e motivo)
-export interface Solicitacao {
+export interface ItemAnaliseIA {
+  rotulo: string;
+  status: boolean; // true = Ok (verde), false = Erro/Alerta (vermelho)
+  detalhe: string;
+}
+
+export interface DetalheSolicitacao {
   id: string;
-  numMatricula?: string;
-  matricula?: string;
-  dataHora?: string;
-  aluno?: string;
-  alunoNome?: string;
-  tipo?: string;
-  motivo?: string;
-  turno?: string;
-  turma?: string;
-  status: string;
+  matricula: string;
+  aluno: string;
+  curso: string;
+  tipoDocumento: string;
+  tamanhoArquivo: string;
+  conteudoAtestado: {
+    clinica: string;
+    texto: string;
+    localData: string;
+    carimbo: string;
+  };
+  confiancaIA: number;
+  statusIA: string;
+  analiseIA: ItemAnaliseIA[];
+  observacaoIA: string;
 }
 
 @Component({
-  selector: 'app-solicitacoes-sec',
+  selector: 'app-solicitacoes-s',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './solicitacoesS.html',
   styleUrl: './solicitacoesS.css'
 })
 export class SolicitacoesSec implements OnInit {
-  termoPesquisa: string = '';
-  filtroTurno: string = '';
-  filtroOrdem: string = 'recentes';
-  filtroTurma: string = '';
 
-  // Método para resetar todos os filtros e a barra de pesquisa
-  limparFiltros(): void {
-    this.termoPesquisa = '';
-    this.filtroTurno = '';
-    this.filtroOrdem = 'recentes';
-    this.filtroTurma = '';
-    this.aplicarFiltros();
-  }
+  solicitacaoId: string | null = null;
+  solicitacao!: DetalheSolicitacao;
+  justificativaSecretaria: string = '';
+  zoomNivel: number = 100;
 
-  // Lista mock mapeada com ambos os nomes de campos para evitar erros no HTML
-  todasSolicitacoes: Solicitacao[] = [
-    {
+  // Base de dados simulada para os detalhes
+  private readonly dadosSolicitacoes: Record<string, DetalheSolicitacao> = {
+    '1': {
       id: '1',
-      numMatricula: '2024001234',
-      matricula: '2024001234',
-      dataHora: '14b, 11:22',
-      aluno: 'Mariana Souza Santos',
-      alunoNome: 'Mariana Souza Santos',
-      tipo: 'Solicitação de Abono: Atestado de Comparecimento',
-      motivo: 'Solicitação de Abono: Atestado de Comparecimento',
-      turno: 'Manhã',
-      turma: 'INFO1',
-      status: 'Sujeito'
-    },
-    {
-      id: '2',
-      numMatricula: '2024001990',
-      matricula: '2024001990',
-      dataHora: 'Ontem, 08:15',
-      aluno: 'Pedro Henrique Alencar',
-      alunoNome: 'Pedro Henrique Alencar',
-      tipo: 'Segunda Chamada: Exame Final Física',
-      motivo: 'Segunda Chamada: Exame Final Física',
-      turno: 'Tarde',
-      turma: 'ADM2',
-      status: 'Sujeito'
-    },
-    {
-      id: '3',
-      numMatricula: '2024001552',
-      matricula: '2024001552',
-      dataHora: '07 Nov, 20:01',
-      aluno: 'Clara Regina Mota',
-      alunoNome: 'Clara Regina Mota',
-      tipo: 'Ajuste de Matrícula: Tópicos Especiais',
-      motivo: 'Ajuste de Matrícula: Tópicos Especiais',
-      turno: 'Noite',
-      turma: 'INFO2',
-      status: 'Sujeito'
+      matricula: '2024005678',
+      aluno: 'Maria Silva',
+      curso: 'Enfermagem',
+      tipoDocumento: 'PDF / Imagem',
+      tamanhoArquivo: '3.2 MB',
+      conteudoAtestado: {
+        clinica: 'CLÍNICA MÉDICA VIDA & SAÚDE',
+        texto: 'Atesto para os devidos fins que a paciente Maria Silva, portadora do CPF 123.456.789-00, esteve sob meus cuidados médicos no dia 12 de Agosto de 2026, necessitando de 03 (três) dias de repouso absoluto por motivos de saúde (CID10: J11).',
+        localData: 'Brasília - DF, 12/08/2026.',
+        carimbo: '[Carimbo com CRM ilegível]\nDr. [Não Identificado]'
+      },
+      confiancaIA: 35,
+      statusIA: 'Rejeitado pela IA',
+      analiseIA: [
+        { rotulo: 'Assinatura Médica', status: false, detalhe: 'Não detectada ou ilegível' },
+        { rotulo: 'Número CRM', status: false, detalhe: 'Ausente no cabeçalho/corpo' },
+        { rotulo: 'Data do Atestado', status: true, detalhe: 'Identificado (12/08/2026)' },
+        { rotulo: 'Carimbo do Médico', status: false, detalhe: 'Não identificado' },
+        { rotulo: 'Nome do Paciente', status: true, detalhe: 'Compatível (Maria Silva)' }
+      ],
+      observacaoIA: 'Documento com baixa qualidade de imagem. Possível foto de tela ou fotocópia de baixa resolução. Recomenda-se solicitar reenvio ou cópia digitalizada limpa caso necessário.'
     }
-  ];
+  };
 
-  solicitacoesFiltradas: Solicitacao[] = [];
-
-  constructor(private readonly router: Router) {}
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.aplicarFiltros();
+    this.solicitacaoId = this.route.snapshot.paramMap.get('id');
+
+    // Se houver ID correspondente na base simulada, carrega ele, senão usa o padrão (ID '1')
+    if (this.solicitacaoId && this.dadosSolicitacoes[this.solicitacaoId]) {
+      this.solicitacao = this.dadosSolicitacoes[this.solicitacaoId];
+    } else {
+      this.solicitacao = this.dadosSolicitacoes['1'];
+    }
   }
 
-  voltarDash(): void {
-    this.router.navigate(['/secretaria/dashboard']);
+  voltar(): void {
+    this.router.navigate(['/secretaria/analises-manuais']);
   }
 
-  getStatusClass(status: string): string {
-    if (!status) return '';
-    const st = status.toLowerCase();
-    if (st.includes('aguardando') || st.includes('sujeito')) return 'aguardando';
-    if (st.includes('aprovado') || st.includes('deferido')) return 'aprovado';
-    if (st.includes('recusado') || st.includes('indeferido')) return 'recusado';
-    return st;
+  aumentarZoom(): void {
+    if (this.zoomNivel < 150) this.zoomNivel += 10;
   }
 
-  aplicarFiltros(): void {
-    let resultado = [...this.todasSolicitacoes];
+  diminuirZoom(): void {
+    if (this.zoomNivel > 70) this.zoomNivel -= 10;
+  }
 
-    if (this.termoPesquisa.trim() !== '') {
-      const termo = this.termoPesquisa.toLowerCase();
-      resultado = resultado.filter(s =>
-        (s.aluno && s.aluno.toLowerCase().includes(termo)) ||
-        (s.alunoNome && s.alunoNome.toLowerCase().includes(termo)) ||
-        (s.matricula && s.matricula.toLowerCase().includes(termo)) ||
-        (s.numMatricula && s.numMatricula.toLowerCase().includes(termo))
-      );
+  resetarZoom(): void {
+    this.zoomNivel = 100;
+  }
+
+  baixarOriginal(): void {
+    alert(`Iniciando o download do arquivo de ${this.solicitacao.aluno}...`);
+  }
+
+  aprovarAtestado(): void {
+    alert(`Atestado de ${this.solicitacao.aluno} APROVADO com sucesso!`);
+    this.voltar();
+  }
+
+  rejeitarAtestado(): void {
+    if (!this.justificativaSecretaria.trim()) {
+      alert('Por favor, digite a justificativa da secretaria antes de rejeitar.');
+      return;
     }
-
-    if (this.filtroTurno) {
-      resultado = resultado.filter(s => s.turno === this.filtroTurno);
-    }
-
-    if (this.filtroTurma) {
-      resultado = resultado.filter(s => s.turma === this.filtroTurma);
-    }
-
-    this.solicitacoesFiltradas = resultado;
+    alert(`Atestado de ${this.solicitacao.aluno} REJEITADO.`);
+    this.voltar();
   }
 }

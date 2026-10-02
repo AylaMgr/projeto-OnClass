@@ -149,12 +149,7 @@
       <div class="table-card">
         <div class="card-header">
   <h3>Recebidos Recentemente</h3>
-  <a class="link-ver-todos" 
-   routerLink="/secretaria/solicitacoes" 
-   [queryParams]="{ aba: 'recentes' }"
-   style="cursor: pointer;">
-  Ver Todos &rarr;
-</a>
+  <a class="link-ver-todos" (click)="verAnalisesManuais()" styles="cursor: pointer;">Ver Todos &rarr;</a>
 </div>
 
         <table class="mini-table">
@@ -189,7 +184,7 @@
       <div class="table-card">
         <div class="table-header">
           <h3>Análises Manuais</h3>
-         <a class="see-all" routerLink="/secretaria/solicitacoes">
+         <a class="link-ver-todos" (click)="verAnalisesManuais()" style="cursor: pointer;">
   Ver Todos &rarr;
 </a>
         </div>

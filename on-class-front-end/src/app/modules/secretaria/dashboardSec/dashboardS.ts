@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { AnalisesManuais } from '../analisesManuais/analisesManuais';
 
 export interface ItemTabelaResumo {
   alunoNome: string;
@@ -91,12 +92,12 @@ export class DashboardS {
 
   // Navega para a tela de solicitações abrindo diretamente na aba 'recentes'
   verHistoricoRecentes(): void {
-  this.router.navigate(['/secretaria/solicitacoes'], { queryParams: { aba: 'recentes' } });
+  this.router.navigate(['/secretaria/analises-manuais'], { queryParams: { aba: 'recentes' } });
 }
 
   // Navega para a tela de solicitações abrindo na aba 'manuais'
   verAnalisesManuais(): void {
-    this.router.navigate(['/secretaria/solicitacoes'], { queryParams: { aba: 'manuais' } });
+    this.router.navigate(['/secretaria/analises-manuais']);
   }
 
   voltar(): void {

@@ -1,0 +1,142 @@
+<div class="page-container">
+
+  <!-- Header Superior Azul Escuro -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <button type="button" class="btn-back" (click)="voltarDashboard()" aria-label="Voltar">
+        &#8592;
+      </button>
+      <div class="user-info">
+        <h1>Olá, Secretaria</h1>
+        <span>Portal dos Docentes</span>
+      </div>
+    </div>
+
+    <div class="top-bar-center">
+      <div class="search-input-wrapper">
+        <input 
+          type="text" 
+          placeholder="Nº de Matrícula" 
+          [(ngModel)]="termoMatricula"
+        />
+      </div>
+    </div>
+
+    <div class="top-bar-right">
+      <button type="button" class="icon-btn" aria-label="Notificações">
+        &#128276;
+      </button>
+      <div class="profile-avatar">
+        &#128100;
+      </div>
+    </div>
+  </header>
+
+  <main class="content-body">
+
+    <!-- Barra de Filtros -->
+    <div class="filters-bar">
+      <span class="filter-label">Filtrar:</span>
+
+      <!-- Dropdown TURNO -->
+      <div class="custom-dropdown" [class.active]="dropdownAberto === 'turno'">
+        <button type="button" class="dropdown-btn" (click)="toggleDropdown('turno', $event)">
+          <span>{{ turnoSelecionado || 'TURNO' }}</span>
+          <span class="arrow">&#9662;</span>
+        </button>
+        <div class="dropdown-menu" *ngIf="dropdownAberto === 'turno'">
+          <div class="dropdown-item" (click)="selecionarOpcao('turno', '')">Todos</div>
+          <div class="dropdown-item" (click)="selecionarOpcao('turno', 'Matutino')">Matutino</div>
+          <div class="dropdown-item" (click)="selecionarOpcao('turno', 'Vespertino')">Vespertino</div>
+          <div class="dropdown-item" (click)="selecionarOpcao('turno', 'Noturno')">Noturno</div>
+        </div>
+      </div>
+
+      <!-- Dropdown ORDEM -->
+      <div class="custom-dropdown" [class.active]="dropdownAberto === 'ordem'">
+        <button type="button" class="dropdown-btn" (click)="toggleDropdown('ordem', $event)">
+          <span>{{ obterRotuloOrdem() }}</span>
+          <span class="arrow">&#9662;</span>
+        </button>
+        <div class="dropdown-menu" *ngIf="dropdownAberto === 'ordem'">
+          <div class="dropdown-item" (click)="selecionarOpcao('ordem', '')">Todas</div>
+          <div class="dropdown-item" (click)="selecionarOpcao('ordem', 'recentes')">Mais Recentes</div>
+          <div class="dropdown-item" (click)="selecionarOpcao('ordem', 'antigos')">Mais Antigos</div>
+        </div>
+      </div>
+
+      <!-- Dropdown TURMA -->
+      <div class="custom-dropdown" [class.active]="dropdownAberto === 'turma'">
+        <button type="button" class="dropdown-btn" (click)="toggleDropdown('turma', $event)">
+          <span>{{ turmaSelecionada || 'TURMA' }}</span>
+          <span class="arrow">&#9662;</span>
+        </button>
+        <div class="dropdown-menu" *ngIf="dropdownAberto === 'turma'">
+          <div class="dropdown-item" (click)="selecionarOpcao('turma', '')">Todas</div>
+          <div class="dropdown-item" (click)="selecionarOpcao('turma', '8º Ano A')">8º Ano A</div>
+          <div class="dropdown-item" (click)="selecionarOpcao('turma', '9º Ano B')">9º Ano B</div>
+          <div class="dropdown-item" (click)="selecionarOpcao('turma', '7º Ano C')">7º Ano C</div>
+        </div>
+      </div>
+
+      <!-- Botão Limpar Filtros -->
+      <button 
+        type="button" 
+        class="btn-clear" 
+        *ngIf="turnoSelecionado || ordemSelecionada || turmaSelecionada || termoMatricula"
+        (click)="limparFiltros()"
+      >
+        &#10005; Limpar Filtros
+      </button>
+    </div>
+
+    <!-- Container Principal das Análises Manuais -->
+    <div class="main-card">
+      <div class="main-card-header">
+        <div>
+          <h2>Análises Manuais</h2>
+          <p class="subtitle">Aguardando revisão ou recentemente atualizados</p>
+        </div>
+        <a class="link-historico" (click)="verHistorico()">
+          Ver Histórico &rarr;
+        </a>
+      </div>
+
+      <!-- LISTA DE CARDS - CADA CARD É UM BOTÃO/LINK PARA SOLICITAÇÕES -->
+      <div class="cards-list">
+        <a 
+          class="student-card-btn" 
+          *ngFor="let item of solicitacoesFiltradas"
+          [routerLink]="['/secretaria/solicitacao', item.id]"
+        >
+          <div class="student-info">
+            <div class="meta-line">
+              <span class="matricula">Nº {{ item.matricula }}</span>
+              <span class="data-envio">{{ item.dataEnvio }}</span>
+            </div>
+            <h3 class="student-name">{{ item.aluno }}</h3>
+            <p class="motivo-text">{{ item.motivo }}</p>
+          </div>
+
+          <div class="student-status">
+            <span 
+              class="status-badge"
+              [ngClass]="{
+                'rejeitada': item.status === 'Rejeitada',
+                'pendente': item.status === 'Pendente',
+                'aprovada': item.status === 'Aprovada'
+              }"
+            >
+              {{ item.status }}
+            </span>
+          </div>
+        </a>
+
+        <div class="empty-state" *ngIf="solicitacoesFiltradas.length === 0">
+          Nenhuma solicitação encontrada.
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
