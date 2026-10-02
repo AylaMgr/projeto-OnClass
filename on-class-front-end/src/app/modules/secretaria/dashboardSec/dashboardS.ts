@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -88,6 +88,16 @@ export class DashboardS {
   ];
 
   constructor(private router: Router) {}
+
+  // Navega para a tela de solicitações abrindo diretamente na aba 'recentes'
+  verHistoricoRecentes(): void {
+  this.router.navigate(['/secretaria/solicitacoes'], { queryParams: { aba: 'recentes' } });
+}
+
+  // Navega para a tela de solicitações abrindo na aba 'manuais'
+  verAnalisesManuais(): void {
+    this.router.navigate(['/secretaria/solicitacoes'], { queryParams: { aba: 'manuais' } });
+  }
 
   voltar(): void {
     this.router.navigate(['/login']);

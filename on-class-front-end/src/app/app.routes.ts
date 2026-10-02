@@ -32,8 +32,9 @@ export const routes: Routes = [
   { path: 'secretaria/dashboard', component: DashboardS },
   { path: 'secretaria/recebidos', component: SolicitacoesSec },
   { path: 'secretaria/analises-manuais', component: AnalisesManuais },
+  { path: 'secretaria/solicitacoes', component: SolicitacoesSec },
 
-  // Redirecionamentos
+  // Redirecionamentos (AQUI DENTRO DO ARRAY DE ROTAS)
   { path: 'dashboard-aluno', redirectTo: 'aluno/dashboard', pathMatch: 'full' },
   { path: 'dashboard-secretaria', redirectTo: 'secretaria/dashboard', pathMatch: 'full' }
 ];

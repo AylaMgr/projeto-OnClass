@@ -147,12 +147,15 @@
     <section class="tables-grid">
       <!-- Recebidos Recentemente -->
       <div class="table-card">
-        <div class="table-header">
-          <h3>Recebidos Recentemente</h3>
-          <a class="ver-historico-btn" routerLink="/secretaria/solicitacoes">
-  Ver Histórico &rarr;
+        <div class="card-header">
+  <h3>Recebidos Recentemente</h3>
+  <a class="link-ver-todos" 
+   routerLink="/secretaria/solicitacoes" 
+   [queryParams]="{ aba: 'recentes' }"
+   style="cursor: pointer;">
+  Ver Todos &rarr;
 </a>
-        </div>
+</div>
 
         <table class="mini-table">
           <thead>

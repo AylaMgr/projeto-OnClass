@@ -1,127 +1,110 @@
-<div class="secretaria-page">
-  <!-- Header Superior Azul Escuro -->
-  <header class="top-header">
-    <div class="header-left">
-      <button type="button" class="btn-back" (click)="voltarDash()" title="Voltar ao Dashboard">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M12 8l-4 4 4 4M16 12H8"></path>
+<div class="page-container">
+  <!-- 1. Barra Azul Escura de Topo -->
+  <header class="top-nav">
+    <div class="user-greeting">
+      <button class="btn-back" (click)="voltarDash()" title="Voltar ao Dashboard">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
       </button>
-      <div class="header-titles">
-        <h1>Olá, Secretaria</h1>
-        <span>Portal dos Docentes</span>
+      <div>
+        <h2>Olá, Secretaria</h2>
+        <span>Pontifícia Docência</span>
       </div>
     </div>
 
-    <!-- Campo de Busca por Matrícula -->
-    <div class="header-search">
+    <!-- Barra de Pesquisa Oval Centralizada -->
+    <div class="header-search-box">
       <input 
         type="text" 
-        placeholder="Nº de Matrícula ou Nome" 
-        [(ngModel)]="termoBuscaMatricula" 
-      />
+        [(ngModel)]="termoPesquisa" 
+        (ngModelChange)="aplicarFiltros()"
+        placeholder="Nº de matrícula" />
     </div>
 
-    <!-- Ações do Usuário -->
-    <div class="header-right">
-      <button type="button" class="icon-btn" title="Notificações">
+    <!-- Ações / Perfil -->
+    <div class="header-actions">
+      <button class="btn-icon" title="Notificações">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
           <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
         </svg>
       </button>
-      <button type="button" class="avatar-btn">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="user-avatar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
-      </button>
+      </div>
     </div>
   </header>
 
-  <!-- Filtros Superiores -->
-  <div class="filters-bar">
-    <span class="filter-label">Filtrar:</span>
+  <!-- Content Principal -->
+  <main class="main-content">
     
-    <div class="filter-select">
-      <select [(ngModel)]="filtroTurno">
-        <option value="">TURNO</option>
-        <option value="matutino">Matutino</option>
-        <option value="vespertino">Vespertino</option>
-        <option value="noturno">Noturno</option>
-      </select>
-    </div>
-
-    <div class="filter-select">
-      <select [(ngModel)]="filtroOrdem">
-        <option value="recente">ORDEM</option>
-        <option value="antigo">Mais Antigos</option>
-      </select>
-    </div>
-
-    <div class="filter-select">
-      <select [(ngModel)]="filtroTurma">
-        <option value="">TURMA</option>
-        <option value="t1">Engenharia A</option>
-        <option value="t2">Medicina B</option>
-      </select>
-    </div>
+    <!-- 2. Filtros Estilo Pílulas com Seta Personalizada e Botão Limpar -->
+    <div class="pills-filters">
+  <div class="select-wrapper">
+    <select [(ngModel)]="filtroTurno" (change)="aplicarFiltros()" class="pill-btn">
+      <option value="">Selecione o Turno</option>
+      <option value="Manhã">Manhã</option>
+      <option value="Tarde">Tarde</option>
+      <option value="Noite">Noite</option>
+    </select>
   </div>
 
-  <!-- Card Principal de Conteúdo -->
-  <main class="content-card">
-    <!-- Navegação por Abas -->
-    <div class="tabs-navigation">
-      <button 
-        type="button" 
-        class="tab-btn" 
-        [class.active]="abaAtiva === 'recentes'"
-        (click)="mudarAba('recentes')">
-        Recebidos Recentemente
-      </button>
-      <button 
-        type="button" 
-        class="tab-btn" 
-        [class.active]="abaAtiva === 'manuais'"
-        (click)="mudarAba('manuais')">
-        Análises Manuais
-      </button>
-    </div>
+  <div class="select-wrapper">
+    <select [(ngModel)]="filtroOrdem" (change)="aplicarFiltros()" class="pill-btn">
+      <option value="recentes">Selecione a Ordem</option>
+      <option value="antigos">Mais Antigos</option>
+    </select>
+  </div>
 
-    <!-- Lista de Solicitações -->
-    <div class="requests-list">
-      <div 
-        *ngFor="let item of solicitacoesFiltradas" 
-        class="request-card">
-        
-        <div class="request-info">
-          <div class="request-meta">
-            <span class="matricula">{{ item.matricula }}</span>
-            <span class="data-hora">{{ item.dataHora }}</span>
+  <div class="select-wrapper">
+    <select [(ngModel)]="filtroTurma" (change)="aplicarFiltros()" class="pill-btn">
+      <option value="">Selecione a Turma</option>
+      <option value="INFO1">INFO1</option>
+      <option value="ADM2">ADM2</option>
+    </select>
+  </div>
+
+  <button class="pill-btn btn-limpar" (click)="limparFiltros()" title="Limpar Filtros">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+    Limpar Filtros
+  </button>
+</div>
+
+    <!-- 3. Container Azul Claro de Solicitações -->
+    <div class="solicitacoes-box">
+      <div class="box-header">
+        <div>
+          <h3>Confirmar Solicitações</h3>
+          <p>Aguardando revisão ou recentemente atualizados</p>
+        </div>
+        <a class="link-historico" (click)="voltarDash()">Ver Histórico &rarr;</a>
+      </div>
+
+      <!-- Lista de Cartões -->
+      <div class="cards-list">
+        <div class="solicitacao-card" *ngFor="let item of solicitacoesFiltradas">
+          <div class="card-left">
+            <span class="matricula-badge">Nº {{ item.matricula || item.numMatricula }} <small class="data-text">{{ item.dataHora }}</small></span>
+            <h4 class="aluno-nome">{{ item.alunoNome || item.aluno }}</h4>
+            <p class="solicitacao-tipo">{{ item.motivo || item.tipo }}</p>
           </div>
-          <h3 class="aluno-nome">{{ item.aluno }}</h3>
-          <p class="solicitacao-tipo">{{ item.tipo }}</p>
+          
+          <div class="card-right">
+            <span class="status-badge" [ngClass]="getStatusClass(item.status)">{{ item.status }}</span>
+          </div>
         </div>
 
-        <div class="request-status-wrapper">
-          <span 
-            class="status-tag"
-            [ngClass]="{
-              'status-pendente': item.status === 'Pendente',
-              'status-analise': item.status === 'Em Análise',
-              'status-aprovada': item.status === 'Aprovada',
-              'status-rejeitada': item.status === 'Rejeitada'
-            }">
-            {{ item.status }}
-          </span>
+        <div *ngIf="solicitacoesFiltradas.length === 0" class="empty-state">
+          Nenhuma solicitação encontrada.
         </div>
-      </div>
-
-      <!-- Estado Vazio -->
-      <div class="empty-state" *ngIf="solicitacoesFiltradas.length === 0">
-        <p>Nenhuma solicitação encontrada para esta aba/filtro.</p>
       </div>
     </div>
+
   </main>
 </div>

@@ -1,24 +1,25 @@
-.secretaria-page {
-  background-color: #f0f4f9;
-  min-height: 100vh;
-  padding: 16px 24px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Header Superior Azul Escuro */
-.top-header {
-  background-color: #002255;
-  border-radius: 12px;
-  padding: 12px 20px;
+body, .page-container {
+  background-color: #ffffff;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* 1. Header Azul Escuro */
+.top-nav {
+  background-color: #0d1b3e; /* Azul Escuro do protótipo */
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #ffffff;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0, 34, 85, 0.1);
+  padding: 12px 32px;
 }
 
-.header-left {
+.user-greeting {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -31,222 +32,359 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border-radius: 50%;
-  transition: background-color 0.2s ease;
 }
 
-.btn-back:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-.header-titles h1 {
-  font-size: 16px;
+.user-greeting h2 {
+  font-size: 0.95rem;
   font-weight: 700;
   margin: 0;
-  line-height: 1.2;
 }
 
-.header-titles span {
-  font-size: 11px;
-  color: #a0aec0;
+.user-greeting span {
+  font-size: 0.75rem;
+  color: #94a3b8;
 }
 
-.header-search input {
-  background-color: #ffffff;
-  border: none;
+/* Pesquisa Central Oval */
+.header-search-box {
+  width: 320px;
+}
+
+.header-search-box input {
+  width: 100%;
+  padding: 6px 18px;
   border-radius: 20px;
-  padding: 8px 18px;
-  width: 260px;
-  font-size: 12px;
+  border: 1px solid #ffffff;
+  background: #ffffff;
+  color: #334155;
   text-align: center;
+  font-size: 0.85rem;
   outline: none;
-  color: #2d3748;
 }
 
-.header-search input::placeholder {
-  color: #a0aec0;
+.header-search-box input::placeholder {
+  color: #94a3b8;
 }
 
-.header-right {
+/* Icones do Lado Direito */
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
-.icon-btn, .avatar-btn {
-  background: #ffffff;
+.btn-icon {
+  background: transparent;
   border: none;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: #ffffff;
+  color: #0d1b3e;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #002255;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
 }
 
-.icon-btn:hover, .avatar-btn:hover {
-  opacity: 0.9;
+/* 2. Área Principal e Filtros Pills */
+.main-content {
+  padding: 24px 48px;
 }
 
-/* Barra de Filtros */
-.filters-bar {
+.pills-filters {
   display: flex;
-  align-items: center;
   gap: 12px;
   margin-bottom: 20px;
 }
 
-.filter-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #2d3748;
-}
-
-.filter-select select {
-  background-color: #e2e8f0;
+.pill-btn {
+  background-color: #f1f5f9;
   border: none;
   border-radius: 16px;
-  padding: 6px 16px;
-  font-size: 11px;
+  padding: 6px 18px;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #4a5568;
+  color: #334155;
   cursor: pointer;
   outline: none;
-  text-transform: uppercase;
+  appearance: none; /* Esconde a seta padrão */
+  text-align: center;
 }
 
-/* Card Principal */
-.content-card {
-  background-color: #e8f0f8;
+.pill-btn:hover {
+  background-color: #e2e8f0;
+}
+
+/* 3. Container Azul Claro de Conteúdo */
+.solicitacoes-box {
+  background-color: #eef2f6; /* Fundo azul-cinza suave */
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
 }
 
-/* Navegação por Abas */
-.tabs-navigation {
+.box-header {
   display: flex;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 20px;
-  border-bottom: 2px solid #cbd5e0;
-  padding-bottom: 8px;
 }
 
-.tab-btn {
-  background: transparent;
-  border: none;
-  font-size: 15px;
-  font-weight: 700;
-  color: #718096;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+.box-header h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
 }
 
-.tab-btn:hover {
-  color: #002255;
-  background-color: rgba(255, 255, 255, 0.5);
+.box-header p {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 4px 0 0 0;
 }
 
-.tab-btn.active {
+.link-historico {
   color: #2563eb;
-  background-color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-/* Lista de Cards de Solicitação */
-.requests-list {
+.link-historico:hover {
+  text-decoration: underline;
+}
+
+/* Cartões Brancos */
+.cards-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.request-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.request-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.request-meta {
-  display: flex;
   gap: 10px;
+}
+
+.solicitacao-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
-.matricula {
-  font-size: 11px;
-  font-weight: 700;
+.card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.matricula-badge {
   color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
-.data-hora {
-  font-size: 11px;
-  color: #a0aec0;
+.data-text {
+  color: #94a3b8;
+  font-weight: 400;
+  margin-left: 6px;
 }
 
 .aluno-nome {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1a202c;
-  margin: 0 0 2px 0;
-}
-
-.solicitacao-tipo {
-  font-size: 12px;
-  color: #718096;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
   margin: 0;
 }
 
-/* Status Tags */
-.status-tag {
-  padding: 6px 16px;
-  border-radius: 16px;
-  font-size: 11px;
+.solicitacao-tipo {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Badges de Status (Avermelhado estilo Sujeito) */
+.status-badge {
+  padding: 4px 14px;
+  border-radius: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
-  display: inline-block;
-  text-align: center;
 }
 
-.status-rejeitada {
-  background-color: #fde8e8;
-  color: #e53e3e;
+.status-badge.aguardando {
+  background-color: #fee2e2;
+  color: #ef4444;
 }
 
-.status-pendente {
-  background-color: #feefc3;
-  color: #b45309;
-}
-
-.status-analise {
-  background-color: #e0f2fe;
-  color: #0284c7;
-}
-
-.status-aprovada {
-  background-color: #def7ec;
-  color: #03543f;
+.status-badge.aprovado {
+  background-color: #d1fae5;
+  color: #10b981;
 }
 
 .empty-state {
   text-align: center;
-  padding: 40px;
-  color: #718096;
-  font-size: 14px;
+  color: #94a3b8;
+  padding: 24px;
+  font-size: 0.85rem;
+}
+/* ==========================================================================
+   Filtros Estilo Pílula (Pills)
+   ========================================================================== */
+
+.pills-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Estilo unificado para os botões Select e Limpar */
+.pill-btn {
+  background-color: #f1f5f9;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #1e293b;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  appearance: none; /* Remove seta padrão do sistema */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.pill-btn:hover {
+  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.pill-btn:focus {
+  background-color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Estilo do Botão Limpar Filtros */
+.btn-limpar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+}
+
+.btn-limpar:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.btn-limpar svg {
+  stroke-width: 2.5;
+}
+/* ==========================================================================
+   Filtros com Estilo Idêntico ao Formulário
+   ========================================================================== */
+
+.pills-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* Wrapper para posicionar a seta customizada */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Seta customizada do select (Chevron para baixo) */
+.select-wrapper::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 6px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+}
+
+/* Estilização base do Select (Idêntica à imagem do formulário) */
+.pill-btn {
+  background-color: #f0f4f9; /* Fundo azul bem claro */
+  border: 1px solid #dbe3ed; /* Borda suave */
+  border-radius: 12px;       /* Cantos arredondados do formulário */
+  padding: 10px 36px 10px 16px; /* Espaço para a seta à direita */
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  appearance: none;          /* Remove a seta nativa do browser */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.pill-btn:hover {
+  background-color: #e4ebf5;
+  border-color: #cbd5e1;
+}
+
+.pill-btn:focus {
+  background-color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Estilização das opções do dropdown */
+.pill-btn option {
+  background-color: #ffffff;
+  color: #1e293b;
+  padding: 10px;
+  font-size: 0.85rem;
+}
+
+/* Ajuste específico para o Botão Limpar Filtros */
+.btn-limpar {
+  padding: 10px 18px; /* Sem a seta à direita */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f0f4f9;
+  border: 1px solid #dbe3ed;
+  color: #475569;
+  font-weight: 600;
+}
+
+.btn-limpar:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.btn-limpar svg {
+  stroke-width: 2.2;
 }
