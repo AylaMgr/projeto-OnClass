@@ -1,110 +1,153 @@
 <div class="page-container">
-  <!-- 1. Barra Azul Escura de Topo -->
-  <header class="top-nav">
-    <div class="user-greeting">
-      <button class="btn-back" (click)="voltarDash()" title="Voltar ao Dashboard">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
+
+  <!-- Header Superior Azul Escuro -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <button type="button" class="btn-back" (click)="voltar()" aria-label="Voltar">
+        &#8592;
       </button>
-      <div>
-        <h2>Olá, Secretaria</h2>
-        <span>Pontifícia Docência</span>
+    </div>
+
+    <div class="top-bar-center">
+      <div class="search-input-wrapper">
+        <input type="text" placeholder="Nº de Matrícula" />
       </div>
     </div>
 
-    <!-- Barra de Pesquisa Oval Centralizada -->
-    <div class="header-search-box">
-      <input 
-        type="text" 
-        [(ngModel)]="termoPesquisa" 
-        (ngModelChange)="aplicarFiltros()"
-        placeholder="Nº de matrícula" />
-    </div>
-
-    <!-- Ações / Perfil -->
-    <div class="header-actions">
-      <button class="btn-icon" title="Notificações">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-      </button>
-      <div class="user-avatar">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </div>
+    <div class="top-bar-right">
+      <button type="button" class="icon-btn" aria-label="Notificações">&#128276;</button>
     </div>
   </header>
 
-  <!-- Content Principal -->
-  <main class="main-content">
-    
-    <!-- 2. Filtros Estilo Pílulas com Seta Personalizada e Botão Limpar -->
-    <div class="pills-filters">
-  <div class="select-wrapper">
-    <select [(ngModel)]="filtroTurno" (change)="aplicarFiltros()" class="pill-btn">
-      <option value="">Selecione o Turno</option>
-      <option value="Manhã">Manhã</option>
-      <option value="Tarde">Tarde</option>
-      <option value="Noite">Noite</option>
-    </select>
-  </div>
+  <!-- Conteúdo Principal Dividido em Duas Colunas -->
+  <main class="content-grid">
 
-  <div class="select-wrapper">
-    <select [(ngModel)]="filtroOrdem" (change)="aplicarFiltros()" class="pill-btn">
-      <option value="recentes">Selecione a Ordem</option>
-      <option value="antigos">Mais Antigos</option>
-    </select>
-  </div>
-
-  <div class="select-wrapper">
-    <select [(ngModel)]="filtroTurma" (change)="aplicarFiltros()" class="pill-btn">
-      <option value="">Selecione a Turma</option>
-      <option value="INFO1">INFO1</option>
-      <option value="ADM2">ADM2</option>
-    </select>
-  </div>
-
-  <button class="pill-btn btn-limpar" (click)="limparFiltros()" title="Limpar Filtros">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path d="M18 6L6 18M6 6l12 12"/>
-    </svg>
-    Limpar Filtros
-  </button>
-</div>
-
-    <!-- 3. Container Azul Claro de Solicitações -->
-    <div class="solicitacoes-box">
-      <div class="box-header">
-        <div>
-          <h3>Confirmar Solicitações</h3>
-          <p>Aguardando revisão ou recentemente atualizados</p>
-        </div>
-        <a class="link-historico" (click)="voltarDash()">Ver Histórico &rarr;</a>
+    <!-- LADO ESQUERDO: Visualização do Documento -->
+    <section class="document-section">
+      <div class="section-title-bar">
+        <h2>Visualização do Documento Enviado</h2>
+        <span class="file-badge">{{ solicitacao.tipoDocumento }} ({{ solicitacao.tamanhoArquivo }})</span>
       </div>
 
-      <!-- Lista de Cartões -->
-      <div class="cards-list">
-        <div class="solicitacao-card" *ngFor="let item of solicitacoesFiltradas">
-          <div class="card-left">
-            <span class="matricula-badge">Nº {{ item.matricula || item.numMatricula }} <small class="data-text">{{ item.dataHora }}</small></span>
-            <h4 class="aluno-nome">{{ item.alunoNome || item.aluno }}</h4>
-            <p class="solicitacao-tipo">{{ item.motivo || item.tipo }}</p>
+      <div class="document-viewer-card">
+        <div class="document-content-paper" [style.transform]="'scale(' + (zoomNivel / 100) + ')'">
+          <div class="clinic-header">
+            <span class="clinic-icon">&#9825;</span>
+            <span>{{ solicitacao.conteudoAtestado.clinica }}</span>
           </div>
-          
-          <div class="card-right">
-            <span class="status-badge" [ngClass]="getStatusClass(item.status)">{{ item.status }}</span>
+
+          <h1 class="document-title">ATESTADO MÉDICO</h1>
+
+          <p class="document-body-text">
+            {{ solicitacao.conteudoAtestado.texto }}
+          </p>
+
+          <p class="document-location-date">
+            {{ solicitacao.conteudoAtestado.localData }}
+          </p>
+
+          <div class="stamp-box">
+            <p>{{ solicitacao.conteudoAtestado.carimbo }}</p>
           </div>
         </div>
 
-        <div *ngIf="solicitacoesFiltradas.length === 0" class="empty-state">
-          Nenhuma solicitação encontrada.
+        <!-- Barra de Ferramentas Inferior do Leitor -->
+        <div class="viewer-toolbar">
+          <div class="zoom-controls">
+            <button type="button" (click)="aumentarZoom()">&#128269;+</button>
+            <span class="zoom-level">{{ zoomNivel }}%</span>
+            <button type="button" (click)="diminuirZoom()">&#128269;-</button>
+            <button type="button" (click)="resetarZoom()" title="Resetar Zoom">&#8634;</button>
+          </div>
+
+          <button type="button" class="btn-download" (click)="baixarOriginal()">
+            &#128229; Baixar Original
+          </button>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- LADO DIREITO: Relatório de Avaliação e Ações -->
+    <aside class="evaluation-aside">
+      <div class="evaluation-card">
+        
+        <div class="evaluation-header">
+          <h3>Relatório de Avaliação - IA</h3>
+          <span class="badge-ai-status">{{ solicitacao.statusIA }}</span>
+        </div>
+
+        <!-- Identificação do Aluno -->
+        <div class="student-id-box">
+          <span class="box-label">IDENTIFICAÇÃO DO ALUNO</span>
+          <div class="id-row">
+            <span>Nome:</span>
+            <strong>{{ solicitacao.aluno }}</strong>
+          </div>
+          <div class="id-row">
+            <span>Matrícula:</span>
+            <strong>{{ solicitacao.matricula }}</strong>
+          </div>
+          <div class="id-row">
+            <span>Curso:</span>
+            <strong>{{ solicitacao.curso }}</strong>
+          </div>
+        </div>
+
+        <!-- Análise do Bot / IA -->
+        <div class="bot-analysis-section">
+          <span class="section-subtitle">ANÁLISE DO BOT</span>
+
+          <div class="confidence-bar-wrapper">
+            <div class="confidence-label">
+              <span>Confiança Geral da Leitura:</span>
+              <span class="confidence-value">{{ solicitacao.confiancaIA }}%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" [style.width.%]="solicitacao.confiancaIA"></div>
+            </div>
+          </div>
+
+          <ul class="check-list">
+            <li *ngFor="let check of solicitacao.analiseIA">
+              <span class="icon-status" [class.success]="check.status" [class.danger]="!check.status">
+                {{ check.status ? '&#10004;' : '&#10006;' }}
+              </span>
+              <span class="check-text">
+                <strong>{{ check.rotulo }}</strong> — {{ check.detalhe }}
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Observações da IA -->
+        <div class="ai-observations-box">
+          <strong class="obs-title">OBSERVAÇÕES DA IA:</strong>
+          <p>{{ solicitacao.observacaoIA }}</p>
+        </div>
+
+        <!-- Justificativa da Secretaria -->
+        <div class="justification-section">
+          <label for="justificativa">Justificativa da Secretaria</label>
+          <textarea 
+            id="justificativa" 
+            placeholder="Digite a justificativa interna ou motivo do indeferimento..."
+            [(ngModel)]="justificativaSecretaria"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="action-buttons">
+          <button type="button" class="btn-approve" (click)="aprovarAtestado()">
+            &#10004; Aprovar Atestado
+          </button>
+          <button type="button" class="btn-reject" (click)="rejeitarAtestado()">
+            &#10006; Rejeitar
+          </button>
+        </div>
+
+      </div>
+    </aside>
 
   </main>
 </div>
