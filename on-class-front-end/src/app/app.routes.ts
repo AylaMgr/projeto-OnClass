@@ -22,9 +22,9 @@ export const routes: Routes = [
 
   // Rotas do Aluno
   { path: 'aluno/dashboard', component: Dashboard },
-  { path: 'aluno/solicitacao/:id', component: SolicitacoesSec },
+  { path: 'aluno/solicitacao/:id', component: SolicitacoesStatus },
 
-  // Rotas do Professor
+  // Rotas do Professor (CORRIGIDO: sem a barra no final)
   { path: 'professor/dashboard', component: DashboardP },
   { path: 'professor/solicitacao/:id', component: SolicitacoesP },
 
@@ -35,7 +35,9 @@ export const routes: Routes = [
   { path: 'secretaria/solicitacoes', component: SolicitacoesSec },
   { path: 'secretaria/solicitacao/:id', component: SolicitacoesSec },
 
-  // Redirecionamentos (AQUI DENTRO DO ARRAY DE ROTAS)
+  // Redirecionamentos
   { path: 'dashboard-aluno', redirectTo: 'aluno/dashboard', pathMatch: 'full' },
-  { path: 'dashboard-secretaria', redirectTo: 'secretaria/dashboard', pathMatch: 'full' }
+  { path: 'dashboard-secretaria', redirectTo: 'secretaria/dashboard', pathMatch: 'full' },
+  { path: 'dashboard-professor', redirectTo: 'professor/dashboard', pathMatch: 'full' },
+  { path: 'dashboardProfessor', redirectTo: 'professor/dashboard', pathMatch: 'full' }
 ];

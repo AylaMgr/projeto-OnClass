@@ -129,6 +129,34 @@
   margin-bottom: 20px;
 }
 
+/* Container que alinha o Título à esquerda e o Botão à direita */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-header h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.btn-see-all {
+  color: #2563eb;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.btn-see-all:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 .chart-header h3, .donut-chart-card h3 {
   margin: 0;
   font-size: 15px;
