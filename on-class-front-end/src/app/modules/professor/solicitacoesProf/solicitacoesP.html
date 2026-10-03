@@ -1,0 +1,205 @@
+<div class="page-container">
+
+  <!-- Header Superior Azul Escuro -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <button type="button" class="btn-back" (click)="voltarDashboard()" aria-label="Voltar">
+        &#8592;
+      </button>
+      <div class="user-info">
+        <h1>Avaliação de Abono de Falta</h1>
+        <span>Matrícula: {{ solicitacao.matricula }}</span>
+      </div>
+    </div>
+
+    <div class="top-bar-center">
+      <div class="search-input-wrapper">
+        <input type="text" placeholder="Nº de Matrícula" [(ngModel)]="termoMatricula" />
+      </div>
+    </div>
+
+    <div class="top-bar-right">
+      <button type="button" class="icon-btn" aria-label="Notificações">&#128276;</button>
+      <div class="profile-avatar">&#128100;</div>
+    </div>
+  </header>
+
+  <main class="content-body">
+
+    <div class="workspace-grid">
+
+      <!-- COLUNA DA ESQUERDA: Documento do Atestado enviado pelo Aluno -->
+      <section class="doc-viewer-card">
+        <div class="doc-viewer-header">
+          <h2>Comprovante Enviado pelo Aluno</h2>
+          <span class="file-tag">PDF / Imagem (1.2 MB)</span>
+        </div>
+
+        <div class="document-paper">
+          <div class="clinic-header">
+            <span class="clinic-icon">&#9877;</span>
+            <span class="clinic-title">CLÍNICA MÉDICA VIDA & SAÚDE</span>
+          </div>
+
+          <h3 class="doc-title">ATESTADO MÉDICO</h3>
+
+          <p class="doc-body">
+            Atesto para os devidos fins que o(a) paciente <strong>{{ solicitacao.aluno }}</strong>, 
+            portador(a) da matrícula {{ solicitacao.matricula }}, esteve sob meus cuidados médicos no dia {{ solicitacao.dataEnvio }}, 
+            necessitando de {{ solicitacao.diasAtestado }} dias de repouso por motivos de saúde.
+          </p>
+
+          <p class="doc-date">Brasília - DF, {{ solicitacao.dataEnvio }}.</p>
+
+          <div class="doc-signature">
+            <div class="sig-line"></div>
+            <span>Carimbo & Assinatura Médica</span>
+          </div>
+        </div>
+
+        <!-- Barra de Ações do Documento -->
+        <div class="doc-actions-bar">
+          <div class="zoom-controls">
+            <button type="button" class="btn-tool" title="Visualizar">&#128065;</button>
+            <span class="zoom-level">100%</span>
+            <button type="button" class="btn-tool" title="Aumentar Zoom">&#128269;</button>
+          </div>
+
+          <button type="button" class="btn-download-original" (click)="baixarOriginal()">
+            &#128229; Baixar Documento Original
+          </button>
+        </div>
+      </section>
+
+      <!-- COLUNA DA DIREITA: Formulário de Situação & Decisão do Professor -->
+      <section class="decision-panel">
+
+        <!-- FORMULÁRIO INICIAL: Situação do Aluno e Botões de Decisão -->
+        <div class="prof-form-card" *ngIf="statusDecisao === 'PENDENTE'">
+          <div class="form-card-header">
+            <h2>Situação da Solicitação</h2>
+            <span class="badge-pending">Aguardando Parecer</span>
+          </div>
+
+          <!-- Tabela de Dados da Situação -->
+          <div class="info-box">
+            <div class="info-row">
+              <span class="info-label">Aluno:</span>
+              <span class="info-val">{{ solicitacao.aluno }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Matrícula:</span>
+              <span class="info-val">{{ solicitacao.matricula }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Turma:</span>
+              <span class="info-val">{{ solicitacao.turma }} ({{ solicitacao.turno }})</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Disciplina:</span>
+              <span class="info-val">{{ solicitacao.disciplina }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Motivo do Pedido:</span>
+              <span class="info-val highlight">{{ solicitacao.motivo }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Faltas a Abonar:</span>
+              <span class="info-val bold">{{ solicitacao.faltasAbonar }} Aulas</span>
+            </div>
+          </div>
+
+          <!-- Campo de Observação do Professor -->
+          <div class="obs-field-group">
+            <label for="obsProfessor">Observação do Professor (Opcional)</label>
+            <textarea 
+              id="obsProfessor" 
+              rows="3" 
+              placeholder="Digite alguma observação sobre o abono ou justificativa de recusa..."
+              [(ngModel)]="observacaoProfessor"
+            ></textarea>
+          </div>
+
+          <!-- Botões de Ação do Abono -->
+          <div class="prof-actions-row">
+            <button type="button" class="btn-accept-abono" (click)="aceitarAbono()">
+              &#10004; Aceitar Abono de Falta
+            </button>
+            <button type="button" class="btn-refuse-abono" (click)="recusarAbono()">
+              &#10006; Recusar Abono
+            </button>
+          </div>
+        </div>
+
+        <!-- ESTADO 2: ABONO ACEITO COM SUCESSO -->
+        <div class="status-result-card accepted-card" *ngIf="statusDecisao === 'ACEITO'">
+          <div class="status-icon-circle green-circle">&#10004;</div>
+
+          <h3 class="status-title green-text">Abono de Falta Deferido!</h3>
+          <p class="status-subtitle">As faltas foram abonadas na pauta da disciplina.</p>
+
+          <div class="info-details-table">
+            <div class="detail-row">
+              <span class="label">Aluno:</span>
+              <span class="value">{{ solicitacao.aluno }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Disciplina:</span>
+              <span class="value">{{ solicitacao.disciplina }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Aulas Abonadas:</span>
+              <span class="value bold">{{ solicitacao.faltasAbonar }} Aulas</span>
+            </div>
+            <div class="detail-row" *ngIf="observacaoProfessor">
+              <span class="label">Observação:</span>
+              <span class="value">{{ observacaoProfessor }}</span>
+            </div>
+          </div>
+
+          <button type="button" class="btn-download-comprovante green-btn" (click)="baixarComprovante('ACEITO')">
+            &#128229; Baixar Comprovante de Abono
+          </button>
+
+          <button type="button" class="btn-reset" (click)="resetarDecisao()">
+            Alterar Parecer
+          </button>
+        </div>
+
+        <!-- ESTADO 3: ABONO RECUSADO -->
+        <div class="status-result-card refused-card" *ngIf="statusDecisao === 'RECUSADO'">
+          <div class="status-icon-box red-box">&#10008;</div>
+
+          <h3 class="status-title red-text">Abono de Falta Indeferido</h3>
+          <p class="status-subtitle">A solicitação foi recusada pelo docente.</p>
+
+          <div class="problems-box">
+            <div class="detail-row">
+              <span class="label">Aluno:</span>
+              <span class="value">{{ solicitacao.aluno }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Disciplina:</span>
+              <span class="value">{{ solicitacao.disciplina }}</span>
+            </div>
+            <div class="detail-row" *ngIf="observacaoProfessor">
+              <span class="label">Motivo da Recusa:</span>
+              <span class="value bold">{{ observacaoProfessor }}</span>
+            </div>
+          </div>
+
+          <button type="button" class="btn-download-comprovante red-btn" (click)="baixarComprovante('RECUSADO')">
+            &#128229; Baixar Comprovante de Recusa
+          </button>
+
+          <button type="button" class="btn-reset" (click)="resetarDecisao()">
+            Alterar Parecer
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+</div>
