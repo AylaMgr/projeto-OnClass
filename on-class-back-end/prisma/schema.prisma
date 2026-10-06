@@ -12,12 +12,12 @@ model Notificacao {
   alunoId             String
   tipo                 String   @default("AUSENCIA_INFORMAL")
   motivo               String
-  dataInicio           String
-  dataFim              String
+  dataInicio           DateTime 
+  dataFim              DateTime
   descricao            String
   declaracaoVeracidade Boolean  @default(true)
   status               String   @default("Pendente")
-  administrador        String   @default("Pendente")
+  administrador        String?
   dataEnvio            DateTime @default(now())
 
   @@map("notificacoes")

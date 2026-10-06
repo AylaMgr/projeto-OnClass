@@ -18,6 +18,11 @@ export class NotificacoesController {
     return this.notificacoesService.listarRecentes();
   }
 
+  @Get()
+  async listarTodas() {
+    return this.notificacoesService.listarTodas();
+  }
+
   @Get('aluno/:alunoId')
   async listarPorAluno(@Param('alunoId') alunoId: string) {
     return this.notificacoesService.listarPorAluno(alunoId);
@@ -27,8 +32,9 @@ export class NotificacoesController {
   async buscarPorId(@Param('id') id: string) {
     return this.notificacoesService.buscarPorId(id);
   }
+
   @Patch(':id/status')
-async atualizarStatus(@Param('id') id: string, @Body('status') status: string) {
-  return this.notificacoesService.atualizarStatus(id, status);
-}
+  async atualizarStatus(@Param('id') id: string, @Body('status') status: string) {
+    return this.notificacoesService.atualizarStatus(id, status);
+  }
 }
