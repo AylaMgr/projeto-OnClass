@@ -12,7 +12,7 @@
     <div class="recentes-section">
       <div class="section-header">
         <h3>Acompanhamentos Recentemente</h3>
-        
+
         <!-- Filtros de Status -->
         <div class="filtros-status">
           <button [class.ativo]="filtroStatus === 'TODOS'" (click)="filtrarPorStatus('TODOS')">Todos</button>
@@ -36,10 +36,10 @@
           <tr *ngFor="let item of notificacoesPaginadas" (click)="abrirDetalhes(item)" style="cursor: pointer;">
             <td>{{ (item.administrador === 'IA' && item.tipo !== 'ATESTADO' && !item.temUpload) ? 'Secretaria' : (item.administrador || 'Secretaria') }}</td>
             <td>{{ item.motivo }}</td>
-            <td>{{ item.dataEnvio | date:'dd/MM/yyyy' }}</td>
+            <td>{{ item.dataEnvio | date: 'dd/MM/yyyy' }}</td>
             <td>
               <span class="status-badge" [ngClass]="getStatusClass(item.status)">
-                {{ item.status || 'Pendente' }}
+                {{ obterTextoStatus(item.status) }}
               </span>
             </td>
           </tr>
@@ -63,7 +63,7 @@
     <div *ngIf="!mostrarFormulario" class="upload-box">
       <div class="upload-area" (click)="fileInput.click()">
         <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,.pdf" hidden />
-        <div class="upload-icon">☁️</div>
+        <div class="upload-icon">☁</div>
         <p><strong>Anexar Atestado (PDF/Imagem)</strong></p>
         <span>Arraste ou clique para enviar</span>
         <small *ngIf="arquivoAtestado"><br>Ficheiro: {{ arquivoAtestado.name }}</small>
@@ -75,47 +75,45 @@
       <app-criar-notificacao></app-criar-notificacao>
     </div>
   </div>
-  <!-- Modal de Detalhes com Linha do Tempo de Andamento -->
-<div class="modal-overlay" *ngIf="notificacaoSelecionada" (click)="fecharDetalhes()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>Detalhes do Acompanhamento</h2>
-      <button class="btn-fechar" (click)="fecharDetalhes()">✕</button>
-    </div>
 
-    <div class="modal-body">
-      <p><strong>Motivo:</strong> {{ notificacaoSelecionada.motivo }}</p>
-      <p><strong>Período:</strong> {{ notificacaoSelecionada.dataInicio | date:'dd/MM/yyyy' }} até {{ notificacaoSelecionada.dataFim | date:'dd/MM/yyyy' }}</p>
-      <p><strong>Descrição:</strong> {{ notificacaoSelecionada.descricao || 'Nenhuma observação informada.' }}</p>
-
-      <hr />
-
-      <h3>Andamento do Pedido</h3>
-      <div class="timeline">
-        <div class="step concluido">
-          <span class="bullet">✓</span>
-          <div>
-            <strong>Solicitação Enviada</strong>
-            <p>{{ notificacaoSelecionada.dataEnvio | date:'dd/MM/yyyy HH:mm' }}</p>
-          </div>
-        </div>
-
-        <div class="step" [ngClass]="{'concluido': notificacaoSelecionada.status !== 'PENDENTE'}">
-          <span class="bullet">{{ notificacaoSelecionada.status === 'PENDENTE' ? '⏳' : '✓' }}</span>
-          <div>
-            <strong>Análise da Secretaria / Professor</strong>
-            <p>{{ notificacaoSelecionada.status === 'PENDENTE' ? 'Aguardando avaliação' : 'Avaliado' }}</p>
-          </div>
-        </div>
-
-        <div class="step" [ngClass]="getStatusClass(notificacaoSelecionada.status)">
-          <span class="bullet">•</span>
-          <div>
-            <strong>Status Atual: {{ notificacaoSelecionada.status }}</strong>
-          </div>
-        </div>
+  <!-- Modal de Detalhes com Linha do Tempo do Andamento -->
+  <div class="modal-overlay" *ngIf="notificacaoSelecionada" (click)="fecharDetalhes()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Detalhes do Acompanhamento</h2>
+        <button class="btn-fechar" (click)="fecharDetalhes()">×</button>
       </div>
+
+      <div class="modal-body">
+        <p><strong>Motivo:</strong> {{ notificacaoSelecionada.motivo }}</p>
+        <p><strong>Período:</strong> {{ notificacaoSelecionada.dataInicio | date: 'dd/MM/yyyy' }} até {{ notificacaoSelecionada.dataFim | date: 'dd/MM/yyyy' }}</p>
+        <p><strong>Descrição:</strong> {{ notificacaoSelecionada.descricao || 'Nenhuma observação informada.' }}</p>
+
+        <hr />
+
+        <h3>Andamento do Pedido</h3>
+<div class="timeline">
+  <div class="step concluido">
+    <span class="bullet">✓</span>
+    <div>
+      <strong>Solicitação Enviada</strong>
+      <p>{{ notificacaoSelecionada.dataEnvio | date: 'dd/MM/yyyy HH:mm' }}</p>
     </div>
   </div>
-</div>
+
+  <div class="step" [ngClass]="{'concluido': normalizarStatus(notificacaoSelecionada.status) !== 'PENDENTE' && normalizarStatus(notificacaoSelecionada.status) !== ''}">
+    <span class="bullet">{{ (normalizarStatus(notificacaoSelecionada.status) === 'PENDENTE' || !notificacaoSelecionada.status) ? '⏳' : '✓' }}</span>
+    <div>
+      <strong>Análise da Secretaria / Professor</strong>
+      <p>{{ (normalizarStatus(notificacaoSelecionada.status) === 'PENDENTE' || !notificacaoSelecionada.status) ? 'Aguardando avaliação' : 'Avaliado pela Secretaria' }}</p>
+    </div>
+  </div>
+
+  <div class="step" [ngClass]="getStatusClass(notificacaoSelecionada.status)">
+    <span class="bullet">●</span>
+    <div>
+      <strong>Status Atual:</strong>
+      <p>{{ obterTextoStatus(notificacaoSelecionada.status) }}</p>
+    </div>
+  </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -17,19 +17,6 @@ export class Dashboard implements OnInit {
   notificacoes: Notificacao[] = [];
   arquivoAtestado: File | null = null;
 
-    getStatusClass(status: string): string {
-  if (!status) return 'status-pendente';
-  
-  switch (status.toUpperCase()) {
-    case 'APROVADO':
-      return 'status-aprovado';
-    case 'REJEITADO':
-      return 'status-rejeitado';
-    case 'PENDENTE':
-    default:
-      return 'status-pendente';
-  }
-}
   // Estado para controlar o modal de detalhes
   notificacaoSelecionada: Notificacao | null = null;
 
@@ -44,22 +31,65 @@ export class Dashboard implements OnInit {
     this.notificacoesService.notificacaoCriada$.subscribe(() => this.carregarNotificacoes());
   }
 
+  // Normaliza o texto de status evitando falhas de comparação
+  private normalizarStatus(statusRaw: any): string {
+    if (!statusRaw) return '';
+    return String(statusRaw).toUpperCase().trim();
+  }
+
+  getStatusClass(statusRaw: string): string {
+    const status = this.normalizarStatus(statusRaw);
+
+    if (status.includes('ENCAMINHADO') || status.includes('SECRETARIA') || status === 'APROVADO_SECRETARIA') {
+      return 'status-encaminhado';
+    }
+
+    if (status.includes('REJEIT') || status.includes('RECUS')) {
+      return 'status-rejeitado';
+    }
+
+    if (status.includes('APROV') || status === 'CONCLUIDO') {
+      return 'status-aprovado';
+    }
+
+    return 'status-pendente';
+  }
+
+  // Mapeia todas as opções possíveis para exibição amigável ao aluno
+  obterTextoStatus(statusRaw: string): string {
+    const status = this.normalizarStatus(statusRaw);
+
+    if (status.includes('ENCAMINHADO') || status.includes('SECRETARIA') || status === 'APROVADO_SECRETARIA') {
+      return 'Aceito pela Secretaria - Encaminhado para o Professor (Aguardando resultado final)';
+    }
+
+    if (status.includes('REJEIT') || status.includes('RECUS')) {
+      return 'Recusado pela Secretaria';
+    }
+
+    if (status.includes('APROV') || status === 'CONCLUIDO') {
+      return 'Solicitação Aprovada Definitivamente';
+    }
+
+    return 'Em Análise pela Secretaria';
+  }
+
   carregarNotificacoes(): void {
     this.notificacoesService.listarTodas().subscribe({
-      next: (dados) => this.notificacoes = dados || [],
+      next: (dados) => {
+        this.notificacoes = dados || [];
+      },
       error: (err) => console.error('Erro ao carregar notificações:', err)
     });
   }
 
   obterAnalista(item: any): string {
-  if (item.administrador) {
-    return item.administrador;
+    if (item.administrador) {
+      return item.administrador;
+    }
+    return (item.tipo === 'ATESTADO' || item.temUpload || item.arquivoUrl) ? 'IA' : 'Secretaria';
   }
-  // Se tiver upload de atestado é IA, caso contrário é Secretaria
-  return (item.tipo === 'ATESTADO' || item.temUpload || item.arquivoUrl) ? 'IA' : 'Secretaria';
-}
 
-  // Métodos para abrir e fechar o modal de detalhes
   abrirDetalhes(item: Notificacao): void {
     this.notificacaoSelecionada = item;
   }
@@ -85,27 +115,39 @@ export class Dashboard implements OnInit {
   }
 
   get notificacoesFiltradas(): Notificacao[] {
-  return this.notificacoes
-    .map(item => {
-      // 1. Identifica se é envio de atestado/upload
-      const ehAtestadoComUpload = (item.tipo === 'ATESTADO' || (item as any).temUpload || (item as any).arquivoUrl);
+    return this.notificacoes
+      .map(item => {
+        const ehAtestadoComUpload = (item.tipo === 'ATESTADO' || (item as any).temUpload || (item as any).arquivoUrl);
+        const analista = ehAtestadoComUpload
+          ? 'IA'
+          : (item.administrador && item.administrador !== 'IA' ? item.administrador : 'Secretaria');
 
-      // 2. Garante o responsável correto (IA se for upload, Secretaria caso contrário)
-      const analista = ehAtestadoComUpload 
-        ? 'IA' 
-        : (item.administrador && item.administrador !== 'IA' ? item.administrador : 'Secretaria');
+        return {
+          ...item,
+          administrador: analista
+        };
+      })
+      .filter(item => {
+        if (this.filtroStatus === 'TODOS') return true;
 
-      return {
-        ...item,
-        administrador: analista
-      };
-    })
-    .filter(item => {
-      // 3. Aplica o filtro de status (Todos, Pendentes, Aprovados, Rejeitados)
-      if (this.filtroStatus === 'TODOS') return true;
-      return item.status?.toUpperCase() === this.filtroStatus.toUpperCase();
-    });
-}
+        const itemStatus = this.normalizarStatus(item.status);
+        const filtro = this.normalizarStatus(this.filtroStatus);
+
+        if (filtro === 'APROVADO') {
+          return itemStatus.includes('APROV') || itemStatus.includes('ENCAMINHADO') || itemStatus.includes('SECRETARIA');
+        }
+
+        if (filtro === 'REJEITADO') {
+          return itemStatus.includes('REJEIT') || itemStatus.includes('RECUS');
+        }
+
+        if (filtro === 'PENDENTE') {
+          return itemStatus === 'PENDENTE' || itemStatus === '';
+        }
+
+        return itemStatus === filtro;
+      });
+  }
 
   get notificacoesPaginadas(): Notificacao[] {
     const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
