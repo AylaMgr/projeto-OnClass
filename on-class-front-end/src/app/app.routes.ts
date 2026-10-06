@@ -9,10 +9,10 @@ import { SolicitacoesStatus } from './features/aluno/solicitacoesStatus/solicita
 
 // Professor
 import { DashboardP } from './features/professor/dashboardProf/dashboardP';
-import { SolicitacoesP } from './features/professor/solicitacoesProf/solicitacoesP';
+import { SolicitacoesProf } from './features/professor/solicitacoesProf/solicitacoesP';
 
 // Secretaria
-import { DashboardS } from './features/secretaria/dashboardSec/dashboardS';
+import { Dashboards } from './features/secretaria/dashboardSec/dashboardS';
 import { SolicitacoesSec } from './features/secretaria/solicitacoesSec/solicitacoesS';
 import { AnalisesManuais } from './features/secretaria/analisesManuais/analisesManuais';
 
@@ -26,10 +26,10 @@ export const routes: Routes = [
 
   // Rotas do Professor (CORRIGIDO: sem a barra no final)
   { path: 'professor/dashboard', component: DashboardP },
-  { path: 'professor/solicitacao/:id', component: SolicitacoesP },
+  { path: 'professor/solicitacoes/:id', component: SolicitacoesProf },
 
   // Rotas da Secretaria
-  { path: 'secretaria/dashboard', component: DashboardS },
+  { path: 'secretaria/dashboard', component: Dashboards },
   { path: 'secretaria/recebidos', component: AnalisesManuais },
   { path: 'secretaria/analises-manuais', component: AnalisesManuais },
   { path: 'secretaria/solicitacoes', component: SolicitacoesSec },
@@ -39,5 +39,5 @@ export const routes: Routes = [
   { path: 'dashboard-aluno', redirectTo: 'aluno/dashboard', pathMatch: 'full' },
   { path: 'dashboard-secretaria', redirectTo: 'secretaria/dashboard', pathMatch: 'full' },
   { path: 'dashboard-professor', redirectTo: 'professor/dashboard', pathMatch: 'full' },
-  { path: 'dashboardProfessor', redirectTo: 'professor/dashboard', pathMatch: 'full' }
+  { path: 'dashboardProfessor', redirectTo: 'professor/dashboard', pathMatch: 'full' },
 ];
