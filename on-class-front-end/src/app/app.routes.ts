@@ -1,20 +1,20 @@
 import { Routes } from '@angular/router';
 
 // Autenticação
-import { LoginComponent } from './modules/autenticacao/login/login';
+import { LoginComponent } from './features/login/login';
 
 // Aluno
-import { Dashboard } from './modules/aluno/dashboardAluno/dashboard';
-import { SolicitacoesStatus } from './modules/aluno/solicitacoesStatus/solicitacoesStatus';
+import { Dashboard } from './features/aluno/dashboardAluno/dashboard';
+import { SolicitacoesStatus } from './features/aluno/solicitacoesStatus/solicitacoesStatus';
 
 // Professor
-import { DashboardP } from './modules/professor/dashboardProf/dashboardP';
-import { SolicitacoesP } from './modules/professor/solicitacoesProf/solicitacoesP';
+import { DashboardP } from './features/professor/dashboardProf/dashboardP';
+import { SolicitacoesP } from './features/professor/solicitacoesProf/solicitacoesP';
 
 // Secretaria
-import { DashboardS } from './modules/secretaria/dashboardSec/dashboardS';
-import { SolicitacoesSec } from './modules/secretaria/solicitacoesSec/solicitacoesS';
-import { AnalisesManuais } from './modules/secretaria/analisesManuais/analisesManuais';
+import { DashboardS } from './features/secretaria/dashboardSec/dashboardS';
+import { SolicitacoesSec } from './features/secretaria/solicitacoesSec/solicitacoesS';
+import { AnalisesManuais } from './features/secretaria/analisesManuais/analisesManuais';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },

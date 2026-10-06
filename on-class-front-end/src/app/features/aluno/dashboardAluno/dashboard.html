@@ -32,8 +32,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of notificacoesPaginadas">
-            <td>{{ item.administrador || 'IA' }}</td>
+          <!-- Adicionado o (click) e cursor pointer -->
+          <tr *ngFor="let item of notificacoesPaginadas" (click)="abrirDetalhes(item)" style="cursor: pointer;">
+            <td>{{ (item.administrador === 'IA' && item.tipo !== 'ATESTADO' && !item.temUpload) ? 'Secretaria' : (item.administrador || 'Secretaria') }}</td>
             <td>{{ item.motivo }}</td>
             <td>{{ item.dataEnvio | date:'dd/MM/yyyy' }}</td>
             <td>
@@ -74,4 +75,47 @@
       <app-criar-notificacao></app-criar-notificacao>
     </div>
   </div>
+  <!-- Modal de Detalhes com Linha do Tempo de Andamento -->
+<div class="modal-overlay" *ngIf="notificacaoSelecionada" (click)="fecharDetalhes()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Detalhes do Acompanhamento</h2>
+      <button class="btn-fechar" (click)="fecharDetalhes()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <p><strong>Motivo:</strong> {{ notificacaoSelecionada.motivo }}</p>
+      <p><strong>Período:</strong> {{ notificacaoSelecionada.dataInicio | date:'dd/MM/yyyy' }} até {{ notificacaoSelecionada.dataFim | date:'dd/MM/yyyy' }}</p>
+      <p><strong>Descrição:</strong> {{ notificacaoSelecionada.descricao || 'Nenhuma observação informada.' }}</p>
+
+      <hr />
+
+      <h3>Andamento do Pedido</h3>
+      <div class="timeline">
+        <div class="step concluido">
+          <span class="bullet">✓</span>
+          <div>
+            <strong>Solicitação Enviada</strong>
+            <p>{{ notificacaoSelecionada.dataEnvio | date:'dd/MM/yyyy HH:mm' }}</p>
+          </div>
+        </div>
+
+        <div class="step" [ngClass]="{'concluido': notificacaoSelecionada.status !== 'PENDENTE'}">
+          <span class="bullet">{{ notificacaoSelecionada.status === 'PENDENTE' ? '⏳' : '✓' }}</span>
+          <div>
+            <strong>Análise da Secretaria / Professor</strong>
+            <p>{{ notificacaoSelecionada.status === 'PENDENTE' ? 'Aguardando avaliação' : 'Avaliado' }}</p>
+          </div>
+        </div>
+
+        <div class="step" [ngClass]="getStatusClass(notificacaoSelecionada.status)">
+          <span class="bullet">•</span>
+          <div>
+            <strong>Status Atual: {{ notificacaoSelecionada.status }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </div>

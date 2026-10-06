@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NotificacoesService } from '../../services/notificacoes';
+import { NotificacoesService } from '../notificacoes/services/notificacoes.service';
 
 interface DiaCalendario {
   data: Date;
@@ -208,24 +208,52 @@ export class CriarNotificacao implements OnInit {
     }
   }
 
-  onSubmit(): void {
-    this.validarDatas();
+ // Dentro de criar-notificacao.ts
 
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
+onSubmit(): void {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
+
+  const rawValues = this.form.value;
+
+  // Função para converter com segurança qualquer tipo de entrada (timestamp string, numero ou ISO)
+  const formatarDataEnvio = (data: any): string => {
+    if (!data) return new Date().toISOString();
+    
+    // Se for string numérica (ex: "1791244800000") ou número primitivo
+    const num = Number(data);
+    if (!isNaN(num) && num > 0) {
+      return new Date(num).toISOString();
     }
 
-    this.notificacoesService.criar(this.form.value).subscribe({
-      next: () => {
-        this.sucesso = true;
-        this.erro = '';
-        this.form.reset();
-      },
-      error: (err: unknown) => {
-        this.erro = 'Erro ao enviar a notificação. Tente novamente.';
-        console.error(err);
-      }
-    });
-  }
+    const parsedDate = new Date(data);
+    return !isNaN(parsedDate.getTime()) ? parsedDate.toISOString() : new Date().toISOString();
+  };
+
+  const payload = {
+    ...rawValues,
+    dataInicio: formatarDataEnvio(rawValues.dataInicio),
+    dataFim: formatarDataEnvio(rawValues.dataFim),
+    administrador: 'Secretaria',
+  };
+
+  console.log('Payload enviado para a API:', payload);
+
+  this.notificacoesService.criar(payload).subscribe({
+    next: (res: any) => {
+      console.log('Notificação enviada com sucesso!', res);
+      this.sucesso = true;
+      this.erro = '';
+      this.form.reset();
+      this.notificacoesService.notificarMudanca();
+    },
+    error: (err: any) => {
+      console.error('Erro ao enviar:', err);
+      this.erro = 'Erro ao enviar a notificação. Tente novamente.';
+      this.sucesso = false;
+    }
+  });
+}
 }
