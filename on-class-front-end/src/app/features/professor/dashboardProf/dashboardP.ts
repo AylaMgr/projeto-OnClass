@@ -1,7 +1,8 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { NotificacoesService } from '../../notificacoes/services/notificacoes.service';
 
 export interface SolicitacaoAluno {
   id: string;
@@ -9,9 +10,9 @@ export interface SolicitacaoAluno {
   aluno: string;
   motivo: string;
   dataEnvio: string;
-  status?: string;
-  turno: string;
-  turma: string;
+  status: string;
+  turno?: string;
+  turma?: string;
 }
 
 @Component({
@@ -21,59 +22,74 @@ export interface SolicitacaoAluno {
   templateUrl: './dashboardP.html',
   styleUrl: './dashboardP.css'
 })
-export class DashboardP {
+export class DashboardP implements OnInit {
 
   termoMatricula: string = '';
   turnoSelecionado: string = '';
   ordemSelecionada: string = '';
   turmaSelecionada: string = '';
-  ordemAlfabetica: boolean = false;
   dropdownAberto: string | null = null;
+  carregando: boolean = false;
 
-  solicitacoes: SolicitacaoAluno[] = [
-    {
-      id: '1',
-      matricula: '2024001234',
-      aluno: 'Mariana Souza Santos',
-      motivo: 'Solicitação de Abono: Atestado de Casamento',
-      dataEnvio: 'Hoje, 14:32',
-      status: 'Pendente',
-      turno: 'Matutino',
-      turma: '8º Ano A'
-    },
-    {
-      id: '2',
-      matricula: '2024001990',
-      aluno: 'Pedro Henrique Alencar',
-      motivo: 'Segunda Chamada: Exame Final Física',
-      dataEnvio: 'Ontem, 09:15',
-      status: 'Pendente',
-      turno: 'Vespertino',
-      turma: '9º Ano B'
-    },
-    {
-      id: '3',
-      matricula: '2024001002',
-      aluno: 'Clara Regina Mota',
-      motivo: 'Ajuste de Matrícula: Tópicos Especiais',
-      dataEnvio: '08 Nov 2026',
-      status: 'Pendente',
-      turno: 'Matutino',
-      turma: '7º Ano C'
-    },
-    {
-      id: '4',
-      matricula: '2024001552',
-      aluno: 'Lucas Bezerra da Silva',
-      motivo: 'Solicitação de Abono: Atestado Médico',
-      dataEnvio: '07 Nov 2026',
-      status: 'Pendente',
-      turno: 'Noturno',
-      turma: '8º Ano A'
-    }
-  ];
+  // Começa vazia e será preenchida exclusivamente pelos dados retornados do serviço
+  solicitacoes: SolicitacaoAluno[] = [];
 
-  constructor(private readonly router: Router) {}
+  constructor(
+    private readonly router: Router,
+    private readonly notificacoesService: NotificacoesService
+  ) {}
+
+  ngOnInit(): void {
+    this.carregarSolicitacoes();
+  }
+
+  carregarSolicitacoes(): void {
+    this.carregando = true;
+    
+    // Busca a lista real do serviço NotificacoesService
+    this.notificacoesService.listarTodas().subscribe({
+      next: (dados: any[]) => {
+        if (dados && Array.isArray(dados)) {
+          // Filtra estritamente apenas as solicitações com status aceito/encaminhado pela Secretaria
+          const aprovadasPelaSecretaria = dados.filter(item => {
+            const statusUpper = String(item.status || '').toUpperCase().trim();
+            return statusUpper === 'ENCAMINHADO_PROFESSOR' || 
+                   statusUpper === 'APROVADO_SECRETARIA' ||
+                   statusUpper.includes('ENCAMINHADO');
+          });
+
+          // Mapeia os dados reais do backend para a interface utilizada no template do professor
+          this.solicitacoes = aprovadasPelaSecretaria.map(item => ({
+            id: String(item.id),
+            matricula: item.matricula || item.alunoMatricula || 'Sem matrícula',
+            aluno: item.aluno || item.alunoNome || 'Aluno Não Identificado',
+            motivo: item.motivo || item.titulo || 'Solicitação de Abono',
+            dataEnvio: item.dataEnvio 
+              ? new Date(item.dataEnvio).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) 
+              : 'Data não informada',
+            status: item.status || 'ENCAMINHADO_PROFESSOR',
+            turno: item.turno || 'Matutino',
+            turma: item.turma || '8º Ano A'
+          }));
+        } else {
+          this.solicitacoes = [];
+        }
+        this.carregando = false;
+      },
+      error: (err) => {
+        console.error('Erro ao buscar solicitações da Secretaria:', err);
+        this.solicitacoes = [];
+        this.carregando = false;
+      }
+    });
+  }
+
+  // Navega para a tela solicitacoesP passando o ID da solicitação selecionada
+  abrirSolicitacao(id: string): void {
+    if (id) {
+    this.router.navigate(['/professor/solicitacoes', id]);
+  }
+}
 
   toggleDropdown(tipo: string, event: Event): void {
     event.stopPropagation();
@@ -85,17 +101,6 @@ export class DashboardP {
     if (tipo === 'ordem') this.ordemSelecionada = valor;
     if (tipo === 'turma') this.turmaSelecionada = valor;
     this.dropdownAberto = null;
-  }
-
-  toggleOrdemAlfabetica(ativar: boolean): void {
-    this.ordemAlfabetica = ativar;
-    this.dropdownAberto = null;
-  }
-
-  obterRotuloOrdem(): string {
-    if (this.ordemSelecionada === 'recentes') return 'Mais Recentes';
-    if (this.ordemSelecionada === 'antigos') return 'Mais Antigos';
-    return 'ORDEM';
   }
 
   @HostListener('document:click')
@@ -112,8 +117,8 @@ export class DashboardP {
       return atendeMatricula && atendeTurno && atendeTurma;
     });
 
-    if (this.ordemAlfabetica) {
-      lista = lista.sort((a, b) => a.aluno.localeCompare(b.aluno));
+    if (this.ordemSelecionada === 'recentes') {
+      lista = lista.reverse();
     }
 
     return lista;
@@ -124,7 +129,6 @@ export class DashboardP {
     this.turnoSelecionado = '';
     this.ordemSelecionada = '';
     this.turmaSelecionada = '';
-    this.ordemAlfabetica = false;
     this.dropdownAberto = null;
   }
 

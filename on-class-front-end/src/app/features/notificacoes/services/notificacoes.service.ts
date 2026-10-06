@@ -26,6 +26,8 @@ export interface Notificacao {
   alunoNome?: string;
   matricula?: string;
   turma?: string;
+  temUpload?: boolean;
+  arquivoUrl?: string;
 }
 
 @Injectable({
