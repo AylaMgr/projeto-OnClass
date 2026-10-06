@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
@@ -56,7 +56,8 @@ export class Dashboards implements OnInit, OnDestroy {
 
   constructor(
     private readonly notificacoesService: NotificacoesService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -77,6 +78,14 @@ export class Dashboards implements OnInit, OnDestroy {
     next: (dados) => {
       console.log('Dados recebidos da API na Secretaria:', dados);
       this.notificacoes = dados || [];
+
+      // 1. Recalcula as métricas, cartões e gráficos imediatamente com o período atual
+      if (typeof (this as any).selecionarPeriodo === 'function') {
+        (this as any).selecionarPeriodo(this.periodoSelecionado || 'Últimos 7 dias');
+      }
+
+      // 2. Notifica o Angular para renderizar os dados na tela na hora
+      this.cdr.detectChanges();
     },
     error: (err) => console.error('Erro ao carregar notificações:', err)
   });
@@ -115,22 +124,22 @@ export class Dashboards implements OnInit, OnDestroy {
 
   // Listas extraídas das notificações reais
  // Listas extraídas das notificações reais
-  get recebidosRecentemente(): ItemTabelaResumo[] {
-    return this.notificacoes.map((n: any) => {
-      const analiseResponsavel = (n.tipo === 'ATESTADO' || n.temUpload) 
-        ? 'IA' 
-        : (n.administrador || 'Pendente (Secretaria)');
+ get recebidosRecentemente(): ItemTabelaResumo[] {
+  return this.notificacoes.map((n: any) => {
+    const analiseResponsavel = (n.tipo === 'ATESTADO' || n.temUpload)
+      ? 'IA'
+      : (n.administrador || 'Pendente (Secretaria)');
 
-      return {
-        alunoNome: n.alunoNome || 'Aluno Não Identificado',
-        matricula: n.matricula || '2024001',
-        turma: n.turma || 'Ensino Médio',
-        motivo: n.motivo || 'Sem Motivo',
-        dataEnvio: n.dataEnvio ? new Date(n.dataEnvio).toLocaleDateString('pt-BR') : 'Hoje',
-        status: n.status || 'Pendente',
-        administrador: analiseResponsavel
-      };
-    });
+    return {
+      alunoNome: n.alunoNome || 'Aluno Não Identificado',
+      matricula: n.matricula || '2024001',
+      turma: n.turma || 'Ensino Médio',
+      motivo: n.motivo || 'Sem Motivo',
+      dataEnvio: n.dataEnvio ? new Date(n.dataEnvio).toLocaleDateString('pt-BR') : 'Hoje',
+      status: n.status || 'Pendente',
+      administrador: analiseResponsavel
+    };
+  }).slice(0, 5); // Limita o resultado às 5 últimas solicitações
   }
 
   get analisesManuais(): ItemTabelaResumo[] {

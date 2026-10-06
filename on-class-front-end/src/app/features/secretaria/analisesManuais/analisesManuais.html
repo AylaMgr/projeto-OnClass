@@ -14,9 +14,9 @@
 
     <div class="top-bar-center">
       <div class="search-input-wrapper">
-        <input 
-          type="text" 
-          placeholder="Nº de Matrícula" 
+        <input
+          type="text"
+          placeholder="Nº de Matrícula"
           [(ngModel)]="termoMatricula"
         />
       </div>
@@ -80,9 +80,9 @@
       </div>
 
       <!-- Botão Limpar Filtros -->
-      <button 
-        type="button" 
-        class="btn-clear" 
+      <button
+        type="button"
+        class="btn-clear"
         *ngIf="turnoSelecionado || ordemSelecionada || turmaSelecionada || termoMatricula"
         (click)="limparFiltros()"
       >
@@ -102,39 +102,50 @@
         </a>
       </div>
 
-      <!-- LISTA DE CARDS - CADA CARD É UM BOTÃO/LINK PARA SOLICITAÇÕES -->
+      <!-- LISTA DE CARDS DA API -->
       <div class="cards-list">
-        <a 
-          class="student-card-btn" 
-          *ngFor="let item of solicitacoesFiltradas"
-          [routerLink]="['/secretaria/solicitacao', item.id]"
-        >
-          <div class="student-info">
-            <div class="meta-line">
-              <span class="matricula">Nº {{ item.matricula }}</span>
-              <span class="data-envio">{{ item.dataEnvio }}</span>
-            </div>
-            <h3 class="student-name">{{ item.aluno }}</h3>
-            <p class="motivo-text">{{ item.motivo }}</p>
-          </div>
 
-          <div class="student-status">
-            <span 
-              class="status-badge"
-              [ngClass]="{
-                'rejeitada': item.status === 'Rejeitada',
-                'pendente': item.status === 'Pendente',
-                'aprovada': item.status === 'Aprovada'
-              }"
-            >
-              {{ item.status }}
-            </span>
-          </div>
-        </a>
-
-        <div class="empty-state" *ngIf="solicitacoesFiltradas.length === 0">
-          Nenhuma solicitação encontrada.
+        <!-- Estado de Carregamento -->
+        <div class="empty-state" *ngIf="carregando">
+          A carregar solicitações...
         </div>
+
+        <!-- Cards dos Alunos -->
+        <ng-container *ngIf="!carregando">
+          <a
+            class="student-card-btn"
+            *ngFor="let item of solicitacoesFiltradas"
+            [routerLink]="['/secretaria/solicitacao', item.id]"
+          >
+            <div class="student-info">
+              <div class="meta-line">
+                <span class="matricula">Nº {{ item.matricula }}</span>
+                <span class="data-envio">{{ item.dataEnvio }}</span>
+              </div>
+              <h3 class="student-name">{{ item.aluno }}</h3>
+              <p class="motivo-text">{{ item.motivo }}</p>
+            </div>
+
+            <div class="student-status">
+              <span
+                class="status-badge"
+                [ngClass]="{
+                  'rejeitada': item.status?.toLowerCase().includes('rejeit') || item.status?.toLowerCase().includes('indefer'),
+                  'pendente': item.status?.toLowerCase().includes('pendent'),
+                  'aprovada': item.status?.toLowerCase().includes('aprov') || item.status?.toLowerCase().includes('defer')
+                }"
+              >
+                {{ item.status }}
+              </span>
+            </div>
+          </a>
+
+          <!-- Lista Vazia -->
+          <div class="empty-state" *ngIf="solicitacoesFiltradas.length === 0">
+            Nenhuma solicitação encontrada.
+          </div>
+        </ng-container>
+
       </div>
     </div>
 

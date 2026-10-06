@@ -28,136 +28,221 @@
 
     <div class="workspace-grid">
 
-      <!-- COLUNA DA ESQUERDA: Visualização do Documento Enviado -->
+      <!-- ================================================================= -->
+      <!-- COLUNA DA ESQUERDA: Visualização do Documento OU Dados do Aluno   -->
+      <!-- ================================================================= -->
       <section class="doc-viewer-card">
-        <div class="doc-viewer-header">
-          <h2>Visualização do Documento Enviado</h2>
-          <span class="file-tag">PDF / Imagem (1.2 MB)</span>
-        </div>
-
-        <div class="document-paper">
-          <div class="clinic-header">
-            <span class="clinic-icon">&#9877;</span>
-            <span class="clinic-title">CLÍNICA MÉDICA VIDA & SAÚDE</span>
+        
+        <!-- CENÁRIO 1: Quando HÁ Imagem/Documento Enviado -->
+        <ng-container *ngIf="solicitacao.comImagem; else painelDadosAluno">
+          <div class="doc-viewer-header">
+            <h2>Visualização do Documento Enviado</h2>
+            <span class="file-tag">PDF / Imagem (1.2 MB)</span>
           </div>
 
-          <h3 class="doc-title">ATESTADO MÉDICO</h3>
+          <div class="document-paper">
+            <ng-container *ngIf="solicitacao.imagemUrl; else atestadoTextoPadrao">
+              <img [src]="solicitacao.imagemUrl" alt="Documento Enviado" style="max-width: 100%; height: auto; display: block; margin: 0 auto; rounded: 8px;" />
+            </ng-container>
 
-          <p class="doc-body">
-            Atesto para os devidos fins que a paciente <strong>{{ solicitacao.aluno }}</strong>, 
-            portadora do CPF 123.456.789-00, esteve sob meus cuidados médicos no dia 12 de Agosto de 2026, 
-            necessitando de 03 (três) dias de repouso absoluto por motivos de saúde (CID10: J11).
-          </p>
+            <ng-template #atestadoTextoPadrao>
+              <div class="clinic-header">
+                <span class="clinic-icon">&#9877;</span>
+                <span class="clinic-title">CLÍNICA MÉDICA VIDA & SAÚDE</span>
+              </div>
 
-          <p class="doc-date">Brasília - DF, 12/08/2026.</p>
+              <h3 class="doc-title">ATESTADO MÉDICO</h3>
 
-          <div class="doc-signature">
-            <div class="sig-line"></div>
-            <span>(Carimbo com CRM legível)</span><br>
-            <small>Dr. (Não identificado)</small>
+              <p class="doc-body">
+                Atesto para os devidos fins que a paciente <strong>{{ solicitacao.aluno }}</strong>,
+                portadora do CPF 123.456.789-00, esteve sob meus cuidados médicos no dia 12 de Agosto de 2026,
+                necessitando de 03 (três) dias de repouso absoluto por motivos de saúde (CID10: J11).
+              </p>
+
+              <p class="doc-date">Brasília - DF, {{ solicitacao.dataEnvio }}.</p>
+
+              <div class="doc-signature">
+                <div class="sig-line"></div>
+                <span>(Carimbo com CRM legível)</span><br>
+                <small>Dr. (Não identificado)</small>
+              </div>
+            </ng-template>
           </div>
-        </div>
 
-        <!-- Barra de Ferramentas e Download do Original -->
-        <div class="doc-actions-bar">
-          <div class="zoom-controls">
-            <button type="button" class="btn-tool" title="Pesquisar">&#128065;</button>
-            <span class="zoom-level">100%</span>
-            <button type="button" class="btn-tool" title="Aumentar Zoom">&#128269;</button>
-            <button type="button" class="btn-tool" title="Girar">&#10226;</button>
+          <!-- Barra de Ferramentas e Download do Original -->
+          <div class="doc-actions-bar">
+            <div class="zoom-controls">
+              <button type="button" class="btn-tool" title="Pesquisar">&#128065;</button>
+              <span class="zoom-level">100%</span>
+              <button type="button" class="btn-tool" title="Aumentar Zoom">&#128269;</button>
+              <button type="button" class="btn-tool" title="Girar">&#10226;</button>
+            </div>
+
+            <button type="button" class="btn-download-original" (click)="baixarOriginal()">
+              &#128229; Baixar Original
+            </button>
+          </div>
+        </ng-container>
+
+        <!-- CENÁRIO 2: Quando NÃO HÁ Imagem (Formulário Simples) -->
+        <ng-template #painelDadosAluno>
+          <div class="doc-viewer-header">
+            <h2>Dados Académicos do Aluno</h2>
+            <span class="file-tag">Ficha do Aluno</span>
           </div>
 
-          <button type="button" class="btn-download-original" (click)="baixarOriginal()">
-            &#128229; Baixar Original
-          </button>
-        </div>
+          <div class="document-paper">
+            <div class="clinic-header">
+              <span class="clinic-icon">&#127891;</span>
+              <span class="clinic-title">INFORMAÇÕES ACADÊMICAS</span>
+            </div>
+
+            <h3 class="doc-title" style="margin-top: 15px;">{{ solicitacao.aluno }}</h3>
+
+            <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 15px;">
+              <div>
+                <span style="font-size: 12px; color: #64748b; font-weight: 600;">MATRÍCULA</span>
+                <p style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 2px 0 0 0;">{{ solicitacao.matricula }}</p>
+              </div>
+
+              <div>
+                <span style="font-size: 12px; color: #64748b; font-weight: 600;">PERÍODO / TURNO</span>
+                <p style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 2px 0 0 0;">{{ solicitacao.turno || 'Matutino' }}</p>
+              </div>
+
+              <div>
+                <span style="font-size: 12px; color: #64748b; font-weight: 600;">TURMA</span>
+                <p style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 2px 0 0 0;">{{ solicitacao.turma || '8º Ano A' }}</p>
+              </div>
+
+              <div>
+                <span style="font-size: 12px; color: #64748b; font-weight: 600;">PROFESSOR RESPONSÁVEL</span>
+                <p style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 2px 0 0 0;">{{ solicitacao.professor || 'Prof. Carlos Eduardo' }}</p>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
       </section>
 
-      <!-- COLUNA DA DIREITA: Relatório da IA / Painel de Decisão -->
+
+      <!-- ================================================================= -->
+      <!-- COLUNA DA DIREITA: Relatório de IA / Formulário + Painel Decisão -->
+      <!-- ================================================================= -->
       <section class="decision-panel">
 
-        <!-- ESTADO 1: RELATÓRIO DE AVALIAÇÃO - IA (EXATAMENTE COMO NA IMAGEM) -->
-        <div class="ia-report-card-full" *ngIf="statusAnalise === 'PENDENTE'">
+        <!-- ESTADO 1: PENDENTE -->
+        <ng-container *ngIf="statusAnalise === 'PENDENTE'">
 
-          <!-- Cabeçalho do Card com Badge -->
-          <div class="ia-card-header">
-            <h2>Relatório de Avaliação - IA</h2>
-            <span class="badge-rejected">Rejeitado pela IA</span>
-          </div>
-
-          <!-- Tabela de Identificação do Aluno -->
-          <div class="student-id-box">
-            <div class="id-title">IDENTIFICAÇÃO DO ALUNO</div>
-            <div class="id-row">
-              <span class="id-label">Nome:</span>
-              <span class="id-val font-bold">{{ solicitacao.aluno }}</span>
-            </div>
-            <div class="id-row">
-              <span class="id-label">Matrícula:</span>
-              <span class="id-val font-bold">{{ solicitacao.matricula }}</span>
-            </div>
-            <div class="id-row">
-              <span class="id-label">Curso:</span>
-              <span class="id-val font-bold">{{ solicitacao.curso }}</span>
-            </div>
-          </div>
-
-          <!-- Seção Análise do Bot -->
-          <div class="bot-analysis-section">
-            <div class="bot-header">
-              <span class="section-title">ANÁLISE DO BOT</span>
+          <!-- CENÁRIO A: Relatório de Avaliação - IA (Se houver Imagem) -->
+          <div class="ia-report-card-full" *ngIf="solicitacao.comImagem; else formularioDiretoSec">
+            <!-- Cabeçalho do Card com Badge -->
+            <div class="ia-card-header">
+              <h2>Relatório de Avaliação - IA</h2>
+              <span class="badge-rejected">Análise Automática</span>
             </div>
 
-            <!-- Barra de Confiança -->
-            <div class="confidence-wrapper">
-              <div class="confidence-info">
-                <span>Confiança Geral da Leitura:</span>
-                <span class="confidence-percent">35%</span>
+            <!-- Tabela de Identificação do Aluno -->
+            <div class="student-id-box">
+              <div class="id-title">IDENTIFICAÇÃO DO ALUNO</div>
+              <div class="id-row">
+                <span class="id-label">Nome:</span>
+                <span class="id-val font-bold">{{ solicitacao.aluno }}</span>
               </div>
-              <div class="progress-bar-bg">
-                <div class="progress-bar-fill" style="width: 35%;"></div>
+              <div class="id-row">
+                <span class="id-label">Matrícula:</span>
+                <span class="id-val font-bold">{{ solicitacao.matricula }}</span>
+              </div>
+              <div class="id-row">
+                <span class="id-label">Curso:</span>
+                <span class="id-val font-bold">{{ solicitacao.curso }}</span>
               </div>
             </div>
 
-            <!-- Lista de Checagens da IA -->
-            <ul class="bot-checklist">
-              <li class="check-item invalid">
-                <span class="icon">&#10060;</span>
-                <span>Assinatura Médica &mdash; <strong>Não detectada ou ilegível</strong></span>
-              </li>
-              <li class="check-item invalid">
-                <span class="icon">&#10060;</span>
-                <span>Número CRM &mdash; <strong>Ausente no cabeçalho/corpo</strong></span>
-              </li>
-              <li class="check-item valid">
-                <span class="icon">&#9989;</span>
-                <span>Data do Atestado &mdash; <strong>Identificado (12/08/2026)</strong></span>
-              </li>
-              <li class="check-item invalid">
-                <span class="icon">&#10060;</span>
-                <span>Carimbo do Médico &mdash; <strong>Não identificado</strong></span>
-              </li>
-              <li class="check-item valid">
-                <span class="icon">&#9989;</span>
-                <span>Nome do Paciente &mdash; <strong>Compatível ({{ solicitacao.aluno }})</strong></span>
-              </li>
-            </ul>
+            <!-- Seção Análise do Bot -->
+            <div class="bot-analysis-section">
+              <div class="bot-header">
+                <span class="section-title">ANÁLISE DO BOT</span>
+              </div>
+
+              <!-- Barra de Confiança -->
+              <div class="confidence-wrapper">
+                <div class="confidence-info">
+                  <span>Confiança Geral da Leitura:</span>
+                  <span class="confidence-percent">35%</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" style="width: 35%;"></div>
+                </div>
+              </div>
+
+              <!-- Lista de Checagens da IA -->
+              <ul class="bot-checklist">
+                <li class="check-item invalid">
+                  <span class="icon">&#10060;</span>
+                  <span>Assinatura Médica &mdash; <strong>Não detectada ou ilegível</strong></span>
+                </li>
+                <li class="check-item invalid">
+                  <span class="icon">&#10060;</span>
+                  <span>Número CRM &mdash; <strong>Ausente no cabeçalho/corpo</strong></span>
+                </li>
+                <li class="check-item valid">
+                  <span class="icon">&#9989;</span>
+                  <span>Data do Atestado &mdash; <strong>Identificado ({{ solicitacao.dataEnvio }})</strong></span>
+                </li>
+                <li class="check-item invalid">
+                  <span class="icon">&#10060;</span>
+                  <span>Carimbo do Médico &mdash; <strong>Não identificado</strong></span>
+                </li>
+                <li class="check-item valid">
+                  <span class="icon">&#9989;</span>
+                  <span>Nome do Paciente &mdash; <strong>Compatível ({{ solicitacao.aluno }})</strong></span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Caixa de Observações da IA -->
+            <div class="ia-obs-box">
+              <h4>OBSERVAÇÕES DA IA:</h4>
+              <p>Documento com baixa qualidade de imagem. Possível foto de tela ou fotocópia de baixa resolução. Recomenda-se solicitar reenvio ou cópia digitalizada limpa caso necessário.</p>
+            </div>
           </div>
 
-          <!-- Caixa de Observações da IA -->
-          <div class="ia-obs-box">
-            <h4>OBSERVAÇÕES DA IA:</h4>
-            <p>
-              Documento com baixa qualidade de imagem. Possível foto de tela ou fotocópia de baixa resolução. Recomenda-se solicitar reenvio ou cópia digitalizada limpa caso necessário.
-            </p>
-          </div>
+          <!-- CENÁRIO B: Formulário Preenchido pelo Aluno (Se NÃO houver Imagem) -->
+          <ng-template #formularioDiretoSec>
+            <div class="ia-report-card-full">
+              <div class="ia-card-header">
+                <h2>Formulário de Solicitação</h2>
+                <span class="badge-rejected" style="background: #e0f2fe; color: #0369a1;">Formulário Direto</span>
+              </div>
+
+              <div class="student-id-box">
+                <div class="id-title">DETALHES DA SOLICITAÇÃO</div>
+                <div class="id-row">
+                  <span class="id-label">Tipo:</span>
+                  <span class="id-val font-bold">{{ solicitacao.motivo }}</span>
+                </div>
+                <div class="id-row">
+                  <span class="id-label">Data de Envio:</span>
+                  <span class="id-val font-bold">{{ solicitacao.dataEnvio }}</span>
+                </div>
+              </div>
+
+              <div class="ia-obs-box" style="margin-top: 15px; background: #f8fafc; border-color: #cbd5e1;">
+                <h4 style="color: #334155;">JUSTIFICATIVA / OBSERVAÇÃO DO ALUNO:</h4>
+                <p style="color: #475569; font-size: 13px; line-height: 1.5; margin-top: 5px;">
+                  {{ solicitacao.descricao || 'O aluno solicitou a revisão ou ajuste diretamente pelo portal.' }}
+                </p>
+              </div>
+            </div>
+          </ng-template>
 
           <!-- Campo de Justificativa da Secretaria -->
           <div class="justification-section">
             <label for="justificativa">Justificativa da Secretaria</label>
-            <textarea 
-              id="justificativa" 
-              rows="3" 
+            <textarea
+              id="justificativa"
+              rows="3"
               placeholder="Digite a justificativa interna ou motivo do indeferimento..."
               [(ngModel)]="justificativaSecretaria"
             ></textarea>
@@ -166,36 +251,36 @@
           <!-- Botões Principais de Ação -->
           <div class="action-buttons-row">
             <button type="button" class="btn-approve" (click)="aprovarAtestado()">
-              &#10004; Aprovar Atestado
+              &#10004; {{ solicitacao.comImagem ? 'Aprovar Atestado' : 'Aprovar Solicitação' }}
             </button>
             <button type="button" class="btn-reject" (click)="rejeitarAtestado()">
-              &#10006; Rejeitar
+              &#10006; Recusar
             </button>
           </div>
 
-        </div>
+        </ng-container>
 
         <!-- ESTADO 2: ATESTADO VALIDADO (APÓS APROVAR) -->
         <div class="status-result-card approved-card" *ngIf="statusAnalise === 'APROVADO'">
           <div class="status-icon-circle green-circle">&#10004;</div>
 
-          <h3 class="status-title green-text">Atestado Validado</h3>
-          <p class="status-subtitle">O documento cumpre as exigências</p>
+          <h3 class="status-title green-text">Solicitação Aprovada</h3>
+          <p class="status-subtitle">O documento/formulário cumpre as exigências</p>
 
           <div class="info-details-table">
             <div class="detail-row">
               <span class="label">Data:</span>
               <span class="value">11/08/2026</span>
             </div>
-            <div class="detail-row">
+            <div class="detail-row" *ngIf="solicitacao.comImagem">
               <span class="label">Assinatura Médica:</span>
               <span class="value font-bold">Verificada</span>
             </div>
-            <div class="detail-row">
+            <div class="detail-row" *ngIf="solicitacao.comImagem">
               <span class="label">CRM:</span>
               <span class="value">12345-SP</span>
             </div>
-            <div class="detail-row">
+            <div class="detail-row" *ngIf="solicitacao.comImagem">
               <span class="label">Período:</span>
               <span class="value font-bold">3 dias</span>
             </div>
@@ -218,18 +303,19 @@
         <div class="status-result-card rejected-card" *ngIf="statusAnalise === 'REJEITADO'">
           <div class="status-icon-box red-box">&#9888;</div>
 
-          <h3 class="status-title red-text">Atestado Não Validado</h3>
+          <h3 class="status-title red-text">Solicitação Recusada</h3>
 
-          <div class="problems-box">
+          <div class="problems-box" *ngIf="solicitacao.comImagem">
             <h4>PROBLEMAS DETECTADOS:</h4>
             <ul>
               <li><span class="bullet-icon">&#10008;</span> Assinatura médica: Não detectada</li>
               <li><span class="bullet-icon">&#10008;</span> CRM do profissional: Não encontrado</li>
               <li><span class="bullet-icon">&#10008;</span> Data de emissão: Ilegível ou ausente</li>
             </ul>
-            <div class="justification-view" *ngIf="justificativaSecretaria">
-              <strong>Motivo/Justificativa:</strong> {{ justificativaSecretaria }}
-            </div>
+          </div>
+
+          <div class="justification-view" *ngIf="justificativaSecretaria">
+            <strong>Motivo/Justificativa:</strong> {{ justificativaSecretaria }}
           </div>
 
           <button type="button" class="btn-download-comprovante red-btn" (click)="baixarComprovante('REJEITADO')">
