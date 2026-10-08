@@ -28,9 +28,6 @@
   <!-- Conteúdo Principal -->
   <main class="main-content" *ngIf="!carregando">
     
-    <!-- ================================================================= -->
-    <!-- CENÁRIO 1: SOLICITAÇÃO COM ANEXO/IMAGEM (Relatório de IA à Direita) -->
-    <!-- ================================================================= -->
     <div class="grid-layout" *ngIf="solicitacao.comImagem">
       
       <!-- Coluna Esquerda: Visualização do Documento Enviado -->
@@ -137,9 +134,6 @@
 
     </div>
 
-    <!-- ================================================================= -->
-    <!-- CENÁRIO 2: SOLICITAÇÃO APENAS COM FORMULÁRIO (SEM IMAGEM/ANEXO)   -->
-    <!-- ================================================================= -->
     <div class="grid-layout" *ngIf="!solicitacao.comImagem">
       
       <!-- Coluna Esquerda: Dados Acadêmicos do Aluno -->

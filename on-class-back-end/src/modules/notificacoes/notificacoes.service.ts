@@ -37,7 +37,6 @@ export class NotificacoesService {
     const dataFimValida = this.parseDate(dto.dataFim);
 
     // 2. Persiste no banco com as variáveis 'inicio' e 'fim'
-    // 2. Persiste no banco com as variáveis 'inicio' e 'fim'
 const novaNotificacao = await this.prisma.notificacao.create({
   data: {
     alunoId: alunoId || dto.alunoId,

@@ -121,8 +121,6 @@ export class Dashboards implements OnInit, OnDestroy {
   fecharDetalhes(): void {
     this.solicitacaoSelecionada = null;
   }
-
-  // Listas extraídas das notificações reais
  // Listas extraídas das notificações reais
  get recebidosRecentemente(): ItemTabelaResumo[] {
   return this.notificacoes.map((n: any) => {

@@ -49,7 +49,7 @@
         </tbody>
       </table>
 
-      <!-- Controlo de Paginação -->
+      <!-- Controle de Paginação -->
       <div class="paginacao" *ngIf="notificacoesFiltradas.length > 0">
         <button (click)="mudarPagina(paginaAtual - 1)" [disabled]="paginaAtual === 1">Anterior</button>
         <span>Página {{ paginaAtual }} de {{ totalPaginas }}</span>
