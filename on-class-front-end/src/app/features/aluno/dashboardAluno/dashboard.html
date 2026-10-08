@@ -5,7 +5,7 @@
       <h2>Falta médica ou imprevisto?</h2>
       <p>Envie justificativas e atestados digitalmente e notifique a escola em minutos.</p>
       <button class="btn-primary" (click)="toggleFormulario()">
-        {{ mostrarFormulario ? '← Voltar para Atestado' : '⊕ Enviar Nova Justificativa' }}
+        {{ mostrarFormulario ? '← Voltar para Atestado' : '✚ Enviar Nova Justificativa' }}
       </button>
     </div>
 
@@ -51,9 +51,9 @@
 
       <!-- Controle de Paginação -->
       <div class="paginacao" *ngIf="notificacoesFiltradas.length > 0">
-        <button (click)="mudarPagina(paginaAtual - 1)" [disabled]="paginaAtual === 1">Anterior</button>
-        <span>Página {{ paginaAtual }} de {{ totalPaginas }}</span>
-        <button (click)="mudarPagina(paginaAtual + 1)" [disabled]="paginaAtual === totalPaginas">Próxima</button>
+        <th><button class="btn primary" (click)="mudarPagina(paginaAtual - 1)" [disabled]="paginaAtual === 1">Anterior </button>
+        <th><span>Página {{ paginaAtual }} de {{ totalPaginas }}</span>
+        <th><button class="btn primary" (click)="mudarPagina(paginaAtual + 1)" [disabled]="paginaAtual === totalPaginas">Próxima</button>
       </div>
     </div>
   </div>
