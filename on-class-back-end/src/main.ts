@@ -17,8 +17,8 @@ async function bootstrap() {
   // Ativa o pipe global de validação para processar os DTOs
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Remove propriedades que não estejam no DTO
-      transform: true, // Converte tipos de dados automaticamente
+      whitelist: true, 
+      transform: true, 
     }),
   );
 

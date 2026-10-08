@@ -9,7 +9,7 @@ import { JwtStrategy } from './strategies/jwt.strategy.js';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: 'SEU_SECRET_AQUI',
+      secret: 'FOCASSIA',
       signOptions: { expiresIn: '1d' },
     }),
   ],

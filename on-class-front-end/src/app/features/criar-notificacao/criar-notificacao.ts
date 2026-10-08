@@ -208,8 +208,6 @@ export class CriarNotificacao implements OnInit {
     }
   }
 
- // Dentro de criar-notificacao.ts
-
 onSubmit(): void {
   if (this.form.invalid) {
     this.form.markAllAsTouched();

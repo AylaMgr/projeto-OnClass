@@ -9,6 +9,4 @@ import { RouterLink } from '@angular/router';
   templateUrl: './solicitacoesStatus.html',
   styleUrl: './solicitacoesStatus.css'
 })
-export class SolicitacoesStatus {
-  // Lógica de detalhes e status do aluno
-}
+export class SolicitacoesStatus {}

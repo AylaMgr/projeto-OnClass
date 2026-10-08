@@ -8,7 +8,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'SEU_SECRET_AQUI', // Em produção, utilize process.env.JWT_SECRET
+      secretOrKey: process.env.JWT_SECRET || 'FOCASSIA',
     });
   }
 
@@ -16,7 +16,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload) {
       throw new UnauthorizedException();
     }
-    // O retorno deste método é injetado automaticamente em req.user
     return { userId: payload.sub, email: payload.email, role: payload.role };
   }
 }
