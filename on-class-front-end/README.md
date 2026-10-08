@@ -1,59 +1,47 @@
-# OnClassFrontEnd
+# 🎓 Sistema de Gestão de Abono de Faltas — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.4.
+Aplicação web desenvolvida em **Angular** para a gestão e automação do processo de solicitação, triagem e validação de abono de faltas e segunda chamada acadêmica.
 
-## Development server
+---
 
-To start a local development server, run:
+## 🚀 Sobre o Projeto
 
-```bash
-ng serve
-```
+O sistema foi desenhado para conectar três atores fundamentais no ambiente educacional:
+1. **Aluno:** Solicita abonos anexando atestados/comprovantes ou através de formulários diretos e acompanha o estado do pedido em tempo real.
+2. **Secretaria:** Efetua a triagem inicial das solicitações com auxílio de leitura inteligente por IA e faz o encaminhamento ao corpo docente.
+3. **Professor:** Avalia as solicitações encaminhadas pela secretaria, visualiza os dias de afastamento/faltas pendentes e regista o parecer final com um clique.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 🛠️ Tecnologias Utilizadas
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Framework:** Angular (Standalone Components)
+- **Linguagem:** TypeScript
+- **Estilização:** CSS3 puro / Design Responsivo
+- **Roteamento:** Angular Router (Rotas Dinâmicas)
+- **Comunicação:** RxJS / HttpClient
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 💻 Funcionalidades Principais
 
-```bash
-ng generate --help
-```
+- **Dashboard do Aluno:** Envio de atestados, acompanhamento de estado em tempo real.
+- **Painel da Secretaria (`solicitacoesS`):** Triagem inteligente, verificação de dados acadêmicos e encaminhamento aos docentes.
+- **Dashboard do Professor (`dashboardP`):** Listagem restrita às 5 solicitações mais recentes encaminhadas e aceitas pela secretaria.
+- **Layout Dual (`solicitacoesP`):** Alternância automática entre o relatório de análise inteligente por IA (para anexos) e visualização de dados acadêmicos com contador de **dias de afastamento / faltas a abonar**.
 
-## Building
+---
 
-To build the project run:
+## ⚙️ Como Executar o Projeto
 
-```bash
-ng build
-```
+### Pré-requisitos
+- **Node.js**: v18.x ou superior
+- **npm**: v9.x ou superior
+- **Angular CLI**: v17.x ou superior
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Passos para Instalação
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1. **Clonar o repositório:**
+   ```bash
+   git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
+   cd on-class-front-end
