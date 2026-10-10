@@ -143,82 +143,45 @@
       </div>
     </section>
 
-    <!-- Tabelas Resumidas -->
-    <section class="tables-grid">
-      <!-- Recebidos Recentemente -->
-      <div class="table-card">
-        <div class="card-header">
-  <h3>Recebidos Recentemente</h3>
-  <a class="link-ver-todos" (click)="verAnalisesManuais()" styles="cursor: pointer;">Ver Todos &rarr;</a>
-</div>
-
-        <table class="mini-table">
-          <thead>
-            <tr>
-              <th>Aluno</th>
-              <th>Motivo</th>
-              <th>Data de Envio</th>
-              <th>Analizado Por</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of recebidosFiltrados">
-              <td>
-                <div class="student-name">{{ item.alunoNome }}</div>
-                <div class="student-sub">{{ item.turma }} (Matrícula: {{ item.matricula }})</div>
-              </td>
-              <td>{{ item.motivo }}</td>
-              <td class="text-muted">{{ item.dataEnvio }}</td>
-              <td>
-                <span class="badge" [class]="item.status.toLowerCase()">{{ item.status }}</span>
-              </td>
-            </tr>
-            <tr *ngIf="recebidosFiltrados.length === 0">
-              <td colspan="4" class="no-results">Nenhum aluno encontrado.</td>
-            </tr>
-          </tbody>
-        </table>
+ <!-- Análises Manuais -->
+  <section class="tables-grid single-card">
+    <div class="table-card">
+      <div class="card-header">
+        <h3>Análises Manuais</h3>
+        <a class="link-ver-todos" (click)="verAnalisesManuais()" style="cursor: pointer;">
+          Ver Todos &rarr;
+        </a>
       </div>
 
-      <!-- Análises Manuais -->
-      <div class="table-card">
-        <div class="table-header">
-          <h3>Análises Manuais</h3>
-         <a class="link-ver-todos" (click)="verAnalisesManuais()" style="cursor: pointer;">
-  Ver Todos &rarr;
-</a>
-        </div>
-
-        <table class="mini-table">
-          <thead>
-            <tr>
-              <th>Aluno</th>
-              <th>Motivo</th>
-              <th>Data de Envio</th>
-              <th>Analizado Por</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of analisesFiltradas">
-              <td>
-                <div class="student-name">{{ item.alunoNome }}</div>
-                <div class="student-sub">{{ item.turma }} (Matrícula: {{ item.matricula }})</div>
-              </td>
-              <td>{{ item.motivo }}</td>
-              <td class="text-muted">{{ item.dataEnvio }}</td>
-              <td>
-                <span class="badge" [class]="item.status.toLowerCase()">{{ item.status }}</span>
-              </td>
-            </tr>
-            <tr *ngIf="analisesFiltradas.length === 0">
-              <td colspan="4" class="no-results">Nenhum aluno encontrado.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </main>
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th>Aluno</th>
+            <th>Motivo</th>
+            <th>Data de Envio</th>
+            <th>Analisado Por</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of analisesFiltradas">
+            <td>
+              <div class="student-name">{{ item.alunoNome }}</div>
+              <div class="student-sub">{{ item.turma }} (Matrícula: {{ item.matricula }})</div>
+            </td>
+            <td>{{ item.motivo }}</td>
+            <td class="text-muted">{{ item.dataEnvio }}</td>
+                <td>{{item.analisadoPor || 'Pendente'}}</td>
+            <td>
+              <span class="badge" [class]="item.status?.toLowerCase()">{{ item.status }}</span>
+            </td>
+          </tr>
+          <tr *ngIf="analisesFiltradas.length === 0">
+            <td colspan="5" class="no-results">Nenhum aluno encontrado.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
 </div>

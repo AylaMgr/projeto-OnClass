@@ -144,6 +144,12 @@
   margin: 0;
 }
 
+.tables-grid.single-card {
+  dis´lay: block;
+  width: 100%;
+  margin-top: 24px;
+}
+
 .btn-see-all {
   color: #2563eb;
   font-size: 0.85rem;
@@ -274,9 +280,10 @@
 }
 
 .tables-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  display: block;
+  width: 100%;
+  grid-template-columns: 1fr;
+  margin-top: 24px;
 }
 
 .table-card {

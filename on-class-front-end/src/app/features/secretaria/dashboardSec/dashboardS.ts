@@ -12,6 +12,7 @@ export interface ItemTabelaResumo {
   motivo: string;
   dataEnvio: string;
   status: 'Pendente' | 'Aprovada' | 'Rejeitada' | string;
+  analisadoPor?: string;
 }
 
 export interface IndicadoresKPI {
