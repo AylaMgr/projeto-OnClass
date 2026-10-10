@@ -31,7 +31,7 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas na s
 Abra o terminal da sua máquina e execute:
 
 ```bash
-git clone <URL_DO_SEU_REPOSITORIO_GIT>
+git clone https://github.com/AylaMgr/projeto-OnClass
 cd projeto-OnClass
 cd on-class-back-end
 npm install
