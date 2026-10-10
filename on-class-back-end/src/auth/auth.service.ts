@@ -12,6 +12,11 @@ export class AuthService {
       { email: 'aluno@email.com', pass: '123456', role: 'ALUNO_RESPONSAVEL' },
       { email: 'aluno@email.com', pass: '123456', role: 'ALUNO' },
       { email: 'secretaria@email.com', pass: '123456', role: 'SECRETARIA' },
+      { email: 'renato@email.com', pass: '123456', role: 'ALUNO', nome: 'Renato Alencar da Silva' },
+      { email: 'deborah@email.com', pass: '123456', role: 'ALUNO', nome: 'Deborah W. Brito Espindola da Silva' },
+      { email: 'julia@email.com', pass: '123456', role: 'ALUNO', nome: 'Julia Brito' },
+      { email: 'ayla@email.com', pass: '123456', role: 'ALUNO', nome: 'Ayla Margarida Sales Pessoa' },
+      { email: 'rebeca@email.com', pass: '123456', role: 'ALUNO', nome: 'Rebeca Felix' },
     ];
 
     // 2. Busca do utilizador correspondente
@@ -34,7 +39,12 @@ export class AuthService {
     }
 
     // 4. Geração do token JWT e retorno
-    const payload = { sub: user.email, email: user.email, role: user.role };
+    const payload = { 
+      sub: user.email, 
+      email: user.email, 
+      role: user.role, 
+      nome: (user as any).nome || 'Usuário OnClass' 
+    };
 
     return {
       accessToken: this.jwtService.sign(payload),
@@ -42,6 +52,7 @@ export class AuthService {
         id: '123',
         email: user.email,
         role: user.role,
+        nome: (user as any).nome || 'Usuário OnClass', // <--- Retorna o nome do aluno logado
       },
     };
   }

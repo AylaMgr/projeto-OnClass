@@ -96,4 +96,5 @@ const novaNotificacao = await this.prisma.notificacao.create({
     }
     return notificacao;
   }
+  
 }
