@@ -1,6 +1,6 @@
 import { Controller, Post, UseInterceptors, UploadedFile, Body, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AiService } from './ai.service.js';
+import { IaService } from './ai.service.js';
 import { PrismaService } from '../../common/prisma/prisma.service.js';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -8,7 +8,7 @@ import * as path from 'path';
 @Controller('ai')
 export class AiController {
   constructor(
-    private readonly aiService: AiService,
+    private readonly aiService: IaService,
     private readonly prisma: PrismaService,
   ) {}
 
