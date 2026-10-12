@@ -7,7 +7,7 @@ import { AtestadosModule } from './modules/atestados/atestados.module.js';
 import { NotificacoesModule } from './modules/notificacoes/notificacoes.module.js';
 import { PrismaModule } from './common/prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
-import { AiModule } from './modules/ai/ai.module.js';
+import { IaModule } from './modules/ai/ai.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -20,7 +20,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     }),
     AuthModule,
     AtestadosModule,
-    AiModule,
+    IaModule,
     NotificacoesModule,
     PrismaModule,
   ],
