@@ -1,10 +1,16 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateNotificacaoDto } from './dto/criate-notificacao.dto.js';
 import { PrismaService } from '../../common/prisma/prisma.service.js';
+import { Express } from 'express';
+import { IaService } from '../ai/ai.service.js';
+import 'multer';
 
 @Injectable()
 export class NotificacoesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly iaService: IaService,
+  ) {}
 
   // Converte com segurança strings numéricas ("1791244800000"), timestamps ou ISO Strings para Date
   private parseDate(valor: any): Date {
@@ -96,5 +102,41 @@ const novaNotificacao = await this.prisma.notificacao.create({
     }
     return notificacao;
   }
+
+  // Exemplo no serviço do Back-end (atestado.service.ts / notificacao.service.ts)
+async processarUploadAtestado(file: any, alunoId: string, nomeAluno: string) {
+  // Converte o caminho do arquivo para Buffer ou lê diretamente
+  const fs = require('fs');
+  const buffer = file.buffer || fs.readFileSync(file.path);
+  const mimeType = file.mimetype || 'application/pdf';
+
+  // Passa os 3 parâmetros esperados pelo IaService
+  const resultadoIa = await this.iaService.analisarDocumento(buffer, mimeType, nomeAluno);
+
+  if (resultadoIa?.sugestaoAcao === 'APROVAR') {
+    const novaSolicitacao = await this.prisma.notificacao.create({
+      data: {
+        alunoId: Number(alunoId) || alunoId,
+        motivo: resultadoIa.motivo || 'Tratamento Médico (IA)',
+        status: 'SOLICITACAO_APROVADA_DEFINITIVAMENTE',
+        administrador: 'IA OnClass',
+        dataEnvio: new Date(),
+        dataInicio: this.parseDate(resultadoIa.dataInicio),
+        dataFim: this.parseDate(resultadoIa.dataFim),
+        descricao: resultadoIa.relatorioSecretaria || 'Validado por IA',
+        tipo: 'ATESTADO',
+        declaracaoVeracidade: true
+      } as any
+    });
+
+    return { resultadoIa, solicitacao: novaSolicitacao };
+  }
+
+  // Se recusado, retorna apenas a análise da IA sem criar registro no banco de dados
+  return {
+    resultadoIa,
+    solicitacao: null
+  };
+}
   
 }
