@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, BadRequestException } from '@
 import OpenAI from 'openai';
 
 @Injectable()
-export class AiService {
+export class IaService {
   private openai: OpenAI;
 
   constructor() {
