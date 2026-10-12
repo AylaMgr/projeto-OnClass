@@ -112,6 +112,11 @@ export class Dashboard implements OnInit {
 
   toggleFormulario(): void {
     this.mostrarFormulario = !this.mostrarFormulario;
+
+    if (!this.mostrarFormulario) {
+    this.resultadoIa = null;
+    this.arquivoAtestado = null;
+  }
   }
 
  // Trigger disparado assim que o ficheiro é selecionado
@@ -250,7 +255,8 @@ export class Dashboard implements OnInit {
     this.carregandoIa = false;
     this.processandoEnvio = false;
     this.tentativasRecusadas = 0; // Zera contagem de tentativas
-    this.idSolicitacaoAtual = null; // Permite que o próximo arquivo gere uma nova linha
+    this.idSolicitacaoAtual = null;
+    this.mostrarFormulario = false;
 
     const inputElement = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (inputElement) {
