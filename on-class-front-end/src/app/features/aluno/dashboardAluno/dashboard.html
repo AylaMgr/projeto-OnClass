@@ -1,24 +1,22 @@
 <div class="dashboard-container">
-  <!-- COLUNA DA ESQUERDA -->
+  <!-- COLUNA DA ESQUERDA (Principal) -->
   <div class="main-content">
     <div class="banner-card">
       <h2>Falta médica ou imprevisto?</h2>
       <p>Envie justificativas e atestados digitalmente e notifique a escola em minutos.</p>
       <button class="btn-primary" (click)="toggleFormulario()">
-  <!-- Ícone quando o formulário está FECHADO (Nuvem com seta de envio) -->
-  <svg *ngIf="!mostrarFormulario" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
-    <path d="M12 12v9"></path>
-    <path d="m16 16-4-4-4 4"></path>
-  </svg>
-
-  <!-- Ícone quando o formulário está ABERTO (Seta para voltar) -->
-  <svg *ngIf="mostrarFormulario" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M19 12H5M12 19l-7-7 7-7"/>
-  </svg>
-
-  <span>{{ mostrarFormulario ? ' Voltar para Atestado' : ' Enviar Nova Justificativa' }}</span>
-</button>
+        <!-- Ícone quando o formulário está FECHADO -->
+        <svg *ngIf="!mostrarFormulario" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+          <path d="M12 12v9"></path>
+          <path d="m16 16-4-4-4 4"></path>
+        </svg>
+        <!-- Ícone quando o formulário está ABERTO -->
+        <svg *ngIf="mostrarFormulario" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m09 12H19M12 19l-7-7 7-7"></path>
+        </svg>
+        <span>{{ mostrarFormulario ? 'Voltar para Atestado' : 'Enviar Nova Justificativa' }}</span>
+      </button>
     </div>
 
     <div class="recentes-section">
@@ -44,17 +42,17 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Adicionado o (click) e cursor pointer -->
           <tr *ngFor="let item of notificacoesPaginadas" (click)="abrirDetalhes(item)" style="cursor: pointer;">
-            <td>{{ (item.administrador === 'IA' && item.tipo !== 'ATESTADO' && !item.temUpload) ? 'Secretaria' : (item.administrador || 'Secretaria') }}</td>
+            <td>{{ (item.administrador === 'IA' && item.tipo === 'ATESTADO' && !item.temUpload) ? 'Secretaria' : (item.administrador || 'Secretaria') }}</td>
             <td>{{ item.motivo }}</td>
-            <td>{{ item.dataEnvio | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ item.dataEnvio }}</td>
             <td>
               <span class="status-badge" [ngClass]="getStatusClass(item.status)">
                 {{ obterTextoStatus(item.status) }}
               </span>
             </td>
           </tr>
+
           <tr *ngIf="notificacoesFiltradas.length === 0">
             <td colspan="4" class="empty-row">Nenhuma notificação encontrada com o filtro selecionado.</td>
           </tr>
@@ -63,213 +61,188 @@
 
       <!-- Controle de Paginação -->
       <div class="paginacao" *ngIf="notificacoesFiltradas.length > 0">
-        <th><button class="btn primary" (click)="mudarPagina(paginaAtual - 1)" [disabled]="paginaAtual === 1">Anterior </button>
-        <th><span>Página {{ paginaAtual }} de {{ totalPaginas }}</span>
-        <th><button class="btn primary" (click)="mudarPagina(paginaAtual + 1)" [disabled]="paginaAtual === totalPaginas">Próxima</button>
+        <button class="btn-primary" (click)="mudarPagina(paginaAtual - 1)" [disabled]="paginaAtual === 1">Anterior</button>
+        <span>Página {{ paginaAtual }} de {{ totalPaginas }}</span>
+        <button class="btn-primary" (click)="mudarPagina(paginaAtual + 1)" [disabled]="paginaAtual === totalPaginas">Próxima</button>
       </div>
     </div>
   </div>
 
-  <!-- COLUNA DA DIREITA -->
-<div class="side-panel">
-
-  <!-- 1. FORMULÁRIO MANUAL (Exibido apenas se o botão de alternância manual for clicado) -->
-  <div *ngIf="mostrarFormulario" class="form-panel p-3 border rounded bg-white shadow-sm">
-    <app-criar-notificacao></app-criar-notificacao>
-  </div>
-
-<!-- 2. FLUXO AUTOMÁTICO DE UPLOAD E VALIDAÇÃO VIA IA -->
-<div *ngIf="!mostrarFormulario" class="upload-sidebar">
-
-  <!-- A) ÁREA DE UPLOAD (Exibida SOMENTE quando AINDA NÃO houver resultado da IA) -->
-  <div *ngIf="!resultadoIa" class="result-sidebar-panel">
-    <div 
-      class="upload-box" 
-      [class.loading]="carregandoIa" 
-      (click)="!carregandoIa && fileInput.click()">
-      
-      <input 
-        type="file" 
-        #fileInput 
-        (change)="onFileSelected($event)" 
-        accept="image/*,.pdf" 
-        [disabled]="carregandoIa" 
-        hidden 
-      />
-
-      <!-- Ícone Circular de Upload / Spinner -->
-      <div class="upload-icon-circle">
-        <svg *ngIf="!carregandoIa" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
-          <path d="M12 13v8"></path>
-          <path d="m8 17 4-4 4 4"></path>
-        </svg>
-        <span *ngIf="carregandoIa" class="spinner">⌛</span>
-      </div>
-
-      <!-- Título e Subtítulo Dinâmicos -->
-      <h4 class="upload-title">
-        {{ carregandoIa ? 'Validando Atestado via IA...' : 'Anexar Atestado (PDF/Imagem)' }}
-      </h4>
-      <p class="upload-subtitle">
-        {{ carregandoIa ? 'Aguarde a validação do documento' : 'Arraste ou clique para enviar' }}
-      </p>
-
-      <!-- Badge do Ficheiro Selecionado -->
-      <div *ngIf="arquivoAtestado" class="file-badge">
-        📄 {{ arquivoAtestado.name }}
-      </div>
+  <!-- COLUNA DA DIREITA (Painel de Upload/Formulário) -->
+  <div class="side-panel">
+    <!-- 1. FORMULÁRIO MANUAL -->
+    <div *ngIf="mostrarFormulario" class="form-panel p-3 border rounded bg-white shadow-sm">
+      <app-criar-notificacao></app-criar-notificacao>
     </div>
 
-    <!-- Texto Informativo de Tamanho Máximo -->
-    <span class="file-limit-text">Tamanho máximo de arquivo: 5MB</span>
+    <!-- 2. FLUXO AUTOMÁTICO DE UPLOAD VIA IA -->
+    <div *ngIf="!mostrarFormulario" class="upload-sidebar">
+      <!-- ÁREA DE UPLOAD (Sem Resultado de IA) -->
+      <div *ngIf="!resultadoIa" class="result-sidebar-panel">
+        <div class="upload-box" [class.loading]="carregandoIa" (click)="!carregandoIa && fileInput.click()">
+          <input
+            type="file"
+            #fileInput
+            (change)="onFileSelected($event)"
+            accept="image/*,.pdf"
+            [disabled]="carregandoIa"
+            hidden
+          />
 
-    <!-- Botão Enviar Inferior -->
-    <button class="btn-submit-upload" [disabled]="carregandoIa || !arquivoAtestado" (click)="!carregandoIa && fileInput.click()">
-      Enviar
+          <div class="upload-icon-circle">
+            <svg *ngIf="!carregandoIa" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+              <path d="M12 12v9"></path>
+              <path d="m16 16-4-4-4 4"></path>
+            </svg>
+            <span *ngIf="carregandoIa" class="spinner">⌛</span>
+          </div>
+
+          <h4 class="upload-title">{{ carregandoIa ? 'Validando Atestado via IA...' : 'Anexar Atestado (PDF/Imagem)' }}</h4>
+          <p class="upload-subtitle">{{ carregandoIa ? 'Aguarde a validação do documento' : 'Arraste ou clique para enviar' }}</p>
+
+          <div *ngIf="arquivoAtestado" class="file-badge">
+            📄 {{ arquivoAtestado.name }}
+          </div>
+
+          <span class="file-limit-text">Tamanho máximo de arquivo: 5MB</span>
+
+          <button class="btn-submit-upload" [disabled]="carregandoIa || !arquivoAtestado" (click)="!carregandoIa && fileInput.click()">
+            Enviar
+          </button>
+        </div>
+      </div>
+
+      <!-- PAINEL LATERAL DE RESULTADO DA IA -->
+      <div *ngIf="resultadoIa" class="result-sidebar-panel" [class.aprovado]="resultadoIa?.sugestaoAcao === 'APROVAR'">
+        <div class="validated-card-modal">
+          <div class="status-circle-icon" [class.recusado]="resultadoIa?.sugestaoAcao !== 'APROVAR'">
+            <svg *ngIf="resultadoIa?.sugestaoAcao === 'APROVAR'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <svg *ngIf="resultadoIa?.sugestaoAcao !== 'APROVAR'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+
+          <h3 class="validated-title">
+            {{ resultadoIa?.sugestaoAcao === 'APROVAR' ? 'Atestado Validado' : 'Atestado Recusado pela IA' }}
+          </h3>
+          <p class="validated-subtitle">
+            {{ resultadoIa?.sugestaoAcao === 'APROVAR' ? 'O documento cumpre as exigências' : 'O documento apresenta divergências' }}
+          </p>
+
+          <div class="data-summary-box">
+            <div class="data-row">
+              <span class="data-label">Data:</span>
+              <span class="data-value">{{ resultadoIa?.dataEmissao || '15/08/2026' }}</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Assinatura Médica:</span>
+              <span class="data-value">Verificada</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">CRM:</span>
+              <span class="data-value">12345-SP</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">Período:</span>
+              <span class="data-value">{{ resultadoIa?.datasAfastamento || '1 dia' }}</span>
+            </div>
+          </div>
+
+        <!-- Ações e Botões do Painel Lateral -->
+<div class="sidebar-actions-bottom">
+
+  <!-- SE APROVADO: Apenas opção de enviar outro documento -->
+  <button 
+    *ngIf="resultadoIa?.sugestaoAcao === 'APROVAR'" 
+    type="button" 
+    class="btn-submit-upload" 
+    (click)="reiniciarAnalise()"
+  >
+    🔄 Enviar Outro Documento
+  </button>
+
+  <!-- SE RECUSADO PELA IA: Dá imediatamente as duas opções -->
+  <ng-container *ngIf="resultadoIa?.sugestaoAcao !== 'APROVAR'">
+    <button 
+      type="button" 
+      class="btn-submit-upload btn-secretaria" 
+      (click)="enviarParaSecretariaPendente()"
+    >
+      📩 Enviar para Análise da Secretaria
     </button>
-  </div>
-
-  <!-- B) PAINEL LATERAL DE RESULTADO DA IA (Exibido SOMENTE quando HOUVER resultado da IA) -->
-  <div *ngIf="resultadoIa" class="result-sidebar-panel" [class.aprovado]="resultadoIa?.sugestaoAcao === 'APROVAR'">
     
-  <!-- Card Branco Flutuante (Centralizado) -->
-  <div class="validated-card-modal">
+    <button 
+      type="button" 
+      class="btn-secondary-link" 
+      (click)="reiniciarAnalise()"
+    >
+      🔄 Tentar Outro Arquivo
+    </button>
+  </ng-container>
 
-    <!-- Círculo com Ícone de Status (Verde para Aprovação / Vermelho para Recusa) -->
-    <div class="status-circle-icon" [class.recusado]="resultadoIa?.sugestaoAcao !== 'APROVAR'">
-      <svg *ngIf="resultadoIa?.sugestaoAcao === 'APROVAR'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
-      <svg *ngIf="resultadoIa?.sugestaoAcao !== 'APROVAR'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </div>
+</div>
 
-    <!-- Título e Subtítulo -->
-    <h3 class="validated-title">
-      {{ resultadoIa?.sugestaoAcao === 'APROVAR' ? 'Atestado Validado' : 'Atestado Recusado pela IA' }}
-    </h3>
-    <p class="validated-subtitle">
-      {{ resultadoIa?.sugestaoAcao === 'APROVAR' ? 'O documento cumpre as exigências' : 'O documento apresenta divergências' }}
-    </p>
-
-    <!-- Tabela / Bloco de Informações Extraídas -->
-    <div class="data-summary-box">
-      <div class="data-row">
-        <span class="data-label">Data:</span>
-        <span class="data-value">{{ resultadoIa?.dataEmissao || '15/08/2026' }}</span>
-      </div>
-      <div class="data-row">
-        <span class="data-label">Assinatura Médica:</span>
-        <span class="data-value">Verificada</span>
-      </div>
-      <div class="data-row">
-        <span class="data-label">CRM:</span>
-        <span class="data-value">12345-SP</span>
-      </div>
-      <div class="data-row">
-        <span class="data-label">Período:</span>
-        <span class="data-value">{{ resultadoIa?.datasAfastamento || '1 dia' }}</span>
-      </div>
-    </div>
-
-  </div>
-
-    <!-- Alerta em caso de Limite de Tentativas Atingido -->
-    <div *ngIf="tentativasRecusadas >= 3 && resultadoIa?.sugestaoAcao !== 'APROVAR'" class="alerta-bloqueio">
-      ⚠️ <strong>Limite de 3 tentativas atingido.</strong><br>
-      O envio automático foi blocked para este arquivo. Clique abaixo para enviar à análise manual da Secretaria.
-    </div>
-
-    <!-- Ações e Botões do Painel -->
-    <div class="sidebar-actions-bottom">
-      
-      <!-- Se Atingiu o Limite (3 tentativas) -->
-      <ng-container *ngIf="tentativasRecusadas >= 3 && resultadoIa?.sugestaoAcao !== 'APROVAR'">
-        <button type="button" class="btn-submit-upload btn-secretaria" (click)="enviarParaSecretariaPendente()">
-          📨 Enviar para Análise da Secretaria
-        </button>
-        <button type="button" class="btn-secondary-link" (click)="reiniciarAnalise()">
-          🔄 Tentar Outro Arquivo
-        </button>
-      </ng-container>
-
-      <!-- Se ainda possui tentativas (< 3) ou se foi Aprovado -->
-      <ng-container *ngIf="tentativasRecusadas < 3 || resultadoIa?.sugestaoAcao === 'APROVAR'">
-        <button type="button" class="btn-submit-upload" (click)="reiniciarAnalise()">
-          🔄 Enviar Outro Documento
-        </button>
-
-        <span *ngIf="resultadoIa?.sugestaoAcao !== 'APROVAR'" class="tentativas-badge">
-          Tentativa {{ tentativasRecusadas }}/3
-        </span>
-      </ng-container>
-
-    </div>
-  </div>
-<!-- MODAL DE DETALHES COM LINHA DO TEMPO DO ANDAMENTO -->
-<div class="modal-overlay" *ngIf="notificacaoSelecionada" (click)="fecharDetalhes()">
+<!-- ========================================================= -->
+<!-- MODAL DE DETALHES E TIMELINE (Raiz independente) -->
+<!-- ========================================================= -->
+<div *ngIf="notificacaoSelecionada" class="modal-overlay" (click)="fecharDetalhes()">
   <div class="modal-card" (click)="$event.stopPropagation()">
-    
-    <!-- Cabeçalho do Modal -->
     <div class="modal-header">
       <h2>Detalhes do Acompanhamento</h2>
       <button type="button" class="btn-fechar" (click)="fecharDetalhes()">&times;</button>
     </div>
 
-    <!-- Corpo do Modal -->
     <div class="modal-body">
-      <p><strong>Motivo:</strong> {{ notificacaoSelecionada?.motivo }}</p>
+      <p><strong>Motivo:</strong> {{ notificacaoSelecionada.motivo }}</p>
       <p>
         <strong>Período:</strong> 
-        {{ notificacaoSelecionada?.dataInicio | date: 'dd/MM/yyyy' }} 
-        <span *ngIf="notificacaoSelecionada?.dataFim"> até {{ notificacaoSelecionada?.dataFim | date: 'dd/MM/yyyy' }}</span>
+        {{ notificacaoSelecionada.dataInicio }}
+        <span *ngIf="notificacaoSelecionada.dataFim"> até {{ notificacaoSelecionada.dataFim }}</span>
       </p>
       <p>
-        <strong>Descrição:</strong> 
-        {{ notificacaoSelecionada?.descricao || 'Nenhuma observação informada.' }}
+        <strong>Descrição:</strong>
+        {{ notificacaoSelecionada.descricao || 'Nenhuma observação informada.' }}
       </p>
 
       <hr class="modal-divider" />
 
       <h3>Andamento do Pedido</h3>
-      
+
       <!-- Linha do Tempo (Timeline) -->
       <div class="timeline">
-        
         <!-- Passo 1: Solicitação Enviada -->
         <div class="step concluido">
           <span class="bullet">✓</span>
           <div>
             <strong>Solicitação Enviada</strong>
-            <p>{{ notificacaoSelecionada?.dataEnvio | date: 'dd/MM/yyyy HH:mm' }}</p>
+            <p>{{ notificacaoSelecionada.dataEnvio }}</p>
           </div>
         </div>
 
         <!-- Passo 2: Análise da Secretaria -->
-        <div class="step" [ngClass]="{'concluido': normalizarStatus(notificacaoSelecionada?.status) !== 'PENDENTE' && normalizarStatus(notificacaoSelecionada?.status) !== ''}">
+        <div class="step" [ngClass]="{'concluido': getStatusClass(notificacaoSelecionada.status) !== 'status-pendente'}">
           <span class="bullet">
-            {{ (normalizarStatus(notificacaoSelecionada?.status) === 'PENDENTE' || !notificacaoSelecionada?.status) ? '⌛' : '✓' }}
+            {{ getStatusClass(notificacaoSelecionada.status) !== 'status-pendente' ? '✓' : '2' }}
           </span>
           <div>
             <strong>Análise da Secretaria / Professor</strong>
-            <p>{{ (normalizarStatus(notificacaoSelecionada?.status) === 'PENDENTE' || !notificacaoSelecionada?.status) ? 'Aguardando avaliação' : 'Avaliado pela Secretaria' }}</p>
+            <p>{{ getStatusClass(notificacaoSelecionada.status) === 'status-pendente' ? 'Aguardando avaliação' : 'Avaliado pela Secretaria' }}</p>
           </div>
         </div>
 
         <!-- Passo 3: Status Atual -->
-        <div class="step" [ngClass]="getStatusClass(notificacaoSelecionada?.status)">
-          <span class="bullet">•</span>
+        <div class="step" [ngClass]="getStatusClass(notificacaoSelecionada.status)">
+          <span class="bullet">3</span>
           <div>
             <strong>Status Atual:</strong>
-            <p>{{ obterTextoStatus(notificacaoSelecionada?.status) }}</p>
+            <p>{{ obterTextoStatus(notificacaoSelecionada.status) }}</p>
           </div>
         </div>
-
       </div>
     </div>
-
   </div>
 </div>
