@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CriarNotificacao } from '../../criar-notificacao/criar-notificacao';
 import { NotificacoesService, Notificacao } from '../../notificacoes/services/notificacoes.service.js';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,6 +15,7 @@ import { NotificacoesService, Notificacao } from '../../notificacoes/services/no
 })
 export class Dashboard implements OnInit {
   // Controle de Interface e Formulários
+  termoPesquisa: string = '';
   mostrarFormulario: boolean = false;
   notificacoes: Notificacao[] = [];
   arquivoAtestado: File | null = null;
@@ -35,7 +37,8 @@ export class Dashboard implements OnInit {
 
   constructor(
     private readonly notificacoesService: NotificacoesService,
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
+    private readonly router:  Router
   ) {}
 
   ngOnInit(): void {
@@ -114,6 +117,13 @@ export class Dashboard implements OnInit {
 
   get notificacoesFiltradas(): Notificacao[] {
     return this.notificacoes.filter(item => {
+      // 1. filtro por texto de pesquisa
+      const termo = (this.termoPesquisa || '').trim().toLowerCase();
+      const motivoMatch = !termo || (item.motivo && item.motivo.toLowerCase().includes(termo));
+
+      if(!motivoMatch) return false;
+
+      // 2. filtro por abas de status
       if (this.filtroStatus === 'TODOS') return true;
 
       const itemStatus = this.normalizarStatus(item.status);
@@ -266,4 +276,8 @@ enviarAtestadoParaIa(nomeAlunoCadastrado?: string): void {
       inputElement.value = '';
     }
   }
+
+  voltar(): void {
+  this.router.navigate(['/login']);
+}
 }
