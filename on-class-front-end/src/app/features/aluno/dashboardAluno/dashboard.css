@@ -13,6 +13,67 @@
   line-height: 1;
   cursor: pointer;
 }
+/* ==========================================
+   BARRA SUPERIOR / CABEÇALHO (top-bar)
+   ========================================== */
+.top-bar {
+  background-color: #002b66;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* Botões de Ação (Voltar e Notificações) */
+.back-btn,
+.notification-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.back-btn:hover,
+.notification-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Wrapper do Campo de Pesquisa */
+.search-wrapper {
+  flex: 1;
+  max-width: 520px;
+  margin: 0 20px;
+}
+
+/* Input de Pesquisa */
+.search-wrapper input {
+  width: 100%;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  text-align: center;
+  outline: none;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.search-wrapper input::placeholder {
+  color: #9ca3af;
+}
+
+.search-wrapper input:focus {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+}
 
 /* Garante que o SVG não receba margens estranhas */
 .btn-primary svg {
