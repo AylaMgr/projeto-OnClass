@@ -179,22 +179,40 @@
     </div>
   </div>
 
-  <!-- 2. CASO: ATESTADO REJEITADO PELA IA -->
+ <!-- 2. CASO: ATESTADO REJEITADO PELA IA -->
   <div *ngIf="resultadoIa?.sugestaoAcao === 'REJEITAR'" class="card-resultado-ia rejeitado">
-    <div class="circle-alert">⚠</div>
+    <div class="circle-alert">✕</div>
 
     <h3 class="status-titulo-erro">Documento Não Validado</h3>
     <p class="status-subtitulo">Não foi possível validar as informações do atestado automaticamente.</p>
 
+    <!-- Resumo dos dados lidos pela IA -->
+    <div class="data-summary-box erro-box">
+      <div class="data-row">
+        <span class="data-label">Data / Período:</span>
+        <span class="data-value">{{ afastamentoExtraidoIa || 'Não identificado' }}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Assinatura Médica:</span>
+        <span class="data-value destaque-vermelho">Divergente / Não Verificada</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Nome Lido:</span>
+        <span class="data-value">{{ nomeExtraidoIa || 'Não identificado' }}</span>
+      </div>
+    </div>
+
+    <p class="mensagem-direta">
+      Você pode encaminhar a solicitação para avaliação manual da Secretaria ou tentar enviar outro documento.
+    </p>
+
     <!-- Botões de Ação para Rejeitado -->
-    <div class="acoes-rejeitado">
-      <button type="button" class="btn btn-warning" (click)="enviarParaSecretariaPendente()">
+    <div class="acoes-ia">
+      <button type="button" class="btn btn-danger btn-concluir" (click)="enviarParaSecretariaPendente()">
         Encaminhar para a Secretaria
       </button>
-      <button type="button" class="btn btn-secondary" (click)="reiniciarAnalise()">
-        Tentar Enviar Outro Documento
+      <button type="button" class="btn-secondary-link" (click)="reiniciarAnalise()">
+        <span class="icon-refresh">↺</span> Tentar Enviar Outro Documento
       </button>
     </div>
   </div>
-
-</div>
