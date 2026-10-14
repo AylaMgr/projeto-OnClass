@@ -41,6 +41,8 @@ export class NotificacoesService {
     // 1. Converte as datas antes de enviar ao Prisma
     const dataInicioValida = this.parseDate(dto.dataInicio);
     const dataFimValida = this.parseDate(dto.dataFim);
+    const nomeLido = dto.nomeEncontrado || dto.nomeLido || dto.nomeAluno || 'N/I';
+    const afastamentoLido = dto.datasAfastamento || dto.afastamento || dto.diasAfastamento || 'N/I';
 
     // 2. Persiste no banco com as variáveis 'inicio' e 'fim'
 const novaNotificacao = await this.prisma.notificacao.create({
@@ -49,7 +51,7 @@ const novaNotificacao = await this.prisma.notificacao.create({
     motivo: dto.motivo,
     dataInicio: dataInicioValida,
     dataFim: dataFimValida,
-    descricao: dto.descricao || dto.observacoes || '',
+    descricao: dto.descricao || dto.observacoes || `Análise automática realizada por IA. | Nome Lido: ${dto.nomeEncontrado || 'N/I'} | Afastamento: ${dto.datasAfastamento || 'N/I'}`,
     declaracaoVeracidade: dto.declaracaoVeracidade ?? true,
     
     // Se houver upload de ficheiro/atestado define como 'IA', caso contrário 'Secretaria'
@@ -114,29 +116,30 @@ async processarUploadAtestado(file: any, alunoId: string, nomeAluno: string) {
   const resultadoIa = await this.iaService.analisarDocumento(buffer, mimeType, nomeAluno);
 
   if (resultadoIa?.sugestaoAcao === 'APROVAR') {
-    const novaSolicitacao = await this.prisma.notificacao.create({
-      data: {
-        alunoId: Number(alunoId) || alunoId,
-        motivo: resultadoIa.motivo || 'Tratamento Médico (IA)',
-        status: 'SOLICITACAO_APROVADA_DEFINITIVAMENTE',
-        administrador: 'IA OnClass',
-        dataEnvio: new Date(),
-        dataInicio: this.parseDate(resultadoIa.dataInicio),
-        dataFim: this.parseDate(resultadoIa.dataFim),
-        descricao: resultadoIa.relatorioSecretaria || 'Validado por IA',
-        tipo: 'ATESTADO',
-        declaracaoVeracidade: true
-      } as any
-    });
+  // Extrai as informações capturadas pela IA
+  const nomeLido = resultadoIa.nomeEncontrado || 'N/I';
+  const afastamento = resultadoIa.datasAfastamento || 'N/I';
+  const relatorio = resultadoIa.relatorioSecretaria || 'Validado por IA';
 
-    return { resultadoIa, solicitacao: novaSolicitacao };
-  }
+  // Formata a descrição com os dados legíveis
+  const descricaoDetalhada = `${relatorio} | Nome Lido: ${nomeLido} | Afastamento: ${afastamento}`;
 
-  // Se recusado, retorna apenas a análise da IA sem criar registro no banco de dados
-  return {
-    resultadoIa,
-    solicitacao: null
-  };
+  const novaSolicitacao = await this.prisma.notificacao.create({
+    data: {
+      alunoId: Number(alunoId) || alunoId,
+      motivo: resultadoIa.motivo || 'Tratamento Médico (IA)',
+      status: 'SOLICITACAO_APROVADA_DEFINITIVAMENTE',
+      administrador: 'IA OnClass',
+      dataEnvio: new Date(),
+      dataInicio: this.parseDate(resultadoIa.dataInicio),
+      dataFim: this.parseDate(resultadoIa.dataFim),
+      descricao: descricaoDetalhada, // <--- Descrição atualizada aqui
+      tipo: 'ATESTADO',
+      declaracaoVeracidade: true
+    } as any
+  });
+
+  return { resultadoIa, solicitacao: novaSolicitacao };
 }
-  
+}
 }
