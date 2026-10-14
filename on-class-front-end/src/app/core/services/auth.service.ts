@@ -1,13 +1,15 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse } from '../models/auth-response.model';
 import { Role } from '../models/usuario.model';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:3000/auth'; 
   private readonly TOKEN_KEY = 'auth_token';
@@ -36,14 +38,19 @@ export class AuthService {
    * Guarda o JWT no localStorage
    */
   setToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(this.TOKEN_KEY, token);
+    }
   }
 
   /**
    * Obtém o token JWT guardado
    */
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem(this.TOKEN_KEY);
+    }
+    return null;
   }
 
   /**
