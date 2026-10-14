@@ -1,0 +1,200 @@
+<div class="dashboard-page">
+  <!-- Barra de Topo -->
+  <header class="top-bar">
+    <button class="back-btn" (click)="voltar()" title="Voltar ao Login">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+
+    <div class="search-wrapper">
+      <input 
+        type="text" 
+        [(ngModel)]="termoPesquisa" 
+        placeholder="Pesquisar por Nome Completo ou Nº de Matrícula" />
+    </div>
+
+    <button class="notification-btn" title="Notificações">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+      </svg>
+    </button>
+  </header>
+
+  <div class="dashboard-container">
+    <!-- COLUNA DA ESQUERDA (Principal) -->
+    <div class="main-content">
+      <div class="banner-card">
+        <h2>Falta médica ou imprevisto?</h2>
+        <p>Envie justificativas e atestados digitalmente e notifique a escola em minutos.</p>
+        <button class="btn-primary" (click)="toggleFormulario()">
+          <!-- Ícone quando formulário está FECHADO -->
+          <svg *ngIf="!mostrarFormulario" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <line x1="9" y1="15" x2="15" y2="15"></line>
+          </svg>
+          <!-- Ícone quando formulário está ABERTO -->
+          <svg *ngIf="mostrarFormulario" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          <span>{{ mostrarFormulario ? 'Voltar para Atestados' : 'Enviar Nova Justificativa' }}</span>
+        </button>
+      </div>
+
+      <div class="recentes-section">
+        <div class="section-header">
+          <h3>Acompanhamentos Recentemente</h3>
+          
+          <!-- Filtros de Status -->
+          <div class="filtros-status">
+            <button [class.ativo]="filtroStatus === 'TODOS'" (click)="filtrarPorStatus('TODOS')">Todos</button>
+            <button [class.ativo]="filtroStatus === 'PENDENTE'" (click)="filtrarPorStatus('PENDENTE')">Pendentes</button>
+            <button [class.ativo]="filtroStatus === 'APROVADO'" (click)="filtrarPorStatus('APROVADO')">Aprovados</button>
+            <button [class.ativo]="filtroStatus === 'REJEITADO'" (click)="filtrarPorStatus('REJEITADO')">Rejeitados</button>
+          </div>
+        </div>
+
+        <table class="tabela-notificacoes">
+          <thead>
+            <tr>
+              <th>Administrador</th>
+              <th>Motivo</th>
+              <th>Data de Envio</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of notificacoesPaginadas" (click)="abrirDetalhes(item)" style="cursor: pointer;">
+              <td>{{ (item.administrador === 'IA' && item.tipo === 'ATESTADO' && !item.temUpload) ? 'Secretaria' : (item.administrador || 'Secretaria') }}</td>
+              <td>{{ item.motivo }}</td>
+              <td>{{ item.dataEnvio }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                  {{ obterTextoStatus(item.status) }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="notificacoesFiltradas.length === 0">
+              <td colspan="4" class="empty-row">Nenhuma notificação encontrada com o filtro selecionado.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Controle de Paginação -->
+        <div class="paginacao" *ngIf="notificacoesFiltradas.length > 0">
+          <button class="btn-primary" (click)="mudarPagina(paginaAtual - 1)" [disabled]="paginaAtual === 1">Anterior</button>
+          <span>Página {{ paginaAtual }} de {{ totalPaginas }}</span>
+          <button class="btn-primary" (click)="mudarPagina(paginaAtual + 1)" [disabled]="paginaAtual === totalPaginas">Próxima</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUNA DA DIREITA (Painel de Upload/Formulário) -->
+    <div class="side-panel">
+      <!-- 1. FORMULÁRIO MANUAL -->
+      <div *ngIf="mostrarFormulario" class="form-panel p-3 border rounded bg-white shadow-sm">
+        <app-criar-notificacao></app-criar-notificacao>
+      </div>
+
+      <!-- 2. FLUXO AUTOMÁTICO DE UPLOAD VIA IA -->
+      <div *ngIf="!mostrarFormulario" class="upload-sidebar">
+        <!-- ÁREA DE UPLOAD (Sem Resultado de IA) -->
+        <div *ngIf="!resultadoIa" class="result-sidebar-panel">
+          <div class="upload-box" [class.loading]="carregandoIa" (click)="!carregandoIa && fileInput.click()">
+            <input 
+              type="file" 
+              #fileInput 
+              (change)="onFileSelected($event)" 
+              accept="image/*,.pdf" 
+              [disabled]="carregandoIa" 
+              hidden 
+            />
+
+            <div class="upload-icon-circle">
+              <svg *ngIf="!carregandoIa" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+              </svg>
+              <span *ngIf="carregandoIa" class="spinner">⏳</span>
+            </div>
+
+            <h4 class="upload-title">{{ carregandoIa ? 'Validando Atestado via IA...' : 'Anexar Atestado (PDF/Imagem)' }}</h4>
+            <p class="upload-subtitle">{{ carregandoIa ? 'Aguarde a validação do documento' : 'Arraste ou clique para enviar' }}</p>
+
+            <div *ngIf="arquivoAtestado" class="file-badge">
+              📄 {{ arquivoAtestado.name }}
+            </div>
+
+            <span class="file-limit-text">Tamanho máximo de arquivo: 5MB</span>
+
+            <button class="btn-submit-upload" [disabled]="carregandoIa || !arquivoAtestado" (click)="!carregandoIa && fileInput.click()">
+              Enviar
+            </button>
+          </div>
+        </div>
+
+       <!-- PAINEL LATERAL DE RESULTADO DA IA (BLOCO ÚNICO) -->
+<div *ngIf="resultadoIa" class="result-sidebar-panel">
+
+  <!-- 1. CASO: ATESTADO APROVADO PELA IA -->
+  <div *ngIf="resultadoIa?.sugestaoAcao === 'APROVAR'" class="card-resultado-ia sucesso">
+    <div class="circle-check">✓</div>
+
+    <h3 class="status-titulo">Atestado Validado</h3>
+    <p class="status-subtitulo">O documento cumpre as exigências do sistema.</p>
+
+    <!-- Resumo dos dados lidos pela IA -->
+    <div class="data-summary-box">
+      <div class="data-row">
+        <span class="data-label">Data / Período:</span>
+        <span class="data-value">{{ afastamentoExtraidoIa || '1 dia (Data do Atendimento)' }}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Assinatura Médica:</span>
+        <span class="data-value destaque-verde">Verificada</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Nome Lido:</span>
+        <span class="data-value">{{ nomeExtraidoIa }}</span>
+      </div>
+    </div>
+
+    <p class="mensagem-direta">
+      Aprovado automaticamente! O corpo docente será notificado.
+    </p>
+
+    <!-- Botões de Ação para Aprovado -->
+    <div class="acoes-ia">
+      <button type="button" class="btn btn-primary btn-concluir" (click)="confirmarEnvioAprovado()">
+        Concluir e Salvar Atestado
+      </button>
+      <button type="button" class="btn-secondary-link" (click)="reiniciarAnalise()">
+        <span class="icon-refresh">↺</span> Enviar Outro Documento
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. CASO: ATESTADO REJEITADO PELA IA -->
+  <div *ngIf="resultadoIa?.sugestaoAcao === 'REJEITAR'" class="card-resultado-ia rejeitado">
+    <div class="circle-alert">⚠</div>
+
+    <h3 class="status-titulo-erro">Documento Não Validado</h3>
+    <p class="status-subtitulo">Não foi possível validar as informações do atestado automaticamente.</p>
+
+    <!-- Botões de Ação para Rejeitado -->
+    <div class="acoes-rejeitado">
+      <button type="button" class="btn btn-warning" (click)="enviarParaSecretariaPendente()">
+        Encaminhar para a Secretaria
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="reiniciarAnalise()">
+        Tentar Enviar Outro Documento
+      </button>
+    </div>
+  </div>
+
+</div>
