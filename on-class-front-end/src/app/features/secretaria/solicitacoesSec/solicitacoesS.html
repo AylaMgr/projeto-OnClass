@@ -1,27 +1,35 @@
-<div class="page-container">
-
-  <!-- Header Superior Azul Escuro -->
-  <header class="top-bar">
-    <div class="top-bar-left">
-      <button type="button" class="btn-back" (click)="voltarDashboard()" aria-label="Voltar">
-        &#8592;
+<div class="dashboard-page">
+  <!-- Barra de Topo -->
+   <header class="top-bar">
+    <!-- NOVO CONTAINER: Mantém a seta e o texto juntos no canto esquerdo -->
+    <div class="header-left">
+      <button class="back-btn" (click)="voltarDashboard()" title="Voltar ao Login">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
       </button>
-      <div class="user-info">
-        <h1>Análise de Solicitação</h1>
-        <span>Matrícula: {{ solicitacao.matricula }}</span>
+
+      <div class="header-info">
+        <h1>Olá, Gestor</h1>
+        <small>Portal da Secretaria</small>
       </div>
     </div>
 
-    <div class="top-bar-center">
-      <div class="search-input-wrapper">
-        <input type="text" placeholder="Nº de Matrícula" [(ngModel)]="termoMatricula" />
-      </div>
+    <!-- Busca Centralizada -->
+    <div class="search-wrapper">
+      <input
+        type="text"
+        [(ngModel)]="termoMatricula"
+        placeholder="Pesquisar por Nome Completo ou Nº de Matrícula" />
     </div>
 
-    <div class="top-bar-right">
-      <button type="button" class="icon-btn" aria-label="Notificações">&#128276;</button>
-      <div class="profile-avatar">&#128100;</div>
-    </div>
+    <!-- Notificações à Direita -->
+    <button class="notification-btn" title="Notificações">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+      </svg>
+    </button>
   </header>
 
   <main class="content-body">
