@@ -10,14 +10,93 @@
 }
 
 /* --- Top Bar --- */
+
 .top-bar {
-  background-color: #031c3d;
-  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: #002b66;
   padding: 12px 32px;
-  height: 64px;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.back-btn,
+.notification-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: opacity 0.2s ease;
+}
+
+.back-btn:hover,
+.notification-btn:hover {
+  opacity: 0.8;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.search-wrapper {
+  flex: 1;
+  max-width: 520px;
+  margin: 0 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color: #ffffff;
+  color: #1e293b;
+  font-size: 0.85rem;
+  text-align: center;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.search-wrapper input::placeholder {
+  color: #64748b;
+}
+
+/* Agrupamento do Botão + Mensagem de Boas-vindas */
+.header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* Container do Texto */
+.header-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  line-height: 1.2 !important;
+}
+
+/* Título "Olá, Gestor" em Bolder (Bold de alta intensidade) */
+.header-info h1 {
+  margin: 0 !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important; /* Formato bolder */
+  color: #ffffff !important;
+  letter-spacing: -0.2px;
+}
+
+/* Legenda "Portal dos Docentes" em Medium / Semi-bold */
+.header-info small {
+  margin: 0 !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important; /* Formato medium / semi-bolder */
+  color: rgba(255, 255, 255, 0.8) !important; /* Branco ligeiramente suavizado para hierarquia visual */
 }
 
 .top-bar-left {

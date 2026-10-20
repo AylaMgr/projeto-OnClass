@@ -10,22 +10,23 @@
   background-color: #f3f5f9;
 }
 
-.dashboard-page {
-  width: 100%;
-  min-height: 100vh;
-  background-color: #f3f5f9;
-}
-
 /* ==========================================================================
    BARRA DE TOPO (.top-bar)
    ========================================================================== */
+.dashboard-page {
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+}
+
 .top-bar {
-  background-color: #0b1437;
-  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  background-color: #002b66;
+  padding: 12px 32px;
+  height: 60px;
   box-sizing: border-box;
 }
 
@@ -40,11 +41,12 @@
   justify-content: center;
   padding: 8px;
   border-radius: 50%;
-  transition: background-color 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .back-btn:hover,
 .notification-btn:hover {
+  opacity: 0.8;
   background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -52,39 +54,69 @@
   flex: 1;
   max-width: 520px;
   margin: 0 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .search-wrapper input {
   width: 100%;
-  background-color: #ffffff;
-  border: none;
-  border-radius: 20px;
   padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color: #ffffff;
+  color: #1e293b;
   font-size: 0.85rem;
   text-align: center;
   outline: none;
-  color: #111827;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .search-wrapper input::placeholder {
-  color: #9ca3af;
+  color: #64748b;
 }
 
-/* ==========================================================================
-   CONTEÚDO PRINCIPAL (.dashboard-container)
-   ========================================================================== */
-.dashboard-container {
-  padding: 28px 36px;
-  max-width: 1400px;
-  margin: 0 auto;
-  box-sizing: border-box;
+/* Agrupamento do Botão + Mensagem de Boas-vindas */
+.header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* Container do Texto */
+.header-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  line-height: 1.2 !important;
+}
+
+/* Título "Olá, Professor" em Bolder (Bold de alta intensidade) */
+.header-info h1 {
+  margin: 0 !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important; /* Formato bolder */
+  color: #ffffff !important;
+  letter-spacing: -0.2px;
+}
+
+/* Legenda "Portal dos Docentes" em Medium / Semi-bold */
+.header-info small {
+  margin: 0 !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important; /* Formato medium / semi-bolder */
+  color: rgba(255, 255, 255, 0.8) !important; /* Branco ligeiramente suavizado para hierarquia visual */
 }
 
 /* ==========================================================================
    1. CARDS DE INDICADORES / KPIS (.kpi-grid)
    ========================================================================== */
-.kpi-grid {
+.dashboard-container {
+  padding: 24px 32px !important; /* Espaçamento interno topo/baixo (24px) e laterais (32px) */
+  box-sizing: border-box !important;
+}
+
+   .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
@@ -323,7 +355,46 @@
 /* ==========================================================================
    3. TABELA DE ANÁLISES MANUAIS (ESTRUTURA DO CARD)
    ========================================================================== */
-.tables-grid,
+/* Cabeçalho Azul Escuro para a mini-table (Secretaria) */
+.mini-table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+.mini-table thead tr {
+  background-color: #002b66 !important;
+}
+
+.mini-table th {
+  background-color: #002b66 !important;
+  color: #ffffff !important;
+  padding: 12px 16px !important;
+  font-weight: 600 !important;
+  font-size: 0.88rem !important;
+  border: none !important;
+  text-align: left !important;
+}
+
+/* Bordas Arredondadas nos Cantos do Cabeçalho */
+.mini-table th:first-child {
+  border-top-left-radius: 8px !important;
+  border-bottom-left-radius: 8px !important;
+}
+
+.mini-table th:last-child {
+  border-top-right-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+}
+
+.mini-table td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  font-size: 0.88rem !important;
+  color: #1e293b !important;
+}
+
+   .tables-grid,
 .tables-grid.single-card {
   display: block;
   width: 100%;
@@ -364,33 +435,6 @@
 .link-ver-todos:hover {
   color: #1d4ed8;
   text-decoration: underline;
-}
-
-/* Tabela */
-.mini-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.mini-table th {
-  padding: 12px 16px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #8c98a9;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.mini-table td {
-  padding: 16px;
-  font-size: 0.85rem;
-  color: #374151;
-  border-bottom: 1px solid #f8fafc;
-  vertical-align: middle;
-}
-
-.mini-table tbody tr:last-child td {
-  border-bottom: none;
 }
 
 .student-name {
