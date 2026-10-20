@@ -1,34 +1,35 @@
 <div class="dashboard-prof-container">
   <!-- Topo escuro conforme imagem -->
   <header class="top-bar">
-    <div class="top-bar-left">
-      <button class="btn-back" type="button" (click)="voltarLogin()" title="Voltar">
-        ←
-      </button>
-      <div class="header-info">
-        <h1>Olá, Professor</h1>
-        <small>Portal dos Docentes</small>
-      </div>
-    </div>
+  <!-- NOVO CONTAINER: Agrupa o botão e o texto no mesmo bloco esquerdo -->
+  <div class="header-left">
+    <button class="back-btn" (click)="voltarLogin()" title="Voltar ao Login">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
 
-    <div class="search-box">
-      <input 
-        type="text" 
-        placeholder="Nº de Matrícula" 
-        [(ngModel)]="termoMatricula" 
-      />
+    <div class="header-info">
+      <h1>Olá, Professor</h1>
+      <small>Portal dos Docentes</small>
     </div>
+  </div>
 
-    <div class="top-bar-actions">
-      <button class="icon-btn" title="Notificações">
-        <span class="bell-icon">🔔</span>
-      </button>
-      <div class="user-avatar">
-        👤
-      </div>
-    </div>
-  </header>
+  <div class="search-wrapper">
+    <input
+      type="text"
+      [(ngModel)]="termoMatricula"
+      placeholder="Pesquisar por Nome Completo ou Nº de Matrícula" />
+  </div>
 
+  <button class="notification-btn" title="Notificações">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+    </svg>
+  </button>
+</header>
+  
   <!-- Conteúdo Principal -->
   <main class="main-content">
     <!-- Barra de Filtros (Turno, Ordem, Turma) -->
