@@ -171,7 +171,6 @@ obterTextoStatus(statusRaw: string): string {
       this.enviarAtestadoParaIa();
     }
   }
-
  enviarAtestadoParaIa(nomeAlunoCadastrado?: string): void {
   if (!this.arquivoAtestado || this.processandoEnvio) return;
 
