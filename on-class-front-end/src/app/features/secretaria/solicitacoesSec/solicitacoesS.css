@@ -34,6 +34,21 @@
   border-radius: 50%;
   transition: opacity 0.2s ease;
 }
+.btn-voltar {
+   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #0084ff;
+  color: #ffffff;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+   transform: translateY(8px);
+}
 
 .back-btn:hover,
 .notification-btn:hover {
@@ -551,7 +566,7 @@
 .status-icon-circle.green-circle {
   width: 56px;
   height: 56px;
-  background-color: #10b981;
+  background-color: #06b323;
   color: #ffffff;
   border-radius: 50%;
   display: flex;
@@ -655,7 +670,7 @@
 .btn-download-comprovante {
   width: 100%;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 15px;
   border: none;
   font-weight: 700;
   font-size: 0.85rem;
@@ -664,7 +679,7 @@
 }
 
 .btn-download-comprovante.green-btn {
-  background-color: #10b981;
+  background-color: #06b323;
 }
 
 .btn-download-comprovante.red-btn {
