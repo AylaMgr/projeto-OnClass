@@ -17,6 +17,7 @@ export interface Notificacao {
   tipo: string;
   motivo: string;
   dataInicio: string;
+  horarioEnvio: number;
   dataFim: string;
   descricao: string;
   declaracaoVeracidade: boolean;
