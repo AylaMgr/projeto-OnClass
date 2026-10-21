@@ -254,6 +254,7 @@ salvarOuAtualizarJustificativa(statusDefinido: string): void {
     motivo: resIa.motivo || 'Tratamento Médico (IA)',
     dataEnvio: new Date().toLocaleDateString('pt-BR'),
     dataInicio: new Date().toISOString(),
+    horarioEnvio: new Date().toLocaleTimeString ('pt-BR'),
     dataFim: new Date().toISOString(),
     status: statusFinal,
     statusAprovado: eAprovado,

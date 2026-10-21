@@ -75,6 +75,7 @@
               <th>Administrador</th>
               <th>Motivo</th>
               <th>Data de Envio</th>
+              <th>Horário</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -82,7 +83,8 @@
             <tr *ngFor="let item of notificacoesPaginadas" (click)="abrirDetalhes(item)" style="cursor: pointer;">
               <td>{{ (item.administrador === 'IA' && item.tipo === 'ATESTADO' && !item.temUpload) ? 'Secretaria' : (item.administrador || 'Secretaria') }}</td>
               <td>{{ item.motivo }}</td>
-              <td>{{ item.dataEnvio }}</td>
+              <td>{{ item.dataEnvio | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ item.dataEnvio | date: 'HH:mm' }}</td>
               <td>
                 <span class="status-badge" [ngClass]="getStatusClass(item.status)">
                   {{ obterTextoStatus(item.status) }}
