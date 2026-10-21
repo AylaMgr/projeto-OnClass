@@ -11,6 +11,7 @@ export interface ItemTabelaResumo {
   turma: string;
   motivo: string;
   dataEnvio: string;
+  horarioEnvio: string;
   status: 'Pendente' | 'Aprovada' | 'Rejeitada' | string;
   analisadoPor?: string;
 }
@@ -135,6 +136,7 @@ export class Dashboards implements OnInit, OnDestroy {
       turma: n.turma || 'Ensino Médio',
       motivo: n.motivo || 'Sem Motivo',
       dataEnvio: n.dataEnvio ? new Date(n.dataEnvio).toLocaleDateString('pt-BR') : 'Hoje',
+      horarioEnvio: n.dataEnvio ? new Date(n.dataEnvio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--',
       status: n.status || 'Pendente',
       administrador: analiseResponsavel
     };
