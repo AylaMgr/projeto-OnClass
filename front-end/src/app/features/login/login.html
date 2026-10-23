@@ -86,6 +86,12 @@
           type="text" 
           formControlName="emailOuUsuario"
           placeholder="exemplo@gmail.com" />
+          <!-- Feedback enquanto digita o e-mail -->
+  <div class="field-error" *ngIf="loginForm.get('emailOuUsuario')?.invalid && loginForm.get('emailOuUsuario')?.touched">
+    <small *ngIf="loginForm.get('emailOuUsuario')?.errors?.['email']">
+      Por favor, insira um e-mail válido (ex: nome@dominio.com).
+    </small>
+  </div>
       </div>
 
       <div class="input-field">
@@ -113,11 +119,20 @@
             </svg>
           </button>
         </div>
-      </div>
+        <!-- Feedback enquanto digita a senha -->
+  <div class="field-error" *ngIf="loginForm.get('senha')?.invalid && loginForm.get('senha')?.touched">
+    <small *ngIf="loginForm.get('senha')?.errors?.['minlength']">
+      A senha deve ter no mínimo 6 caracteres.
+    </small>
+  </div>
+</div>
+      <div class="error-banner" *ngIf="mensagemErro">
+  {{ mensagemErro }}
+</div>
 
-      <button type="submit" class="btn-submit" [disabled]="loginForm.invalid">
-        ENTRAR
-      </button>
+     <button type="submit" class="btn-submit">
+  ENTRAR
+</button>
 
       <div class="forgot-password">
         <span>esqueceu a senha? </span>
