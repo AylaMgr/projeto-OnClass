@@ -1,0 +1,658 @@
+/* ==========================================================================
+   1. ESTRUTURA GERAL DA PÁGINA & CABEÇALHO (TOP-BAR)
+   ========================================================================== */
+.dashboard-page {
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #002b66;
+  padding: 12px 32px;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.back-btn,
+.notification-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: opacity 0.2s ease;
+}
+
+.back-btn:hover,
+.notification-btn:hover {
+  opacity: 0.8;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.search-wrapper {
+  flex: 1;
+  max-width: 520px;
+  margin: 0 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color: #ffffff;
+  color: #1e293b;
+  font-size: 0.85rem;
+  text-align: center;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.search-wrapper input::placeholder {
+  color: #64748b;
+}
+
+/* Agrupamento do Botão + Mensagem de Boas-vindas */
+.header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* Container do Texto */
+.header-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  line-height: 1.2 !important;
+}
+
+/* Título "Olá, Professor" em Bolder (Bold de alta intensidade) */
+.header-info h1 {
+  margin: 0 !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important; /* Formato bolder */
+  color: #ffffff !important;
+  letter-spacing: -0.2px;
+}
+
+/* Legenda "Portal dos Docentes" em Medium / Semi-bold */
+.header-info small {
+  margin: 0 !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important; /* Formato medium / semi-bolder */
+  color: rgba(255, 255, 255, 0.8) !important; /* Branco ligeiramente suavizado para hierarquia visual */
+}
+
+/* ==========================================================================
+   2. LAYOUT PRINCIPAL (EXPANDIDO PARA TELA CHEIA)
+   ========================================================================== */
+.dashboard-container {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 32px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 32px 40px;
+  box-sizing: border-box;
+  align-items: start;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ==========================================================================
+   3. BANNER SUPERIOR (CRIAR JUSTIFICATIVA)
+   ========================================================================== */
+.banner-card {
+  background-color: #002b66;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 12px rgba(0, 43, 102, 0.12);
+}
+
+.banner-card h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.banner-card p {
+  margin: 0 0 20px 0;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #0f172a;
+  outline: 2px solid #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0052cc;
+}
+
+.btn-primary svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   4. ACOMPANHAMENTOS RECENTES & TABELA
+   ========================================================================== */
+.recentes-section {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.filtros-status {
+  display: flex;
+  gap: 8px;
+}
+
+.filtros-status button {
+  background-color: #eef2f7;
+  border: 1px solid #dcdfe6;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  color: #555555;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filtros-status button.ativo {
+  background-color: #0066ff;
+  color: #ffffff;
+  border-color: #0066ff;
+  font-weight: bold;
+}
+
+/* Estilização da Tabela */
+.tabela-notificacoes {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabela-notificacoes thead tr {
+  background-color: #002b66;
+  color: #ffffff;
+}
+
+.tabela-notificacoes th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border: none;
+}
+
+.tabela-notificacoes td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.88rem;
+  color: #002b66;
+}
+
+.empty-row {
+  text-align: center;
+  color: #888888;
+  padding: 32px 16px !important;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.status-pendente,
+.status-badge.pendente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-aprovado,
+.status-badge.aprovado {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-rejeitado,
+.status-badge.rejeitado {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Paginação */
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* ==========================================================================
+   5. PAINEL LATERAL DE UPLOAD (DASHBOARD & IA)
+   ========================================================================== */
+.upload-sidebar,
+.result-sidebar-panel {
+  background-color: #eef2f7;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 520px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.upload-box {
+  background-color: #ffffff;
+  border: 2px dashed #3b82f6;
+  border-radius: 16px;
+  padding: 42px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.upload-box:hover {
+  background-color: #f8fafc;
+  border-color: #1d4ed8;
+}
+
+.upload-icon-circle {
+  width: 56px;
+  height: 56px;
+  background-color: #eff6ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.upload-title {
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.upload-subtitle {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.file-badge {
+  margin-top: 14px;
+  padding: 6px 12px;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.file-limit-text {
+  margin-top: 16px;
+  font-size: 0.75rem;
+  color: #64748b;
+  text-align: center;
+}
+
+.btn-submit-upload {
+  width: 100%;
+  background-color: #0066ff;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 20px;
+}
+
+.btn-submit-upload:hover {
+  background-color: #0052cc;
+}
+
+.btn-submit-upload:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   6. CARDS DE RESULTADO DA IA (APROVADO E REJEITADO)
+   ========================================================================== */
+.card-resultado-ia {
+  background-color: #ffffff !important;
+  border-radius: 20px !important;
+  padding: 28px 20px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+}
+
+.circle-check,
+.circle-alert {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 auto 12px auto;
+}
+
+.circle-check {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.circle-alert {
+  background-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+}
+
+.status-titulo {
+  color: #065f46;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+}
+
+.status-titulo-erro {
+  color: #991b1b;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.status-subtitulo {
+  color: #64748b;
+  font-size: 0.8rem;
+  margin: 0 0 24px 0;
+  font-weight: 500;
+}
+
+.data-summary-box {
+  background-color: #f1f5f9 !important;
+  border-radius: 14px !important;
+  padding: 16px 20px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important; /* Espaço uniforme entre as linhas */
+  text-align: left !important;
+  margin: 16px 0 !important;
+}
+
+.data-summary-box.erro-box {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.data-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important; /* Alinha os textos no topo caso quebrem linha */
+  gap: 12px !important;
+  font-size: 0.85rem !important;
+  width: 100% !important;
+}
+
+.data-label {
+ color: #64748b !important;
+  font-weight: 500 !important;
+  min-width: 110px !important; /* LARGURA FIXA: Evita empurrar o valor para os lados */
+  flex-shrink: 0 !important;
+}
+
+.data-value {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  text-align: right !important; /* Força o alinhamento na extrema direita */
+  word-break: break-word !important;
+  flex: 1 !important;
+}
+
+.destaque-verde {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.destaque-vermelho {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.mensagem-direta {
+  font-size: 0.85rem;
+  color: #334155;
+  margin: 16px 0;
+  line-height: 1.4;
+}
+
+.acoes-ia {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.btn-secondary-link {
+  width: 100%;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-link:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ==========================================================================
+   7. MODAL & TIMELINE (SE HOUVER DETALHES DE HISTÓRICO)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(11, 20, 55, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-card {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 520px;
+  padding: 28px 32px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  padding-left: 8px;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  position: relative;
+}
+
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 28px;
+  width: 2px;
+  height: calc(100% + 4px);
+  background-color: #cbd5e1;
+}
+
+.step.concluido:not(:last-child)::after {
+  background-color: #2563eb;
+}
+
+.step .bullet {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.step.concluido .bullet {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.spinner {
+  display: inline-block;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
