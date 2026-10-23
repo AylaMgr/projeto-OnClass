@@ -31,8 +31,7 @@ export class LoginComponent implements OnInit {
       senha: ['', [Validators.required, Validators.minLength(6)]]
     });
 
-    this.mensagemErro = '';
-  }
+    this.mensagemErro = '';}
 
   selecionarPerfil(perfil: PerfilUsuario, event?: Event): void {
     if (event) {
@@ -40,48 +39,64 @@ export class LoginComponent implements OnInit {
     }
     this.perfilSelecionado = perfil;
     console.log('Perfil selecionado trocado para:', this.perfilSelecionado);
+    this.mensagemErro = '';
   }
 
   alternarVisibilidadeSenha(): void {
     this.ocultarSenha = !this.ocultarSenha;
   }
 
-  onSubmit(): void {
-    this.mensagemErro = '';
+ onSubmit(): void {
+  console.log('>>> Botão ENTRAR clicado!');
+  this.mensagemErro = '';
 
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
 
-    const { emailOuUsuario, senha } = this.loginForm.value;
-
-    const payload = {
-      email: String(emailOuUsuario).trim(),
-      pass: String(senha).trim(),
-      role: this.perfilSelecionado,
-    };
-
-    console.log('--- ENVIANDO REQUISIÇÃO DE LOGIN ---');
-    console.log('Dados enviados:', payload);
-
-    this.authService.login(payload).subscribe({
-      next: (res) => {
-        const userRole = res.user?.role || this.authService.getUserRole();
-        console.log('Login efetuado com sucesso! Perfil retornado:', userRole);
-
-        if (userRole === 'PROFESSOR') {
-          this.router.navigate(['/professor/dashboard']);
-        } else if (userRole === 'SECRETARIA') {
-          this.router.navigate(['/secretaria/dashboard']);
-        } else if (userRole === 'ALUNO' || userRole === 'ALUNO_RESPONSAVEL') {
-          this.router.navigate(['/aluno/dashboard']);
-        }
-      },
-      error: (err) => {
-        console.error('Erro na autenticação:', err);
-        this.mensagemErro = err.error?.message || 'Credenciais inválidas. Por favor, tente novamente.';
-      },
-    });
+  // 1. Validação de formulário inválido
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    this.mensagemErro = 'Preencha todos os campos corretamente.';
+    return;
   }
+
+  const emailOuUsuario = String(this.loginForm.get('emailOuUsuario')?.value || '');
+  const senha = String(this.loginForm.get('senha')?.value || '');
+
+  // 2. Validação: e-mail de secretaria usado com perfil de aluno
+  const perfilStr = String(this.perfilSelecionado);
+  if ((perfilStr === 'ALUNO' || perfilStr === 'ALUNO_RESPONSAVEL') && emailOuUsuario.toLowerCase().includes('secretaria')) {
+    this.mensagemErro = 'O perfil selecionado não corresponde a este e-mail.';
+    return;
+  }
+
+  const payload = {
+    email: emailOuUsuario.trim(),
+    pass: senha.trim(),
+    role: this.perfilSelecionado,
+  };
+
+  console.log('--- ENVIANDO REQUISIÇÃO DE LOGIN ---');
+  console.log('Dados enviados:', payload);
+
+  this.authService.login(payload).subscribe({
+    next: (res) => {
+      const userRole = String(res.user?.role || this.authService.getUserRole() || '');
+      console.log('Login efetuado com sucesso! Perfil retornado:', userRole);
+
+      if (userRole === 'PROFESSOR') {
+        this.router.navigate(['/professor/dashboard']);
+      } else if (userRole === 'SECRETARIA') {
+        this.router.navigate(['/secretaria/dashboard']);
+      } else if (userRole === 'ALUNO' || userRole === 'ALUNO_RESPONSAVEL') {
+        this.router.navigate(['/aluno/dashboard']);
+      } else {
+        this.router.navigate(['/aluno/dashboard']);
+      }
+    },
+    error: (err) => {
+      console.error('Erro na autenticação:', err);
+      const msg = err.error?.message;
+      this.mensagemErro = Array.isArray(msg) ? msg[0] : (msg || 'Credenciais inválidas. Por favor, tente novamente.');
+    },
+  });
+}
 }

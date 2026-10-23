@@ -238,13 +238,14 @@
   background-color: #3b62f5;
 }
 
-/* Botão em Estado Invalido/Cinza */
+/* Botão em Estado Invalido/Cinza 
 .btn-submit:disabled {
   background-color: #cccccc;
   color: #888888;
   cursor: not-allowed;
   box-shadow: none;
 }
+  */
 
 .forgot-password {
   text-align: center;
@@ -257,4 +258,39 @@
   color: #2b52dd;
   text-decoration: underline;
   font-weight: 600;
+}
+
+.mensagem-erro {
+  background-color: #fde8e8;
+  color: #e53e3e;
+  border: 1px solid #feb2b2;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.error-banner {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.field-error {
+  margin-top: 4px;
+}
+
+.field-error small {
+  color: #dc2626;
+  font-size: 12px;
+  display: block;
+  font-weight: 500;
 }
