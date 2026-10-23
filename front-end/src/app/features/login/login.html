@@ -1,0 +1,128 @@
+<div class="login-wrapper">
+  <div class="login-card">
+
+
+    <!-- Logotipo com ícone sobreposto -->
+    <div class="logo-container">
+  <!-- Ícone SVG exato da logo -->
+  <svg width="150" height="150" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+  <!-- Círculo Azul Claro Superior -->
+  <path d="M100 15C146.944 15 185 53.0558 185 100C185 146.944 146.944 185 100 185C53.0558 185 15 146.944 15 100C15 53.0558 53.0558 15 100 15Z" fill="#0072FF"/>
+  
+  <!-- Sombra/Forma Azul Escura Inferior -->
+  <path d="M45 55C35 70 30 90 35 115C42 150 75 178 115 175C145 172 170 150 178 122C165 160 128 185 85 180C42 175 15 138 20 95C22 78 31 62 45 55Z" fill="#03256C"/>
+  <path d="M42 60C30 80 28 105 38 130C52 165 92 182 128 170C100 182 65 172 45 148C25 124 22 90 42 60Z" fill="#011640"/>
+
+  <!-- Grupo do Documento Centralizado -->
+  <g transform="translate(8, 0)">
+    <!-- Folha de Papel Branca -->
+    <path d="M60 40H115L145 70V140C145 151.046 136.046 160 125 160H60C48.9543 160 40 151.046 40 140V60C40 48.9543 48.9543 40 60 40Z" fill="white"/>
+    
+    <!-- Dobra Verde da Folha -->
+    <path d="M115 40V70H145L115 40Z" fill="#00C853"/>
+    
+    <!-- Linhas do Documento -->
+    <rect x="52" y="76" width="40" height="6" rx="3" fill="#03256C"/>
+    <rect x="52" y="94" width="62" height="6" rx="3" fill="#03256C"/>
+    <rect x="52" y="112" width="40" height="6" rx="3" fill="#03256C"/>
+    
+    <!-- Checkmark Verde -->
+    <path d="M82 128L93 139L123 109" stroke="#00C853" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
+
+  <!-- Nome OnClass Bi-cor -->
+  <h1 class="brand-title">
+    <span class="text-dark">On</span><span class="text-light">Class</span>
+  </h1>
+
+  <!-- Subtítulo com os traços verdes nas laterais -->
+  <div class="brand-subtitle-wrapper">
+    <span class="green-dash"></span>
+    <p class="brand-subtitle">
+      A SOLUÇÃO DIGITAL PARA<br>JUSTIFICATIVAS ESCOLARES
+    </p>
+    <span class="green-dash"></span>
+  </div>
+</div>
+
+
+
+    <p class="section-title">ENTRE COM O SEU PERFIL PROESC</p>
+
+    <!-- Seleção de Perfis -->
+    <div class="profile-group">
+      <button 
+        type="button" 
+        class="profile-card"
+        [class.active]="perfilSelecionado === 'PROFESSOR'"
+        (click)="selecionarPerfil('PROFESSOR')">
+        Professor
+      </button>
+
+      <button 
+        type="button" 
+        class="profile-card"
+        [class.active]="perfilSelecionado === 'ALUNO_RESPONSAVEL'"
+        (click)="selecionarPerfil('ALUNO_RESPONSAVEL')">
+        Aluno<br>ou<br>Responsavel
+      </button>
+
+      <button 
+        type="button" 
+        class="profile-card"
+        [class.active]="perfilSelecionado === 'SECRETARIA'"
+        (click)="selecionarPerfil('SECRETARIA')">
+        Secretaria
+      </button>
+    </div>
+
+    <!-- Formulário -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="input-field">
+        <label for="email">E-mail ou Usuário</label>
+        <input 
+          id="email" 
+          type="text" 
+          formControlName="emailOuUsuario"
+          placeholder="exemplo@gmail.com" />
+      </div>
+
+      <div class="input-field">
+        <label for="senha">Senha</label>
+        <div class="password-box" [class.focused]="senhaFocada">
+          <input 
+            id="senha" 
+            [type]="ocultarSenha ? 'password' : 'text'" 
+            formControlName="senha"
+            placeholder="digite sua senha"
+            (focus)="senhaFocada = true"
+            (blur)="senhaFocada = false" />
+          <button 
+            type="button" 
+            class="eye-btn" 
+            (click)="alternarVisibilidadeSenha()"
+            tabindex="-1">
+            <svg *ngIf="ocultarSenha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+            <svg *ngIf="!ocultarSenha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="loginForm.invalid">
+        ENTRAR
+      </button>
+
+      <div class="forgot-password">
+        <span>esqueceu a senha? </span>
+        <a href="javascript:void(0)">clique aqui!</a>
+      </div>
+    </form>
+  </div>
+</div>

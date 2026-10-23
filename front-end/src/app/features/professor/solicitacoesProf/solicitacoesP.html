@@ -1,0 +1,246 @@
+<div class="solicitacoes-prof-container">
+  <!-- Topbar Escura -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <button class="btn-back" type="button" (click)="voltarDashboard()" title="Voltar">
+       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      </button>
+      <div class="header-info">
+        <h1>Avaliação de Abono de Falta</h1>
+        <small>Matrícula: {{ solicitacao.matricula }}</small>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Nº de Matrícula" 
+        [(ngModel)]="termoMatricula" 
+      />
+    </div>
+
+    <div class="top-bar-actions">
+      <button class="icon-btn" title="Notificações">🔔</button>
+      <div class="user-avatar">👤</div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content" *ngIf="!carregando">
+    
+    <div class="grid-layout" *ngIf="solicitacao.comImagem">
+      
+      <!-- Coluna Esquerda: Visualização do Documento Enviado -->
+      <section class="left-card">
+        <div class="card-header-flex">
+          <h2>Comprovante Enviado pelo Aluno</h2>
+          <span class="file-info">PDF / Imagem</span>
+        </div>
+
+        <div class="doc-preview-box">
+          <img 
+            *ngIf="solicitacao.imagemUrl" 
+            [src]="solicitacao.imagemUrl" 
+            alt="Atestado enviado pelo aluno" 
+            class="atestado-img" 
+          />
+          <div class="atestado-document" *ngIf="!solicitacao.imagemUrl">
+            <p class="clinic-header">🩺 CLÍNICA MÉDICA VIDA & SAÚDE</p>
+            <h3 class="doc-title">ATESTADO MÉDICO</h3>
+            <p class="doc-body">
+              Atesto para os devidos fins que o(a) paciente <strong>{{ solicitacao.aluno }}</strong>, 
+              portador(a) da matrícula <strong>{{ solicitacao.matricula }}</strong>, esteve sob cuidados médicos necessitando de 
+              <strong>{{ solicitacao.diasAfastamento || 3 }} dia(s) de repouso</strong>.
+            </p>
+            <p class="doc-location">Data do Envio: {{ solicitacao.dataEnvio }}</p>
+            <div class="doc-signature">
+              ___________________________________________
+              <small>Carimbo & Assinatura Médica</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-footer">
+          <span class="zoom-info">🔍 100%</span>
+          <button type="button" class="btn-download-original" (click)="baixarOriginal()">
+            📥 Baixar Documento Original
+          </button>
+        </div>
+      </section>
+
+      <!-- Coluna Direita: Análise Inteligente de IA + Validação -->
+      <section class="right-card">
+        <div class="sub-card ia-card">
+          <div class="card-header-flex">
+            <h2>✨ Análise Inteligente (IA)</h2>
+            <span class="badge-tag">Validação Automática</span>
+          </div>
+
+          <div class="ia-report-box">
+            <div class="ia-item">
+              <span class="ia-label">Aluno Identificado:</span>
+              <strong>{{ solicitacao.aluno }} (Nº {{ solicitacao.matricula }})</strong>
+            </div>
+            <div class="ia-item">
+              <span class="ia-label">Período / Turma:</span>
+              <span>{{ solicitacao.turno }} - {{ solicitacao.turma }}</span>
+            </div>
+            <div class="ia-item">
+              <span class="ia-label">Dias Solicitados:</span>
+              <strong class="text-blue">{{ solicitacao.diasAfastamento }} dia(s) de afastamento</strong>
+            </div>
+            <div class="ia-item">
+              <span class="ia-label">Autenticidade do Anexo:</span>
+              <span class="status-ok">✔ Documento Legível e Válido</span>
+            </div>
+            <div class="ia-item">
+              <span class="ia-label">Resumo do Motivo:</span>
+              <p class="motivo-ia">{{ solicitacao.motivo }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Parecer do Professor para Solicitação com Imagem -->
+        <div class="sub-card form-analise">
+          <h2>Parecer Docente</h2>
+          <div class="prof-input-group" *ngIf="!statusDecisao">
+            <textarea 
+              rows="3" 
+              placeholder="Observações do professor sobre a aprovação com imagem..."
+              [(ngModel)]="observacaoProfessor">
+            </textarea>
+          </div>
+
+          <div class="action-buttons" *ngIf="!statusDecisao">
+            <button type="button" class="btn-aprovar" [disabled]="processando" (click)="aceitarAbono()">
+              ✓ Aprovar Abono
+            </button>
+            <button type="button" class="btn-recusar" [disabled]="processando" (click)="recusarAbono()">
+              ✕ Recusar Abono
+            </button>
+          </div>
+
+          <div class="decisao-resultado" *ngIf="statusDecisao">
+            <div class="alert-box" [class.approved]="statusDecisao === 'ACEITO'" [class.rejected]="statusDecisao === 'RECUSADO'">
+              <p *ngIf="statusDecisao === 'ACEITO'">✔ Abono APROVADO com sucesso!</p>
+              <p *ngIf="statusDecisao === 'RECUSADO'">✖ Solicitação de abono RECUSADA.</p>
+              <button type="button" class="btn-download" (click)="baixarComprovante(statusDecisao)">
+                📄 Baixar Declaração
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="grid-layout" *ngIf="!solicitacao.comImagem">
+      
+      <!-- Coluna Esquerda: Dados Acadêmicos do Aluno -->
+      <section class="left-card">
+        <div class="card-header-flex">
+          <h2>Dados Acadêmicos do Aluno</h2>
+          <a class="link-ficha">Ficha do Aluno</a>
+        </div>
+
+        <div class="aluno-details-box">
+          <span class="sub-label">🎓 INFORMAÇÕES ACADÊMICAS</span>
+          <h3 class="aluno-nome">{{ solicitacao.aluno }}</h3>
+
+          <div class="info-grid">
+            <div>
+              <small>MATRÍCULA</small>
+              <strong>{{ solicitacao.matricula }}</strong>
+            </div>
+            <div>
+              <small>PERÍODO / TURNO</small>
+              <strong>{{ solicitacao.turno || 'Matutino' }}</strong>
+            </div>
+            <div>
+              <small>TURMA</small>
+              <strong>{{ solicitacao.turma || '8º Ano A' }}</strong>
+            </div>
+            <div>
+              <small>DIAS DE AFASTAMENTO</small>
+              <strong class="highlight-dias">{{ solicitacao.diasAfastamento || 3 }} dia(s) de falta</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Coluna Direita: Formulário de Solicitação + Ações Aceitar/Recusar -->
+      <section class="right-card">
+        <div class="sub-card form-analise">
+          <div class="card-header-flex">
+            <h2>Formulário de Solicitação</h2>
+            <span class="badge-tag">Validação Docente</span>
+          </div>
+
+          <div class="detalhes-box">
+            <div class="detalhes-row">
+              <span>Tipo / Motivo:</span>
+              <strong>{{ solicitacao.motivo }}</strong>
+            </div>
+            <div class="detalhes-row">
+              <span>Data de Envio:</span>
+              <strong>{{ solicitacao.dataEnvio }}</strong>
+            </div>
+            <div class="detalhes-row">
+              <span>Total de Faltas a Abonar:</span>
+              <strong class="text-blue">{{ solicitacao.diasAfastamento || 3 }} dia(s) ({{ solicitacao.faltasAbonar || '4 Aulas' }})</strong>
+            </div>
+          </div>
+
+          <!-- Parecer do Professor -->
+          <div class="prof-input-group" *ngIf="!statusDecisao">
+            <label for="parecerForm">Parecer / Observação do Professor</label>
+            <textarea 
+              id="parecerForm"
+              rows="3" 
+              placeholder="Digite a justificativa para o abono ou indeferimento da falta..."
+              [(ngModel)]="observacaoProfessor">
+            </textarea>
+          </div>
+
+          <!-- Botões Aceitar e Recusar -->
+          <div class="action-buttons" *ngIf="!statusDecisao">
+            <button 
+              type="button" 
+              class="btn-aprovar" 
+              [disabled]="processando"
+              (click)="aceitarAbono()">
+              ✓ Aprovar Abono
+            </button>
+            <button 
+              type="button" 
+              class="btn-recusar" 
+              [disabled]="processando"
+              (click)="recusarAbono()">
+              ✕ Recusar Abono
+            </button>
+          </div>
+
+          <!-- Mensagem da Decisão -->
+          <div class="decisao-resultado" *ngIf="statusDecisao">
+            <div class="alert-box" [class.approved]="statusDecisao === 'ACEITO'" [class.rejected]="statusDecisao === 'RECUSADO'">
+              <p *ngIf="statusDecisao === 'ACEITO'">
+                ✔ Abono de {{ solicitacao.diasAfastamento || 3 }} dia(s) de falta APROVADO com sucesso!
+              </p>
+              <p *ngIf="statusDecisao === 'RECUSADO'">
+                ✖ Solicitação de abono RECUSADA.
+              </p>
+              <button type="button" class="btn-download" (click)="baixarComprovante(statusDecisao)">
+                📄 Baixar Declaração do Parecer
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+</div>
