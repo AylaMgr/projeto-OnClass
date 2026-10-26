@@ -17,13 +17,15 @@ export interface Notificacao {
   tipo: string;
   motivo: string;
   dataInicio: string;
-  horarioEnvio: string;
+  horarioEnvio?: string;  
   dataFim: string;
   descricao: string;
   declaracaoVeracidade: boolean;
   status: string;
   administrador?: string;
-  dataEnvio: string;
+  dataEnvio?: string;     
+  criadoEm?: string;      
+  createdAt?: string;      
   alunoNome?: string;
   matricula?: string;
   turma?: string;

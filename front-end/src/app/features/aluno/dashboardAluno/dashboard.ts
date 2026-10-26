@@ -93,15 +93,14 @@ obterTextoStatus(statusRaw: string): string {
   // ==========================================
   // CONTROLE DO CARD DE DETALHES & TIMELINE
   // ==========================================
-  abrirDetalhes(item: Notificacao): void {
-    this.notificacaoSelecionada = item;
-    // Opcional: fecha formulário ativo para focar no detalhe da timeline
-    this.mostrarFormulario = false;
-  }
+abrirDetalhes(item: Notificacao): void {
+  console.log('Item clicado:', item);
+  this.notificacaoSelecionada = item;
+}
 
-  fecharDetalhes(): void {
-    this.notificacaoSelecionada = null;
-  }
+fecharDetalhes(): void {
+  this.notificacaoSelecionada = null;
+}
 
   // ==========================================
   // FILTROS DA TABELA DE ACOMPANHAMENTO
@@ -252,9 +251,9 @@ salvarOuAtualizarJustificativa(statusDefinido: string): void {
   const payloadNotificacao: any = {
     administrador: eAprovado ? 'IA OnClass' : 'Secretaria',
     motivo: resIa.motivo || 'Tratamento Médico (IA)',
-    dataEnvio: new Date().toLocaleDateString('pt-BR'),
+    dataEnvio: new Date().toISOString(),
     dataInicio: new Date().toISOString(),
-    horarioEnvio: new Date().toLocaleTimeString ('pt-BR'),
+    horarioEnvio: new Date().toISOString(),
     dataFim: new Date().toISOString(),
     status: statusFinal,
     statusAprovado: eAprovado,
