@@ -110,41 +110,42 @@
           A carregar solicitações...
         </div>
 
-        <!-- Cards dos Alunos -->
-        <ng-container *ngIf="!carregando">
-          <a
-            class="student-card-btn"
-            *ngFor="let item of solicitacoesFiltradas"
-            [routerLink]="['/secretaria/solicitacao', item.id]"
-          >
-            <div class="student-info">
-              <div class="meta-line">
-                <span class="matricula">Nº {{ item.matricula }}</span>
-                <span class="data-envio">{{ item.dataEnvio }}</span>
-              </div>
-              <h3 class="student-name">{{ item.aluno }}</h3>
-              <p class="motivo-text">{{ item.motivo }}</p>
-            </div>
+       <!-- Cards dos Alunos -->
+<ng-container *ngIf="!carregando">
+  <a
+    class="student-card-btn"
+    *ngFor="let item of solicitacoesFiltradas"
+    [routerLink]="['/secretaria/solicitacao', item.id]"
+  >
+    <div class="student-info">
+      <div class="meta-line">
+        <span class="matricula">Nº {{ item.matricula || item.alunoId || '2024001234' }}</span>
+        <span class="data-envio">{{ item.dataEnvio || $any(item).criadoEm || $any(item).createdAt }}</span>
+      </div>
+      <h3 class="student-name">{{ item.aluno || item.nomeAluno || 'Aluno Não Identificado' }}</h3>
+      <p class="motivo-text">{{ item.motivo }}</p>
+    </div>
 
-            <div class="student-status">
-              <span
-                class="status-badge"
-                [ngClass]="{
-                  'rejeitada': item.status?.toLowerCase().includes('rejeit') || item.status?.toLowerCase().includes('indefer'),
-                  'pendente': item.status?.toLowerCase().includes('pendent'),
-                  'aprovada': item.status?.toLowerCase().includes('aprov') || item.status?.toLowerCase().includes('defer')
-                }"
-              >
-                {{ item.status }}
-              </span>
-            </div>
-          </a>
+    <div class="student-status">
+      <span
+        class="status-badge"
+        [ngClass]="{
+      'rejeitada': item.status?.toLowerCase().includes('rejeit') || item.status?.toLowerCase().includes('recus') || item.status?.toLowerCase().includes('indefer'),
+      'pendente': item.status?.toLowerCase().includes('pendent') || item.status?.toLowerCase().includes('analis') || item.status?.toLowerCase().includes('análise'),
+      'aprovada': item.status?.toLowerCase().includes('aprov') || item.status?.toLowerCase().includes('conclu') || item.status?.toLowerCase().includes('defer')
+    }"
+      >
+        <!-- Exibe 'Concluído' se for aprovado, ou o texto do status caso contrário -->
+        {{ (item.status?.toLowerCase().includes('aprov') || item.status?.toLowerCase().includes('conclu')) ? 'Concluído' : item.status }}
+      </span>
+    </div>
+  </a>
 
-          <!-- Lista Vazia -->
-          <div class="empty-state" *ngIf="solicitacoesFiltradas.length === 0">
-            Nenhuma solicitação encontrada.
-          </div>
-        </ng-container>
+  <!-- Lista Vazia -->
+  <div class="empty-state" *ngIf="solicitacoesFiltradas.length === 0">
+    Nenhuma solicitação encontrada.
+  </div>
+</ng-container>
 
       </div>
     </div>
