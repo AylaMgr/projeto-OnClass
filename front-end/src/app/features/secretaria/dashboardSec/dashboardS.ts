@@ -124,24 +124,43 @@ export class Dashboards implements OnInit, OnDestroy {
     this.solicitacaoSelecionada = null;
   }
  // Listas extraídas das notificações reais
- get recebidosRecentemente(): ItemTabelaResumo[] {
+ // Listas extraídas das notificações reais
+get recebidosRecentemente(): ItemTabelaResumo[] {
   return this.notificacoes.map((n: any) => {
-    const analiseResponsavel = (n.tipo === 'ATESTADO' || n.temUpload)
-      ? 'IA'
-      : (n.administrador || 'Pendente (Secretaria)');
+    const statusOriginal = n.status || '';
+    const motivoTexto = n.motivo || n.descricao || 'Sem Motivo';
+
+    // Identifica se foi aprovado automaticamente pela IA ou se contém (IA) no motivo
+    const ehAprovadoIa = 
+      statusOriginal === 'Solicitação Aprovada Definitivamente' ||
+      statusOriginal.toLowerCase().includes('aprov') ||
+      statusOriginal.toLowerCase().includes('conclu') ||
+      motivoTexto.includes('(IA)');
+
+    // Define o responsável pela análise
+    const analiseResponsavel = ehAprovadoIa 
+      ? 'IA OnClass' 
+      : (n.administrador || 'Secretaria');
+
+    // Define o status final para exibição na tabela
+    const statusFinal = ehAprovadoIa ? 'Concluído' : (statusOriginal || 'Pendente');
 
     return {
-      alunoNome: n.alunoNome || 'Aluno Não Identificado',
-      matricula: n.matricula || '2024001',
-      turma: n.turma || 'Ensino Médio',
-      motivo: n.motivo || 'Sem Motivo',
-      dataEnvio: n.dataEnvio ? new Date(n.dataEnvio).toLocaleDateString('pt-BR') : 'Hoje',
-      horarioEnvio: n.dataEnvio ? new Date(n.dataEnvio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--:--',
-      status: n.status || 'Pendente',
-      administrador: analiseResponsavel
+      alunoNome: n.alunoNome || n.aluno?.nome || 'Aluno Não Identificado',
+      matricula: n.matricula || n.alunoMatricula || '2024001',
+      turma: n.turma || n.aluno?.turma || 'Ensino Médio',
+      motivo: motivoTexto,
+      dataEnvio: n.dataEnvio 
+        ? new Date(n.dataEnvio).toLocaleDateString('pt-BR') 
+        : 'Hoje',
+      horarioEnvio: n.dataEnvio 
+        ? new Date(n.dataEnvio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) 
+        : '--:--',
+      status: statusFinal,
+      analisadoPor: analiseResponsavel
     };
   }).slice(0, 5); // Limita o resultado às 5 últimas solicitações
-  }
+}
 
   get analisesManuais(): ItemTabelaResumo[] {
     return this.recebidosRecentemente.filter(item => 
@@ -167,48 +186,63 @@ export class Dashboards implements OnInit, OnDestroy {
   }
 
   // Indicadores de KPIs (Calculados Dinamicamente + Variação do Período)
-  get kpis(): IndicadoresKPI {
-    const total = this.notificacoes.length;
-    const pendentes = this.notificacoes.filter(n => n.status?.toUpperCase() === 'PENDENTE').length;
-    const aprovadas = this.notificacoes.filter(n => n.status?.toUpperCase() === 'APROVADO').length;
-    const recusadas = this.notificacoes.filter(n => n.status?.toUpperCase() === 'REJEITADO').length;
+  // Indicadores de KPIs (Calculados Dinamicamente + Variação do Período)
+get kpis(): IndicadoresKPI {
+  const total = this.notificacoes.length;
 
-    if (this.periodoSelecionado === 'Últimos 30 dias') {
-      return {
-        totalJustificativas: total.toString(),
-        totalSubtexto: '18% a mais este mês',
-        aguardandoAnalise: pendentes.toString(),
-        aguardandoSubtexto: 'Agilidade 10% a mais este mês',
-        aprovadas: aprovadas.toString(),
-        aprovadasSubtexto: '31% a mais este mês',
-        recusadas: recusadas.toString(),
-        recusadasSubtexto: '-4% este mês'
-      };
-    } else if (this.periodoSelecionado === 'Últimos 6 meses') {
-      return {
-        totalJustificativas: total.toString(),
-        totalSubtexto: '25% a mais no semestre',
-        aguardandoAnalise: pendentes.toString(),
-        aguardandoSubtexto: 'Agilidade 15% a mais no semestre',
-        aprovadas: aprovadas.toString(),
-        aprovadasSubtexto: '35% a mais no semestre',
-        recusadas: recusadas.toString(),
-        recusadasSubtexto: '-12% no semestre'
-      };
-    }
+  const pendentes = this.notificacoes.filter(n => {
+    const status = (n.status || '').toLowerCase();
+    const motivo = (n.motivo || n.descricao || '');
+    return status.includes('pendent') && !motivo.includes('(IA)');
+  }).length;
 
-    // Padrão: Últimos 7 dias
+  const aprovados = this.notificacoes.filter(n => {
+    const status = (n.status || '').toLowerCase();
+    const motivo = (n.motivo || n.descricao || '');
+    return status.includes('aprov') || status.includes('conclu') || motivo.includes('(IA)');
+  }).length;
+
+  const recusados = this.notificacoes.filter(n => {
+    const status = (n.status || '').toLowerCase();
+    return status.includes('rejeit') || status.includes('recus');
+  }).length;
+
+  if (this.periodoSelecionado === 'Últimos 30 dias') {
     return {
       totalJustificativas: total.toString(),
-      totalSubtexto: '12% a mais este mês',
+      totalSubtexto: '18% a mais este mês',
       aguardandoAnalise: pendentes.toString(),
-      aguardandoSubtexto: 'Agilidade 6% a mais este mês',
-      aprovadas: aprovadas.toString(),
-      aprovadasSubtexto: '27% a mais este mês',
-      recusadas: recusadas.toString(),
-      recusadasSubtexto: '-7% este mês'
+      aguardandoSubtexto: 'Agilidade 10% a mais este mês',
+      aprovadas: aprovados.toString(),
+      aprovadasSubtexto: '31% a mais este mês',
+      recusadas: recusados.toString(),
+      recusadasSubtexto: '-4% este mês'
+    };
+  } else if (this.periodoSelecionado === 'Últimos 6 meses') {
+    return {
+      totalJustificativas: total.toString(),
+      totalSubtexto: '25% a mais no semestre',
+      aguardandoAnalise: pendentes.toString(),
+      aguardandoSubtexto: 'Agilidade 15% a mais no semestre',
+      aprovadas: aprovados.toString(),
+      aprovadasSubtexto: '35% a mais no semestre',
+      recusadas: recusados.toString(),
+      recusadasSubtexto: '-12% no semestre'
     };
   }
+
+  // Padrão: Últimos 7 dias
+  return {
+    totalJustificativas: total.toString(),
+    totalSubtexto: '12% a mais este mês',
+    aguardandoAnalise: pendentes.toString(),
+    aguardandoSubtexto: 'Agilidade 6% a mais este mês',
+    aprovadas: aprovados.toString(),
+    aprovadasSubtexto: '27% a mais este mês',
+    recusadas: recusados.toString(),
+    recusadasSubtexto: '-7% este mês'
+  };
+}
 
   // Gráfico de Linhas (Eixo X)
   get eixoX(): string[] {
