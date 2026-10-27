@@ -158,9 +158,6 @@
           </div>
         </div>
 
-<!-- Mantenha apenas resultadoIa para o painel lateral da direita -->
-<div *ngIf="resultadoIa" class="result-sidebar-panel">
-
   <!-- 1. CASO: ATESTADO APROVADO PELA IA -->
   <div *ngIf="resultadoIa?.sugestaoAcao === 'APROVAR'" class="card-resultado-ia sucesso">
     <div class="circle-check">✓</div>
@@ -236,64 +233,95 @@
       </button>
     </div>
      </div>
-   <!-- MODAL CENTRAL DE DETALHES & TIMELINE -->
+<!-- MODAL CENTRAL DE DETALHES & TIMELINE -->
 <div class="modal-overlay" *ngIf="notificacaoSelecionada" (click)="fecharDetalhes()">
   <div class="modal-card" (click)="$event.stopPropagation()">
-    
+
     <!-- Cabeçalho -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h2 style="margin: 0; font-size: 1.25rem; font-weight: bold; color: #1e293b;">Detalhes do Acompanhamento</h2>
-      <button type="button" (click)="fecharDetalhes()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Detalhes do Acompanhamento</h2>
+      <button type="button" class="btn-close" (click)="fecharDetalhes()" aria-label="Fechar">×</button>
     </div>
 
-    <!-- Informações do Atestado -->
-    <div style="margin-bottom: 20px; font-size: 0.9rem; color: #334155; line-height: 1.6;">
-      <p style="margin: 0 0 8px 0;"><strong>Motivo:</strong> {{ notificacaoSelecionada.motivo }}</p>
-      <p style="margin: 0 0 8px 0;">
-        <strong>Período:</strong> 
-        {{ (notificacaoSelecionada.dataInicio | date:'dd/MM/yyyy') || 'N/I' }} 
-        até 
-        {{ (notificacaoSelecionada.dataFim | date:'dd/MM/yyyy') || 'N/I' }}
+    <!-- Bloco 1: Informações do Atestado -->
+    <div class="info-box">
+      <p class="info-item">
+        <strong>Motivo:</strong> <span>{{ notificacaoSelecionada.motivo }}</span>
       </p>
-      <p style="margin: 0;"><strong>Descrição:</strong> {{ notificacaoSelecionada.descricao || 'Sem descrição informada.' }}</p>
+      <p class="info-item">
+        <strong>Período:</strong> 
+        <span>
+          {{ (notificacaoSelecionada.dataInicio | date:'dd/MM/yyyy') || 'N/I' }} 
+          até 
+          {{ (notificacaoSelecionada.dataFim | date:'dd/MM/yyyy') || 'N/I' }}
+        </span>
+      </p>
+      <p class="info-item info-description">
+        <strong>Descrição:</strong> 
+        <span>{{ notificacaoSelecionada.descricao || 'Sem descrição informada.' }}</span>
+      </p>
     </div>
 
-    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+    <hr class="modal-divider" />
 
-    <h3 style="font-size: 1rem; font-weight: bold; margin: 0 0 16px 0; color: #1e293b;">Andamento do Pedido</h3>
+    <!-- Bloco 2: Linha do Tempo (Andamento do Pedido) -->
+    <div class="timeline-box">
+      <h3 class="timeline-title">Andamento do Pedido</h3>
 
-    <!-- Timeline usando as suas classes CSS (.timeline, .item, .bullet) -->
-    <div class="timeline">
-      
-      <!-- Passo 1: Envio -->
-      <div class="item concluido">
-        <div class="bullet">✓</div>
-        <div>
-          <strong style="display: block; color: #0f172a;">Solicitação Enviada</strong>
-          <small style="color: #64748b;">{{ (notificacaoSelecionada.dataEnvio || notificacaoSelecionada.criadoEm || notificacaoSelecionada.createdAt) | date:'dd/MM/yyyy HH:mm' }}</small>
+      <div class="timeline">
+        
+        <!-- Passo 1: Solicitação Enviada -->
+        <div class="timeline-item completed">
+          <div class="timeline-marker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="timeline-content">
+            <h4 class="step-title">Solicitação Enviada</h4>
+            <span class="step-subtitle">
+              {{ (notificacaoSelecionada.dataEnvio || notificacaoSelecionada.criadoEm || notificacaoSelecionada.createdAt) | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
         </div>
-      </div>
 
-      <!-- Passo 2: Análise -->
-      <div class="item" [class.concluido]="notificacaoSelecionada.status !== 'Pendente'">
-        <div class="bullet">✓</div>
-        <div>
-          <strong style="display: block; color: #0f172a;">Análise da Secretaria / Professor</strong>
-          <small style="color: #64748b;">Avaliado por {{ notificacaoSelecionada.administrador || 'Secretaria' }}</small>
+        <!-- Passo 2: Análise da Secretaria / Professor -->
+        <div class="timeline-item" [class.completed]="notificacaoSelecionada.status !== 'Pendente'">
+          <div class="timeline-marker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="timeline-content">
+            <h4 class="step-title">Análise da Secretaria / Professor</h4>
+            <span class="step-subtitle">
+              Avaliado por {{ notificacaoSelecionada.administrador || 'Secretaria' }}
+            </span>
+          </div>
         </div>
-      </div>
 
-      <!-- Passo 3: Status Atual -->
-      <div class="item" [class.concluido]="notificacaoSelecionada.status === 'Solicitação Aprovada Definitivamente' || notificacaoSelecionada.status === 'Aprovado'">
-        <div class="bullet">•</div>
-        <div>
-          <strong style="display: block; color: #0f172a;">Status Atual:</strong>
-          <small style="color: #64748b;">{{ obterTextoStatus(notificacaoSelecionada.status) }}</small>
+        <!-- Passo 3: Status Atual -->
+        <div class="timeline-item active">
+          <div class="timeline-marker">
+            <span class="dot-inner"></span>
+          </div>
+          <div class="timeline-content">
+            <h4 class="step-title">Status Atual:</h4>
+            
+            <!-- Badge Dinâmico de Cores -->
+            <div class="status-badge" 
+                 [ngClass]="{
+                   'badge-analise': notificacaoSelecionada.status === 'Pendente' || notificacaoSelecionada.status === 'Em Análise pela Secretaria',
+                   'badge-aprovado': notificacaoSelecionada.status === 'Solicitação Aprovada Definitivamente' || notificacaoSelecionada.status === 'Aprovado',
+                   'badge-recusado': notificacaoSelecionada.status === 'Rejeitado' || notificacaoSelecionada.status === 'Recusado'
+                 }">
+              {{ obterTextoStatus(notificacaoSelecionada.status) }}
+            </div>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
 
   </div>
 </div>
- 
