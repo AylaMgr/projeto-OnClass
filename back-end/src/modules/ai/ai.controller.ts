@@ -62,7 +62,7 @@ export class AiController {
     const ehAprovado = resultadoIa.sugestaoAcao === 'APROVAR';
     const statusInicial = ehAprovado
       ? 'Solicitação Aprovada Definitivamente'
-      : 'Em Análise pela Secretaria';
+      : 'Pendente';
 
     const administradorOrigem = ehAprovado ? 'IA OnClass' : 'Secretaria';
 
