@@ -1,47 +1,41 @@
-# 🎓 Sistema de Gestão de Abono de Faltas — Frontend
+# 🎓 OnClass - Front-end (Angular)
 
-Aplicação web desenvolvida em **Angular** para a gestão e automação do processo de solicitação, triagem e validação de abono de faltas e segunda chamada acadêmica.
-
----
-
-## 🚀 Sobre o Projeto
-
-O sistema foi desenhado para conectar três atores fundamentais no ambiente educacional:
-1. **Aluno:** Solicita abonos anexando atestados/comprovantes ou através de formulários diretos e acompanha o estado do pedido em tempo real.
-2. **Secretaria:** Efetua a triagem inicial das solicitações com auxílio de leitura inteligente por IA e faz o encaminhamento ao corpo docente.
-3. **Professor:** Avalia as solicitações encaminhadas pela secretaria, visualiza os dias de afastamento/faltas pendentes e regista o parecer final com um clique.
+Interface web da plataforma **OnClass**, desenvolvida para a gestão e triagem automatizada de atestados médicos e justificativas escolares com auxílio de Inteligência Artificial.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🚀 Tecnologias Utilizadas
 
-- **Framework:** Angular (Standalone Components)
+- **Framework:** Angular 17+ (Componentes Standalone)
 - **Linguagem:** TypeScript
-- **Estilização:** CSS3 puro / Design Responsivo
-- **Roteamento:** Angular Router (Rotas Dinâmicas)
-- **Comunicação:** RxJS / HttpClient
+- **Estilização:** CSS3 puro com variáveis personalizadas
+- **Roteamento:** Angular Router
+- **Reatividade:** RxJS
 
 ---
 
-## 💻 Funcionalidades Principais
+## 📋 Funcionalidades Principais
 
-- **Dashboard do Aluno:** Envio de atestados, acompanhamento de estado em tempo real.
-- **Painel da Secretaria (`solicitacoesS`):** Triagem inteligente, verificação de dados acadêmicos e encaminhamento aos docentes.
-- **Dashboard do Professor (`dashboardP`):** Listagem restrita às 5 solicitações mais recentes encaminhadas e aceitas pela secretaria.
-- **Layout Dual (`solicitacoesP`):** Alternância automática entre o relatório de análise inteligente por IA (para anexos) e visualização de dados acadêmicos com contador de **dias de afastamento / faltas a abonar**.
+### 🏛️ Painel da Secretaria (`/secretaria/dashboard` & `/secretaria/analises-manuais`)
+- **Dashboard de Gestão:** Indicadores de KPI em tempo real (Total de justificativas, pendentes, aprovadas e recusadas), gráfico de frequência semanal e distribuição de motivos de ausência.
+- **Análises Manuais:** Interface para a secretaria revisar apenas as solicitações que demandam atenção humana (ex: faltas sem formulário padronizado ou justificativas indeferidas).
+- **Badging Dinâmico de Status:**
+  - 🟢 **Concluído:** Atestados válidos processados e aprovados automaticamente pela IA OnClass (`#d1fae5`).
+  - 🟡 **Pendente:** Justificativas que aguardam análise manual da secretaria (`#fef3c7`).
+  - 🔴 **Rejeitado:** Solicitações recusadas ou indeferidas (`#fee2e2`).
+- **Modal de Detalhes:** Visualização completa da linha do tempo e documento enviado.
+- **Filtros Avançados:** Busca por aluno, matrícula, turno e turma.
 
 ---
 
-## ⚙️ Como Executar o Projeto
+## 🛠️ Configuração e Execução
 
 ### Pré-requisitos
-- **Node.js**: v18.x ou superior
-- **npm**: v9.x ou superior
-- **Angular CLI**: v17.x ou superior
+- Node.js (`>= 18.x`)
+- npm (`>= 9.x`) ou yarn
 
-### Passos para Instalação
+### Passos para Rodar
 
-1. **Clonar o repositório:**
+1. **Instalar dependências:**
    ```bash
-   git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
-   cd on-class-front-end
+   npm install
