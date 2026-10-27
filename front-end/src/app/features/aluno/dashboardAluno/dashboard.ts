@@ -189,7 +189,6 @@ fecharDetalhes(): void {
   this.http.post('http://localhost:3000/ai/upload-atestado', formData).subscribe({
     next: (res: any) => {
       const ia = res.analiseIa || res.analiseIA || res.resultadoIa || res;
-      this.resultadoIa = ia;
       this.carregandoIa = false;
       this.processandoEnvio = false;
 
@@ -205,22 +204,30 @@ fecharDetalhes(): void {
       const iaAprovou = ia.sugestaoAcao === 'APROVAR' || ia.sugestao === 'APROVAR' || ia.acao === 'APROVAR';
       const dadosValidos = this.nomeExtraidoIa !== 'N/I' && this.afastamentoExtraidoIa !== 'N/I';
 
-      if (iaAprovou && dadosValidos) {
-        this.resultadoIa.sugestaoAcao = 'APROVAR';
-        // Aprovado automaticamente: Cria/Atualiza o card nos Acompanhamentos Recentemente como APROVADO DEFINITIVAMENTE
-        this.salvarOuAtualizarJustificativa('Solicitação Aprovada Definitivamente');
-      } else {
-        this.resultadoIa.sugestaoAcao = 'REJEITAR';
-        // Negado pela IA: Aguarda decisão do aluno (Encaminhar para Secretaria ou Reenviar imagem)
-      }
-    },
-    error: (err: any) => {
-      console.error('Erro ao processar atestado com a IA:', err);
-      this.carregandoIa = false;
-      this.processandoEnvio = false;
-      alert('Ocorreu um erro ao conectar com o servidor.');
+      this.resultadoIa = {
+      ...ia,
+      valido: iaAprovou && dadosValidos,
+      sugestaoAcao: (iaAprovou && dadosValidos) ? 'APROVAR' : 'REJEITAR',
+      periodo: this.afastamentoExtraidoIa,
+      assinaturaMedica: iaAprovou ? 'Verificada' : 'Divergente / Não Verificada',
+      nomeLido: this.nomeExtraidoIa,
+      mensagem: iaAprovou 
+        ? 'Aprovado automaticamente! O corpo docente será notificado.' 
+        : 'Não foi possível validar as informações do atestado automaticamente.'
+    };
+
+    if (this.resultadoIa.valido) {
+      // Aprovado automaticamente: Cria/Atualiza nos Acompanhamentos Recentes
+      this.salvarOuAtualizarJustificativa('Solicitação Aprovada Definitivamente');
     }
-  });
+  },
+  error: (err: any) => {
+    console.error('Erro ao processar atestado com a IA:', err);
+    this.carregandoIa = false;
+    this.processandoEnvio = false;
+    alert('Ocorreu um erro ao conectar com o servidor.');
+  }
+});
 }
 
 salvarOuAtualizarJustificativa(statusDefinido: string): void {
