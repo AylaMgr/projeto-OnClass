@@ -8,6 +8,7 @@ import { NotificacoesModule } from './modules/notificacoes/notificacoes.module.j
 import { PrismaModule } from './common/prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { IaModule } from './modules/ai/ai.module.js';
+import { AdminTiModule } from './modules/admin-ti/admin-ti.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -24,6 +25,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     IaModule,
     NotificacoesModule,
     PrismaModule,
+    AdminTiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
