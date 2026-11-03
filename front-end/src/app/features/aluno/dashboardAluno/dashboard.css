@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #002b66;
+  background-color: var(--navbar-bg);
   padding: 12px 32px;
   height: 60px;
   box-sizing: border-box;
@@ -128,7 +128,7 @@
    3. BANNER SUPERIOR (CRIAR JUSTIFICATIVA)
    ========================================================================== */
 .banner-card {
-  background-color: #002b66;
+  background-color: var(--navbar-bg);
   color: #ffffff;
   border-radius: 12px;
   padding: 28px 32px;
