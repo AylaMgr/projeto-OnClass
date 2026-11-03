@@ -37,3 +37,49 @@ model Atestado {
 
   @@map("atestados")
 }
+
+model InstituicaoConfig {
+  id                String   @id @default(uuid())
+  nomeInstituicao   String   @default("Minha Instituição")
+  cnpj              String?
+  logoUrl           String?
+  
+  // Customização de Cores
+  corPrimaria       String   @default("#1e3a8a")
+  corNavbar         String   @default("#1e3a8a") // <--- NOVO CAMPO PARA A NAVBAR
+  corCardsPend      String   @default("#fef3c7")
+  corCardsAprov     String   @default("#d1fae5")
+  corCardsRecus     String   @default("#fee2e2")
+  
+  planoContratado   String   @default("PRO")
+  limiteAlunos      Int      @default(1000)
+  limiteProfessores Int      @default(50)
+  limiteSecretaria  Int      @default(10)
+  renovacaoEm       DateTime @default(now())
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("instituicao_config")
+}
+
+model Usuario {
+  id             String   @id @default(uuid())
+  nome           String
+  email          String   @unique
+  senha          String?  // <--- ARMAZENA A SENHA (PADRÃO: DATA DE NASCIMENTO)
+  dataNascimento String?  // <--- FORMATO DD/MM/AAAA
+  role           String   // "SECRETARIA", "PROFESSOR", "ADMIN_TI", "ALUNO"
+  matricula      String?  @unique
+  createdAt      DateTime @default(now())
+
+  @@map("usuarios")
+}
+model ContatoSuporte {
+  id       String @id @default(uuid())
+  nome     String
+  telefone String
+  setor    String
+
+  @@map("contatos_suporte")
+}
