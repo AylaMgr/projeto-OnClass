@@ -16,6 +16,9 @@ import { Dashboards } from './features/secretaria/dashboardSec/dashboardS';
 import { SolicitacoesSec } from './features/secretaria/solicitacoesSec/solicitacoesS';
 import { AnalisesManuais } from './features/secretaria/analisesManuais/analisesManuais';
 
+// Rotas do Admin TI
+import { AdminTiComponent } from './features/admin-ti/admin-ti';
+
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
@@ -40,4 +43,7 @@ export const routes: Routes = [
   { path: 'dashboard-secretaria', redirectTo: 'secretaria/dashboard', pathMatch: 'full' },
   { path: 'dashboard-professor', redirectTo: 'professor/dashboard', pathMatch: 'full' },
   { path: 'dashboardProfessor', redirectTo: 'professor/dashboard', pathMatch: 'full' },
+
+  // Rotas do Admin TI
+  {path: 'admin-ti',component: AdminTiComponent,},
 ];
