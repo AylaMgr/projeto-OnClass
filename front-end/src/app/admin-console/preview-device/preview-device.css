@@ -1,0 +1,109 @@
+:host {
+  display: block;
+}
+
+.preview-card-container {
+  background-color: #0b1324;
+  border: 1px solid #162238;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.device-icons {
+  display: flex;
+  gap: 4px;
+}
+
+.device-btn {
+  background: none;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.device-btn.active {
+  background-color: #1e293b;
+  color: #ffffff;
+}
+
+/* MOLDURA DO MOCKUP */
+.mockup-screen {
+  background-color: #060a12;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  overflow: hidden;
+  height: 480px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.mock-device-bar {
+  background-color: #090e1a;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #162032;
+  z-index: 2;
+}
+
+.camera-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #334155;
+}
+
+.url-label {
+  font-size: 0.7rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* WRAPPER PARA ESCALAR O IFRAME DE FORMA PERFEITA */
+.iframe-viewport-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.preview-iframe {
+  /* Largura original para renderizar como desktop real */
+  width: 1280px;
+  height: 900px;
+  border: none;
+  background-color: #ffffff;
+  
+  /* Reduz o tamanho visual para caber no container */
+  transform: scale(0.42);
+  transform-origin: 0 0;
+  pointer-events: auto;
+}
+
+.contrast-badge {
+  text-align: center;
+  font-size: 0.72rem;
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 6px;
+  border-radius: 6px;
+}

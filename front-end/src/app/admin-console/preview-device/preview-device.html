@@ -1,0 +1,30 @@
+<div class="preview-card-container">
+  <div class="preview-header">
+    <span>Prévia da tela em tempo real</span>
+    <div class="device-icons">
+      <button class="device-btn">📱</button>
+      <button class="device-btn active">💻</button>
+    </div>
+  </div>
+
+  <div class="mockup-screen">
+    <div class="mock-device-bar">
+      <span class="camera-dot"></span>
+      <span class="url-label">{{ rotaAtual }}</span>
+    </div>
+
+    <div class="iframe-viewport-wrapper">
+      <iframe 
+        #previewIframe
+        [src]="iframeUrlSafe" 
+        class="preview-iframe"
+        (load)="aoCarregarIframe()"
+        title="Prévia em tempo real">
+      </iframe>
+    </div>
+  </div>
+
+  <div class="contrast-badge">
+    ✓ Contraste aprovado • 8,4:1 (WCAG AA)
+  </div>
+</div>
