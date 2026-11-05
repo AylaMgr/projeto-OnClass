@@ -5,7 +5,6 @@ import { LoginComponent } from './features/login/login';
 
 // Aluno
 import { Dashboard } from './features/aluno/dashboardAluno/dashboard';
-import { SolicitacoesStatus } from './features/aluno/solicitacoesStatus/solicitacoesStatus';
 
 // Professor
 import { DashboardP } from './features/professor/dashboardProf/dashboardP';
@@ -16,18 +15,14 @@ import { Dashboards } from './features/secretaria/dashboardSec/dashboardS';
 import { SolicitacoesSec } from './features/secretaria/solicitacoesSec/solicitacoesS';
 import { AnalisesManuais } from './features/secretaria/analisesManuais/analisesManuais';
 
-// Rotas do Admin TI
-import { AdminTiComponent } from './features/admin-ti/admin-ti';
-
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
 
   // Rotas do Aluno
   { path: 'aluno/dashboard', component: Dashboard },
-  { path: 'aluno/solicitacao/:id', component: SolicitacoesStatus },
 
-  // Rotas do Professor (CORRIGIDO: sem a barra no final)
+  // Rotas do Professor
   { path: 'professor/dashboard', component: DashboardP },
   { path: 'professor/solicitacoes/:id', component: SolicitacoesProf },
 
@@ -44,6 +39,12 @@ export const routes: Routes = [
   { path: 'dashboard-professor', redirectTo: 'professor/dashboard', pathMatch: 'full' },
   { path: 'dashboardProfessor', redirectTo: 'professor/dashboard', pathMatch: 'full' },
 
-  // Rotas do Admin TI
-  {path: 'admin-ti',component: AdminTiComponent,},
+  // Redirecionamento da URL antiga /admin-ti
+  { path: 'admin-ti', redirectTo: 'admin', pathMatch: 'full' },
+
+  // Nova rota centralizada do Admin Console
+  {
+    path: 'admin',
+    loadChildren: () => import('./admin-console/admin.routes').then(m => m.ADMIN_ROUTES)
+  }
 ];
