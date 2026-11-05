@@ -10,7 +10,7 @@ export class IaService {
 
   constructor() {
     const apiKey = process.env.OPENAI_API_KEY;
-    console.log('--- TESTE CHAVE OPENAI ---:', apiKey ? `${apiKey.substring(0, 15)}...` : 'NÃO ENCONTRADA');
+    // console.log('--- TESTE CHAVE OPENAI ---:', apiKey ? `${apiKey.substring(0, 15)}...` : 'NÃO ENCONTRADA');
 
     this.openai = new OpenAI({
       apiKey: apiKey,

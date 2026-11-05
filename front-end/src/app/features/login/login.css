@@ -1,13 +1,28 @@
+/* ==========================================
+   VARIÁVEIS LOCAIS & ESTRUTURA DO LOGIN
+   ========================================== */
 :host {
   display: block;
   width: 100vw;
   height: 100vh;
+
+  --login-bg: #0d1642;
+  --card-bg: #ebf1f5;
+  --brand-dark: #03256c;
+  --brand-light: #0072ff;
+  --brand-green: #00c853;
+  --primary-btn: #4f73ff;
+  --primary-hover: #3b62f5;
+  --text-dark: #1f2937;
+  --error-bg: #fee2e2;
+  --error-text: #dc2626;
+  --error-border: #fca5a5;
 }
 
 .login-wrapper {
   width: 100%;
   min-height: 100vh;
-  background-color: #0d1642;
+  background-color: var(--login-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,7 +32,7 @@
 }
 
 .login-card {
-  background-color: #ebf1f5;
+  background-color: var(--card-bg);
   border-radius: 24px;
   width: 100%;
   max-width: 420px;
@@ -29,12 +44,16 @@
   align-items: center;
 }
 
+/* ==========================================
+   LOGÓTIPO & TIPOGRAFIA ONCLASS
+   ========================================== */
 .logo-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
 }
+
 .logo-svg {
   width: 130px;
   height: 130px;
@@ -53,7 +72,6 @@
   margin-bottom: 8px;
 }
 
-/* Tipografia OnClass */
 .brand-title {
   font-family: 'Comfortaa', 'Arial Rounded MT Bold', 'Nunito', sans-serif;
   font-size: 42px;
@@ -64,14 +82,14 @@
 }
 
 .brand-title .text-dark {
-  color: #03256c; /* Azul escuro original */
+  color: var(--brand-dark);
 }
 
 .brand-title .text-light {
-  color: #0072ff; /* Azul claro original */
+  color: var(--brand-light);
 }
 
-/* Container do Subtítulo */
+/* Subtítulo */
 .brand-subtitle-wrapper {
   display: flex;
   align-items: center;
@@ -82,9 +100,9 @@
 
 .brand-subtitle {
   font-family: 'Inter', -apple-system, sans-serif;
-  font-size: 10px; /* Aumentado de 8px para 10px */
+  font-size: 10px;
   font-weight: 900;
-  color: #03256c;
+  color: var(--brand-dark);
   letter-spacing: 1.2px;
   text-align: center;
   margin: 0;
@@ -92,21 +110,24 @@
 }
 
 .green-dash {
-  width: 32px; /* Aumentado de 28px para 32px */
+  width: 32px;
   height: 3px;
-  background-color: #00c853;
+  background-color: var(--brand-green);
   border-radius: 2px;
 }
 
 .section-title {
   font-size: 11px;
   font-weight: 800;
-  color: #0d1642;
+  color: var(--login-bg);
   margin-bottom: 16px;
   letter-spacing: 0.5px;
   text-align: center;
 }
 
+/* ==========================================
+   SELEÇÃO DE PERFIS (PROFESSOR / ALUNO / SEC)
+   ========================================== */
 .profile-group {
   display: flex;
   gap: 12px;
@@ -123,7 +144,7 @@
   border-radius: 18px;
   font-size: 12px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-dark);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -141,10 +162,13 @@
 
 .profile-card.active {
   background: #eef2ff;
-  border-color: #3b66f5;
-  color: #0d1642;
+  border-color: var(--primary-hover);
+  color: var(--login-bg);
 }
 
+/* ==========================================
+   FORMULÁRIO & CAMPOS DE ENTRADA
+   ========================================== */
 .login-form {
   width: 100%;
   display: flex;
@@ -160,7 +184,7 @@
 .input-field label {
   font-size: 12px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-dark);
   margin-bottom: 6px;
 }
 
@@ -174,14 +198,14 @@
   font-size: 13px;
   box-sizing: border-box;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease;
 }
 
 .input-field input[type="text"]:focus {
-  border-color: #3b66f5;
+  border-color: var(--primary-hover);
 }
 
-/* Caixa do campo de Senha - Borda inicial transparente como o campo de E-mail */
+/* Campo de Senha */
 .password-box {
   display: flex;
   align-items: center;
@@ -191,12 +215,11 @@
   height: 38px;
   padding: 0 10px 0 14px;
   box-sizing: border-box;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease;
 }
 
-/* Foco na senha: ativa a borda azul apenas ao focar/digitar */
 .password-box.focused {
-  border-color: #3b66f5;
+  border-color: var(--primary-hover);
 }
 
 .password-box input {
@@ -218,11 +241,13 @@
   justify-content: center;
 }
 
-/* Botão Entrar */
+/* ==========================================
+   BOTÕES & AÇÕES DO FORMULÁRIO
+   ========================================== */
 .btn-submit {
   width: 100%;
   height: 42px;
-  background-color: #4f73ff;
+  background-color: var(--primary-btn);
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -231,27 +256,25 @@
   letter-spacing: 0.5px;
   cursor: pointer;
   margin-top: 10px;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .btn-submit:hover:not(:disabled) {
-  background-color: #3b62f5;
+  background-color: var(--primary-hover);
 }
 
-/* Botão em Estado Invalido/Cinza 
 .btn-submit:disabled {
   background-color: #cccccc;
   color: #888888;
   cursor: not-allowed;
   box-shadow: none;
 }
-  */
 
 .forgot-password {
   text-align: center;
   margin-top: 16px;
   font-size: 12px;
-  color: #1f2937;
+  color: var(--text-dark);
 }
 
 .forgot-password a {
@@ -260,24 +283,16 @@
   font-weight: 600;
 }
 
-.mensagem-erro {
-  background-color: #fde8e8;
-  color: #e53e3e;
-  border: 1px solid #feb2b2;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  text-align: center;
-  margin-bottom: 16px;
-  font-weight: 500;
-}
-
+/* ==========================================
+   MENSAGENS DE ERRO
+   ========================================== */
+.mensagem-erro,
 .error-banner {
-  background-color: #fee2e2;
-  color: #dc2626;
-  border: 1px solid #fca5a5;
-  border-radius: 8px;
+  background-color: var(--error-bg);
+  color: var(--error-text);
+  border: 1px solid var(--error-border);
   padding: 10px 14px;
+  border-radius: 8px;
   font-size: 13px;
   text-align: center;
   margin-bottom: 16px;
@@ -289,7 +304,7 @@
 }
 
 .field-error small {
-  color: #dc2626;
+  color: var(--error-text);
   font-size: 12px;
   display: block;
   font-weight: 500;

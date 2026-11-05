@@ -1,30 +1,39 @@
-/* ==========================================================================
-   ESTILOS DO DASHBOARD DA SECRETARIA (dashboardS.css)
-   ========================================================================== */
-
+/* ==========================================
+   VARIÁVEIS LOCAIS & ESTRUTURA DASHBOARD SEC
+   ========================================== */
 :host {
   display: block;
   width: 100%;
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: #f3f5f9;
+
+  --navbar-bg: var(--navbar-bg, #002b66);
+  --primary-blue: var(--primary-color, #2563eb);
+  --primary-hover: #1d4ed8;
+  --text-dark: #0b1437;
+  --text-muted: #8c98a9;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --success-color: var(--card-aprovado-bg, #48bb78);
+  --danger-color: var(--card-recusado-bg, #ef4444);
 }
 
-/* ==========================================================================
-   BARRA DE TOPO (.top-bar)
-   ========================================================================== */
 .dashboard-page {
   min-height: 100vh;
   background-color: #f1f5f9;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #1e293b;
+  color: var(--text-dark);
 }
 
+/* ==========================================
+   1. BARRA DE TOPO (.top-bar)
+   ========================================== */
 .top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #002b66;
+  background-color: var(--navbar-bg);
   padding: 12px 32px;
   height: 60px;
   box-sizing: border-box;
@@ -41,7 +50,7 @@
   justify-content: center;
   padding: 8px;
   border-radius: 50%;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
 .back-btn:hover,
@@ -64,7 +73,7 @@
   border-radius: 20px;
   border: none;
   background-color: #ffffff;
-  color: #1e293b;
+  color: var(--text-dark);
   font-size: 0.85rem;
   text-align: center;
   outline: none;
@@ -75,48 +84,44 @@
   color: #64748b;
 }
 
-/* Agrupamento do Botão + Mensagem de Boas-vindas */
 .header-left {
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-/* Container do Texto */
 .header-info {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  color: #ffffff !important;
-  line-height: 1.2 !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #ffffff;
+  line-height: 1.2;
 }
 
-/* Título "Olá, Professor" em Bolder (Bold de alta intensidade) */
 .header-info h1 {
-  margin: 0 !important;
-  font-size: 1.05rem !important;
-  font-weight: 700 !important; /* Formato bolder */
-  color: #ffffff !important;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
   letter-spacing: -0.2px;
 }
 
-/* Legenda "Portal dos Docentes" em Medium / Semi-bold */
 .header-info small {
-  margin: 0 !important;
-  font-size: 0.75rem !important;
-  font-weight: 500 !important; /* Formato medium / semi-bolder */
-  color: rgba(255, 255, 255, 0.8) !important; /* Branco ligeiramente suavizado para hierarquia visual */
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-/* ==========================================================================
-   1. CARDS DE INDICADORES / KPIS (.kpi-grid)
-   ========================================================================== */
+/* ==========================================
+   2. CARDS DE INDICADORES / KPIS (.kpi-grid)
+   ========================================== */
 .dashboard-container {
-  padding: 24px 32px !important; /* Espaçamento interno topo/baixo (24px) e laterais (32px) */
-  box-sizing: border-box !important;
+  padding: 24px 32px;
+  box-sizing: border-box;
 }
 
-   .kpi-grid {
+.kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
@@ -124,7 +129,7 @@
 }
 
 .kpi-card {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 20px 24px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
@@ -134,7 +139,7 @@
 
 .kpi-title {
   font-size: 0.78rem;
-  color: #8c98a9;
+  color: var(--text-muted);
   font-weight: 500;
   margin-bottom: 8px;
 }
@@ -142,7 +147,7 @@
 .kpi-value {
   font-size: 1.85rem;
   font-weight: 800;
-  color: #0b1437;
+  color: var(--text-dark);
   margin-bottom: 6px;
 }
 
@@ -152,16 +157,16 @@
 }
 
 .kpi-subtitle.positive {
-  color: #10b981;
+  color: var(--success-color);
 }
 
 .kpi-subtitle.negative {
-  color: #ef4444;
+  color: var(--danger-color);
 }
 
-/* ==========================================================================
-   2. GRÁFICOS (.charts-grid)
-   ========================================================================== */
+/* ==========================================
+   3. GRÁFICOS (.charts-grid)
+   ========================================== */
 .charts-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -170,7 +175,7 @@
 }
 
 .chart-card {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
@@ -190,13 +195,13 @@
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
-  color: #0b1437;
+  color: var(--text-dark);
 }
 
 .chart-header p {
   margin: 4px 0 0 0;
   font-size: 0.75rem;
-  color: #8c98a9;
+  color: var(--text-muted);
 }
 
 /* Seletor de Período Dropdown */
@@ -206,7 +211,7 @@
 
 .period-btn {
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 6px 14px;
   font-size: 0.75rem;
@@ -223,8 +228,8 @@
   right: 0;
   top: 100%;
   margin-top: 4px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   z-index: 10;
@@ -242,7 +247,7 @@
 .period-option:hover,
 .period-option.active {
   background-color: #f1f5f9;
-  color: #4f46e5;
+  color: var(--primary-blue);
   font-weight: 600;
 }
 
@@ -263,7 +268,7 @@
   justify-content: space-between;
   margin-top: 12px;
   font-size: 0.75rem;
-  color: #8c98a9;
+  color: var(--text-muted);
 }
 
 /* SVG Gráfico Rosca / Donut */
@@ -304,13 +309,13 @@
 .donut-center-text strong {
   font-size: 1.15rem;
   font-weight: 800;
-  color: #0b1437;
+  color: var(--text-dark);
   line-height: 1;
 }
 
 .donut-center-text span {
   font-size: 0.65rem;
-  color: #8c98a9;
+  color: var(--text-muted);
   margin-top: 2px;
 }
 
@@ -337,8 +342,8 @@
   flex-shrink: 0;
 }
 
-.legend-item .dot.blue { background-color: #3b82f6; }
-.legend-item .dot.green { background-color: #10b981; }
+.legend-item .dot.blue { background-color: var(--primary-blue); }
+.legend-item .dot.green { background-color: var(--success-color); }
 .legend-item .dot.orange { background-color: #d97706; }
 
 .legend-item .label {
@@ -348,53 +353,14 @@
 
 .legend-item .value {
   font-weight: 700;
-  color: #0b1437;
+  color: var(--text-dark);
   margin-left: 8px;
 }
 
-/* ==========================================================================
-   3. TABELA DE ANÁLISES MANUAIS (ESTRUTURA DO CARD)
-   ========================================================================== */
-/* Cabeçalho Azul Escuro para a mini-table (Secretaria) */
-.mini-table {
-  width: 100% !important;
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
-}
-
-.mini-table thead tr {
-  background-color: #002b66 !important;
-}
-
-.mini-table th {
-  background-color: #002b66 !important;
-  color: #ffffff !important;
-  padding: 12px 16px !important;
-  font-weight: 600 !important;
-  font-size: 0.88rem !important;
-  border: none !important;
-  text-align: left !important;
-}
-
-/* Bordas Arredondadas nos Cantos do Cabeçalho */
-.mini-table th:first-child {
-  border-top-left-radius: 8px !important;
-  border-bottom-left-radius: 8px !important;
-}
-
-.mini-table th:last-child {
-  border-top-right-radius: 8px !important;
-  border-bottom-right-radius: 8px !important;
-}
-
-.mini-table td {
-  padding: 14px 16px !important;
-  border-bottom: 1px solid #e2e8f0 !important;
-  font-size: 0.88rem !important;
-  color: #1e293b !important;
-}
-
-   .tables-grid,
+/* ==========================================
+   4. TABELA DE ANÁLISES MANUAIS (.mini-table)
+   ========================================== */
+.tables-grid,
 .tables-grid.single-card {
   display: block;
   width: 100%;
@@ -402,19 +368,19 @@
 }
 
 .table-card {
-  background: #ffffff !important;
-  border-radius: 16px !important;
-  padding: 24px !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02) !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card-header {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  margin-bottom: 20px !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
   width: 100%;
 }
 
@@ -422,7 +388,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #0b1437;
+  color: var(--text-dark);
 }
 
 .link-ver-todos {
@@ -433,18 +399,55 @@
 }
 
 .link-ver-todos:hover {
-  color: #1d4ed8;
+  color: var(--primary-hover);
   text-decoration: underline;
+}
+
+.mini-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.mini-table thead tr {
+  background-color: var(--navbar-bg);
+}
+
+.mini-table th {
+  background-color: var(--navbar-bg);
+  color: #ffffff;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border: none;
+  text-align: left;
+}
+
+.mini-table th:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.mini-table th:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.mini-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.88rem;
+  color: #1e293b;
 }
 
 .student-name {
   font-weight: 700;
-  color: #0b1437;
+  color: var(--text-dark);
 }
 
 .student-sub {
   font-size: 0.75rem;
-  color: #8c98a9;
+  color: var(--text-muted);
   margin-top: 2px;
 }
 
@@ -452,7 +455,7 @@
   color: #6b7280;
 }
 
-/* Badges */
+/* Badges da Tabela */
 .badge {
   display: inline-block;
   padding: 4px 12px;
@@ -472,22 +475,32 @@
 .badge.recusado,
 .badge.indeferido {
   background-color: #fee2e2;
-  color: #dc2626;
+  color: var(--danger-color);
 }
 
 .no-results {
   text-align: center;
   color: #9ca3af;
-  padding: 28px !important;
+  padding: 28px;
 }
 
-/* Responsividade */
+/* ==========================================
+   5. RESPONSIVIDADE
+   ========================================== */
 @media (max-width: 1024px) {
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .charts-grid { grid-template-columns: 1fr; }
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
-  .dashboard-container { padding: 16px; }
-  .kpi-grid { grid-template-columns: 1fr; }
+  .dashboard-container {
+    padding: 16px;
+  }
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
 }

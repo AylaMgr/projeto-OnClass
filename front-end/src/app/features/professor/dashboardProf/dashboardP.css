@@ -1,27 +1,74 @@
+/* ==========================================
+   VARIÁVEIS LOCAIS DE TEMA (PROFESSOR)
+   ========================================== */
 :host {
   display: block;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f1f5f9;
-  min-height: 100vh;
-}
-
-.dashboard-page {
   min-height: 100vh;
   background-color: #f1f5f9;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #1e293b;
+
+  --navbar-bg: var(--navbar-bg, #002b66);
+  --primary-blue: var(--primary-color, #2563eb);
+  --primary-hover: #1d4ed8;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
 }
 
+.dashboard-page,
+.dashboard-prof-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  color: var(--text-dark);
+}
+
+/* ==========================================
+   1. CABEÇALHO (TOP-BAR)
+   ========================================== */
 .top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #002b66;
+  background-color: var(--navbar-bg);
   padding: 12px 32px;
   height: 60px;
   box-sizing: border-box;
 }
 
+.header-left,
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.header-info h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.header-info small {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Botões do Topo */
 .back-btn,
 .notification-btn {
   background: transparent;
@@ -33,7 +80,7 @@
   justify-content: center;
   padding: 8px;
   border-radius: 50%;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
 .back-btn:hover,
@@ -42,6 +89,7 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Campo de Pesquisa */
 .search-wrapper {
   flex: 1;
   max-width: 520px;
@@ -50,13 +98,15 @@
   justify-content: center;
 }
 
-.search-wrapper input {
+.search-wrapper input,
+.search-box input {
   width: 100%;
+  max-width: 380px;
   padding: 8px 20px;
   border-radius: 20px;
   border: none;
   background-color: #ffffff;
-  color: #1e293b;
+  color: var(--text-dark);
   font-size: 0.85rem;
   text-align: center;
   outline: none;
@@ -64,73 +114,7 @@
 }
 
 .search-wrapper input::placeholder {
-  color: #64748b;
-}
-
-/* Agrupamento do Botão + Mensagem de Boas-vindas */
-.header-left {
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-}
-
-/* Container do Texto */
-.header-info {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  color: #ffffff !important;
-  line-height: 1.2 !important;
-}
-
-/* Título "Olá, Professor" em Bolder (Bold de alta intensidade) */
-.header-info h1 {
-  margin: 0 !important;
-  font-size: 1.05rem !important;
-  font-weight: 700 !important; /* Formato bolder */
-  color: #ffffff !important;
-  letter-spacing: -0.2px;
-}
-
-/* Legenda "Portal dos Docentes" em Medium / Semi-bold */
-.header-info small {
-  margin: 0 !important;
-  font-size: 0.75rem !important;
-  font-weight: 500 !important; /* Formato medium / semi-bolder */
-  color: rgba(255, 255, 255, 0.8) !important; /* Branco ligeiramente suavizado para hierarquia visual */
-}
-
-.dashboard-prof-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.header-info h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.header-info small {
-  color: #94a3b8;
-  font-size: 11px;
-}
-
-.search-box input {
-  width: 380px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: none;
-  text-align: center;
-  font-size: 13px;
-  outline: none;
+  color: var(--text-muted);
 }
 
 .top-bar-actions {
@@ -140,12 +124,12 @@
 }
 
 .icon-btn {
-  background: #0f2b48;
+  background: #ef2b48;
   border: none;
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  color: white;
+  color: #ffffff;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -163,12 +147,15 @@
   justify-content: center;
 }
 
-/* Área de Conteúdo */
+/* ==========================================
+   2. ÁREA PRINCIPAL & BARRA DE FILTROS
+   ========================================== */
 .main-content {
   padding: 24px 48px;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .filter-bar {
@@ -181,7 +168,7 @@
 .filter-label {
   font-weight: 700;
   font-size: 13px;
-  color: #1e293b;
+  color: var(--text-dark);
 }
 
 .btn-filter {
@@ -191,10 +178,16 @@
   border-radius: 16px;
   font-size: 12px;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--primary-blue);
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
+.btn-filter:hover {
+  background-color: #cbd5e1;
+}
+
+/* Dropdown */
 .dropdown-container {
   position: relative;
 }
@@ -203,9 +196,9 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: white;
+  background: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 8px 0;
   margin-top: 4px;
   z-index: 10;
@@ -216,6 +209,8 @@
   padding: 8px 16px;
   font-size: 13px;
   cursor: pointer;
+  color: var(--text-dark);
+  transition: background-color 0.15s ease;
 }
 
 .dropdown-menu div:hover {
@@ -229,13 +224,17 @@
   font-size: 12px;
   cursor: pointer;
   margin-left: 8px;
+  font-weight: 600;
 }
 
-/* Card Principal da Lista */
+/* ==========================================
+   3. LISTA DE SOLICITAÇÕES & CARDS
+   ========================================== */
 .content-card {
-  background-color: #ebf3fa;
+  background-color: #ffffff;
   border-radius: 16px;
   padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .card-header {
@@ -248,21 +247,26 @@
 .card-header h2 {
   margin: 0;
   font-size: 18px;
-  color: #0f172a;
+  color: var(--text-dark);
+  font-weight: 700;
 }
 
 .subtitle {
   margin: 4px 0 0 0;
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .link-historico {
-  color: #2563eb;
+  color: var(--primary-blue);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
+}
+
+.link-historico:hover {
+  text-decoration: underline;
 }
 
 .cards-list {
@@ -271,9 +275,10 @@
   gap: 12px;
 }
 
-/* Item / Solicitação (Botão navegável) */
+/* Card Individual de Solicitação */
 .solicitacao-card {
   background: #ffffff;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px 20px;
   display: flex;
@@ -285,7 +290,7 @@
 
 .solicitacao-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .card-meta {
@@ -296,7 +301,7 @@
 }
 
 .matricula-text {
-  color: #2563eb;
+  color: var(--primary-blue);
   font-weight: 700;
 }
 
@@ -307,35 +312,41 @@
 .aluno-nome {
   margin: 0;
   font-size: 15px;
-  color: #0f172a;
+  color: var(--text-dark);
   font-weight: 700;
 }
 
 .motivo-text {
   margin: 2px 0 0 0;
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
-/* Badges de Status */
+/* ==========================================
+   4. BADGES DE STATUS & ESTADO VAZIO
+   ========================================== */
 .badge {
   font-size: 11px;
   font-weight: 700;
   padding: 6px 16px;
   border-radius: 20px;
+  display: inline-block;
 }
 
-.status-encaminhado {
-  color: #0f172a;
-  background: transparent;
+.status-encaminhado,
+.badge.status-encaminhado {
+  color: var(--text-dark);
+  background-color: #e2e8f0;
 }
 
-.status-aprovado {
+.status-aprovado,
+.badge.status-aprovado {
   background-color: #dcfce7;
   color: #166534;
 }
 
-.status-rejeitado {
+.status-rejeitado,
+.badge.status-rejeitado {
   background-color: #fee2e2;
   color: #991b1b;
 }
@@ -343,5 +354,6 @@
 .empty-state {
   text-align: center;
   padding: 32px;
-  color: #64748b;
+  color: var(--text-muted);
+  font-size: 14px;
 }

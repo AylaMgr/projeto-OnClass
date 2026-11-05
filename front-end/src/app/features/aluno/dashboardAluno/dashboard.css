@@ -1,21 +1,65 @@
-/* ==========================================================================
-   1. ESTRUTURA GERAL DA PÁGINA & CABEÇALHO (TOP-BAR)
-   ========================================================================== */
+/* ==========================================
+   VARIÁVEIS LOCAIS DE CORES & TEMA
+   ========================================== */
+:host {
+  --primary-color: var(--navbar-bg, #002b66);
+  --primary-hover: #0052cc;
+  --bg-page: #f1f5f9;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --success-color: var(--card-aprovado-bg, #48bb78);
+  --danger-color: var(--card-recusado-bg, #ef4444);
+}
+
+/* ==========================================
+   1. ESTRUTURA GERAL DA PÁGINA & CABEÇALHO
+   ========================================== */
 .dashboard-page {
   min-height: 100vh;
-  background-color: #f1f5f9;
+  background-color: var(--bg-page);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--navbar-bg);
+  background-color: var(--navbar-bg, #002b66);
   padding: 12px 32px;
   height: 60px;
   box-sizing: border-box;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.header-info h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.header-info small {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .back-btn,
@@ -29,7 +73,7 @@
   justify-content: center;
   padding: 8px;
   border-radius: 50%;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
 .back-btn:hover,
@@ -38,6 +82,7 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Busca */
 .search-wrapper {
   flex: 1;
   max-width: 520px;
@@ -52,7 +97,7 @@
   border-radius: 20px;
   border: none;
   background-color: #ffffff;
-  color: #1e293b;
+  color: var(--text-main);
   font-size: 0.85rem;
   text-align: center;
   outline: none;
@@ -60,45 +105,12 @@
 }
 
 .search-wrapper input::placeholder {
-  color: #64748b;
+  color: var(--text-muted);
 }
 
-/* Agrupamento do Botão + Mensagem de Boas-vindas */
-.header-left {
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-}
-
-/* Container do Texto */
-.header-info {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  color: #ffffff !important;
-  line-height: 1.2 !important;
-}
-
-/* Título "Olá, Professor" em Bolder (Bold de alta intensidade) */
-.header-info h1 {
-  margin: 0 !important;
-  font-size: 1.05rem !important;
-  font-weight: 700 !important; /* Formato bolder */
-  color: #ffffff !important;
-  letter-spacing: -0.2px;
-}
-
-/* Legenda "Portal dos Docentes" em Medium / Semi-bold */
-.header-info small {
-  margin: 0 !important;
-  font-size: 0.75rem !important;
-  font-weight: 500 !important; /* Formato medium / semi-bolder */
-  color: rgba(255, 255, 255, 0.8) !important; /* Branco ligeiramente suavizado para hierarquia visual */
-}
-
-/* ==========================================================================
-   2. LAYOUT PRINCIPAL (EXPANDIDO PARA TELA CHEIA)
-   ========================================================================== */
+/* ==========================================
+   2. LAYOUT PRINCIPAL
+   ========================================== */
 .dashboard-container {
   display: grid;
   grid-template-columns: 1fr 420px;
@@ -111,24 +123,19 @@
   align-items: start;
 }
 
-.main-content {
+.main-content,
+.side-panel {
   display: flex;
   flex-direction: column;
   gap: 24px;
   width: 100%;
 }
 
-.side-panel {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-/* ==========================================================================
-   3. BANNER SUPERIOR (CRIAR JUSTIFICATIVA)
-   ========================================================================== */
+/* ==========================================
+   3. BANNER SUPERIOR & BOTÕES
+   ========================================== */
 .banner-card {
-  background-color: var(--navbar-bg);
+  background-color: var(--navbar-bg, #002b66);
   color: #ffffff;
   border-radius: 12px;
   padding: 28px 32px;
@@ -153,8 +160,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: #0f172a;
-  outline: 2px solid #007bff;
+  background-color: var(--text-main);
+  outline: 2px solid var(--primary-color);
   color: #ffffff;
   border: none;
   padding: 7px 10px;
@@ -166,7 +173,7 @@
 }
 
 .btn-primary:hover {
-  background-color: #0052cc;
+  background-color: var(--primary-hover);
 }
 
 .btn-primary svg {
@@ -174,11 +181,11 @@
   flex-shrink: 0;
 }
 
-/* ==========================================================================
+/* ==========================================
    4. ACOMPANHAMENTOS RECENTES & TABELA
-   ========================================================================== */
+   ========================================== */
 .recentes-section {
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -195,7 +202,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .filtros-status {
@@ -215,13 +222,13 @@
 }
 
 .filtros-status button.ativo {
-  background-color: #0066ff;
+  background-color: var(--primary-color);
   color: #ffffff;
-  border-color: #0066ff;
+  border-color: var(--primary-color);
   font-weight: bold;
 }
 
-/* Estilização da Tabela */
+/* Tabela */
 .tabela-notificacoes {
   width: 100%;
   border-collapse: collapse;
@@ -244,7 +251,7 @@
 
 .tabela-notificacoes td {
   padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
   font-size: 0.88rem;
   color: #002b66;
 }
@@ -252,7 +259,7 @@
 .empty-row {
   text-align: center;
   color: #888888;
-  padding: 32px 16px !important;
+  padding: 32px 16px;
 }
 
 /* Status Badges */
@@ -264,25 +271,21 @@
   display: inline-block;
 }
 
-.status-pendente,
-.status-badge.pendente {
+.status-pendente, .status-badge.pendente {
   background-color: #fff3cd;
   color: #856404;
 }
 
-.status-aprovado,
-.status-badge.aprovado {
+.status-aprovado, .status-badge.aprovado {
   background-color: #d4edda;
   color: #155724;
 }
 
-.status-rejeitado,
-.status-badge.rejeitado {
+.status-rejeitado, .status-badge.rejeitado {
   background-color: #f8d7da;
   color: #721c24;
 }
 
-/* Paginação */
 .paginacao {
   display: flex;
   align-items: center;
@@ -290,12 +293,12 @@
   gap: 12px;
   margin-top: 20px;
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
-/* ==========================================================================
+/* ==========================================
    5. PAINEL LATERAL DE UPLOAD (DASHBOARD & IA)
-   ========================================================================== */
+   ========================================== */
 .upload-sidebar,
 .result-sidebar-panel {
   background-color: #eef2f7;
@@ -345,13 +348,13 @@
   margin: 0 0 6px 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .upload-subtitle {
   margin: 0;
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .file-badge {
@@ -370,13 +373,13 @@
 .file-limit-text {
   margin-top: 16px;
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--text-muted);
   text-align: center;
 }
 
 .btn-submit-upload {
   width: 100%;
-  background-color: #0066ff;
+  background-color: var(--primary-color);
   color: #ffffff;
   border: none;
   padding: 14px;
@@ -389,7 +392,7 @@
 }
 
 .btn-submit-upload:hover {
-  background-color: #0052cc;
+  background-color: var(--primary-hover);
 }
 
 .btn-submit-upload:disabled {
@@ -398,19 +401,19 @@
   opacity: 0.7;
 }
 
-/* ==========================================================================
-   6. CARDS DE RESULTADO DA IA (APROVADO E REJEITADO)
-   ========================================================================== */
+/* ==========================================
+   6. CARDS DE RESULTADO DA IA
+   ========================================== */
 .card-resultado-ia {
-  background-color: #ffffff !important;
-  border-radius: 20px !important;
-  padding: 28px 20px !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 28px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
 }
 
 .circle-check,
@@ -427,12 +430,12 @@
 }
 
 .circle-check {
-  background-color: #10b981;
+  background-color: var(--success-color);
   color: #ffffff;
 }
 
 .circle-alert {
-  background-color: #ef4444;
+  background-color: var(--danger-color);
   color: #ffffff;
   box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
 }
@@ -452,23 +455,23 @@
 }
 
 .status-subtitulo {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.8rem;
   margin: 0 0 24px 0;
   font-weight: 500;
 }
 
 .data-summary-box {
-  background-color: #f1f5f9 !important;
-  border-radius: 14px !important;
-  padding: 16px 20px !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 14px !important; /* Espaço uniforme entre as linhas */
-  text-align: left !important;
-  margin: 16px 0 !important;
+  background-color: var(--bg-page);
+  border-radius: 14px;
+  padding: 16px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  margin: 16px 0;
 }
 
 .data-summary-box.erro-box {
@@ -477,36 +480,36 @@
 }
 
 .data-row {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: flex-start !important; /* Alinha os textos no topo caso quebrem linha */
-  gap: 12px !important;
-  font-size: 0.85rem !important;
-  width: 100% !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.85rem;
+  width: 100%;
 }
 
 .data-label {
- color: #64748b !important;
-  font-weight: 500 !important;
-  min-width: 110px !important; /* LARGURA FIXA: Evita empurrar o valor para os lados */
-  flex-shrink: 0 !important;
+  color: var(--text-muted);
+  font-weight: 500;
+  min-width: 110px;
+  flex-shrink: 0;
 }
 
 .data-value {
-  color: #0f172a !important;
-  font-weight: 700 !important;
-  text-align: right !important; /* Força o alinhamento na extrema direita */
-  word-break: break-word !important;
-  flex: 1 !important;
+  color: var(--text-main);
+  font-weight: 700;
+  text-align: right;
+  word-break: break-word;
+  flex: 1;
 }
 
 .destaque-verde {
-  color: #10b981;
+  color: var(--success-color);
   font-weight: 600;
 }
 
 .destaque-vermelho {
-  color: #ef4444;
+  color: var(--danger-color);
   font-weight: 600;
 }
 
@@ -559,11 +562,13 @@
 }
 
 .btn-secondary-link:hover {
-  background-color: #f1f5f9;
-  color: #0f172a;
+  background-color: var(--bg-page);
+  color: var(--text-main);
 }
 
-/* Container Modal */
+/* ==========================================
+   7. CONTAINER MODAL & CARTÕES INTERNOS
+   ========================================== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -575,13 +580,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999 !important;
+  z-index: 9999;
   padding: 20px;
   box-sizing: border-box;
 }
 
 .modal-card {
-  background: #f8fafc;
+  background: var(--bg-page);
   border-radius: 24px;
   width: 100%;
   max-width: 500px;
@@ -596,7 +601,6 @@
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Cabeçalho e Botão Fechar */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -607,36 +611,36 @@
 .modal-title {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
   margin: 0;
 }
 
 .btn-close {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   width: 32px;
   height: 32px;
   border-radius: 50%;
   font-size: 1.1rem;
   line-height: 1;
-  color: #64748b;
+  color: var(--text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s;
 }
 
 .btn-close:hover {
-  background-color: #f1f5f9;
-  color: #0f172a;
+  background-color: var(--bg-page);
+  color: var(--text-main);
 }
 
-/* Cartões Internos */
-.info-box, .timeline-box {
+.info-box,
+.timeline-box {
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 20px;
 }
@@ -647,24 +651,27 @@
   color: #475569;
 }
 
+/* ==========================================
+   8. DETALHES DO ITEM & ESTRUTURA DA TIMELINE
+   ========================================== */
 .info-item strong {
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .modal-divider {
   border: none;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border-color);
   margin: 20px 0;
 }
 
 .timeline-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
   margin: 0 0 20px 0;
 }
 
-/* Timeline */
+/* Timeline Container */
 .timeline {
   display: flex;
   flex-direction: column;
@@ -681,6 +688,7 @@
   padding-bottom: 0;
 }
 
+/* Linha Conectora Vertical */
 .timeline-item:not(:last-child)::after {
   content: '';
   position: absolute;
@@ -692,9 +700,10 @@
 }
 
 .timeline-item.completed:not(:last-child)::after {
-  background-color: #10b981;
+  background-color: var(--success-color);
 }
 
+/* Marcadores da Linha do Tempo */
 .timeline-marker {
   width: 28px;
   height: 28px;
@@ -708,7 +717,7 @@
 
 .timeline-item.completed .timeline-marker {
   background-color: #d1fae5;
-  color: #10b981;
+  color: var(--success-color);
 }
 
 .timeline-item.completed .timeline-marker svg {
@@ -735,16 +744,18 @@
   margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .step-subtitle {
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
-/* Badges Dinâmicos por Cor de Status */
+/* ==========================================
+   9. BADGES DINÂMICOS POR COR DE STATUS
+   ========================================== */
 .status-badge {
   display: inline-block;
   font-size: 0.85rem;
