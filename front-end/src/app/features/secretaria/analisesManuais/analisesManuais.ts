@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { NotificacoesService } from '../../notificacoes/services/notificacoes.service';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
+import { FiltroDropdown, FilterBarComponent } from '../../../shared/components/filter-bar/filter-bar.component';
 
 export interface SolicitacaoAluno {
   id: string | number;
@@ -24,7 +27,14 @@ export interface SolicitacaoAluno {
 @Component({
   selector: 'app-analises-manuais',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule,
+    StatusBadgeComponent,
+    TopBarComponent,
+    FilterBarComponent
+  ],
   templateUrl: './analisesManuais.html',
   styleUrl: './analisesManuais.css'
 })
@@ -182,6 +192,47 @@ get solicitacoesFiltradas(): SolicitacaoAluno[] {
 
   return resultado;
 }
+
+get filtrosSecretaria(): FiltroDropdown[] {
+    return [
+      {
+        chave: 'turno',
+        label: 'Turno',
+        valorSelecionado: this.turnoSelecionado || '',
+        opcoes: [
+          { label: 'Todos', valor: '' },
+          { label: 'Matutino', valor: 'Matutino' },
+          { label: 'Vespertino', valor: 'Vespertino' },
+          { label: 'Noturno', valor: 'Noturno' }
+        ]
+      },
+      {
+        chave: 'ordem',
+        label: 'Ordem',
+        valorSelecionado: this.ordemSelecionada || '',
+        opcoes: [
+          { label: 'Todas', valor: '' },
+          { label: 'Mais Recentes', valor: 'recentes' },
+          { label: 'Mais Antigos', valor: 'antigos' }
+        ]
+      },
+      {
+        chave: 'turma',
+        label: 'Turma',
+        valorSelecionado: this.turmaSelecionada || '',
+        opcoes: [
+          { label: 'Todas', valor: '' },
+          { label: '8º Ano A', valor: '8º Ano A' },
+          { label: '9º Ano B', valor: '9º Ano B' },
+          { label: '7º Ano C', valor: '7º Ano C' }
+        ]
+      }
+    ];
+  }
+
+  onFiltroSecretariaChange(evento: { chave: string; valor: string }): void {
+    this.selecionarOpcao(evento.chave as any, evento.valor);
+  }
 
   limparFiltros(): void {
     this.termoMatricula = '';

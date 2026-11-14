@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { NotificacoesService, Notificacao } from '../../notificacoes/services/notificacoes.service';
 import { Subscription } from 'rxjs';
+import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { FilterBarComponent, FiltroDropdown } from '../../../shared/components/filter-bar/filter-bar.component';
 
 export interface ItemTabelaResumo {
   alunoNome: string;
@@ -41,7 +44,13 @@ export interface MotivosAusencia {
 @Component({
   selector: 'app-dashboards',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterLink,
+    TopBarComponent,
+    StatusBadgeComponent,
+    FilterBarComponent],
   templateUrl: './dashboards.html',
   styleUrl: './dashboards.css'
 })
@@ -291,4 +300,19 @@ get kpis(): IndicadoresKPI {
       offsetOutros: -(gripal + odonto)
     };
   }
+  
+  get filtrosPeriodo(): FiltroDropdown[] {
+  return [
+    {
+      chave: 'periodo',
+      label: 'Período',
+      valorSelecionado: this.periodoSelecionado,
+      opcoes: this.opcoesPeriodo.map(op => ({ label: op, valor: op }))
+    }
+  ];
+}
+
+onPeriodoChange(evento: { chave: string; valor: string }): void {
+  this.selecionarPeriodo(evento.valor);
+}
 }

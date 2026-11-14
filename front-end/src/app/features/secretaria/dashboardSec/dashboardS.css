@@ -8,7 +8,6 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: #f3f5f9;
 
-  --navbar-bg: var(--navbar-bg, #002b66);
   --primary-blue: var(--primary-color, #2563eb);
   --primary-hover: #1d4ed8;
   --text-dark: #0b1437;
@@ -24,93 +23,6 @@
   background-color: #f1f5f9;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--text-dark);
-}
-
-/* ==========================================
-   1. BARRA DE TOPO (.top-bar)
-   ========================================== */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: var(--navbar-bg);
-  padding: 12px 32px;
-  height: 60px;
-  box-sizing: border-box;
-}
-
-.back-btn,
-.notification-btn {
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  border-radius: 50%;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
-}
-
-.back-btn:hover,
-.notification-btn:hover {
-  opacity: 0.8;
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.search-wrapper {
-  flex: 1;
-  max-width: 520px;
-  margin: 0 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.search-wrapper input {
-  width: 100%;
-  padding: 8px 20px;
-  border-radius: 20px;
-  border: none;
-  background-color: #ffffff;
-  color: var(--text-dark);
-  font-size: 0.85rem;
-  text-align: center;
-  outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.search-wrapper input::placeholder {
-  color: #64748b;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #ffffff;
-  line-height: 1.2;
-}
-
-.header-info h1 {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.2px;
-}
-
-.header-info small {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
 }
 
 /* ==========================================
@@ -405,22 +317,27 @@
 
 .mini-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.mini-table thead {
+  background-color: var(--navbar-bg, #001F54);
 }
 
 .mini-table thead tr {
-  background-color: var(--navbar-bg);
+  background-color: var(--navbar-bg, #001F54);
 }
 
-.mini-table th {
-  background-color: var(--navbar-bg);
-  color: #ffffff;
-  padding: 12px 16px;
+.mini-table thead th {
+  background-color: var(--navbar-bg, #001F54) !important;
+  color: #ffffff !important;
   font-weight: 600;
-  font-size: 0.88rem;
-  border: none;
+  font-size: 13px;
   text-align: left;
+  padding: 14px 16px;
+  border: none;
 }
 
 .mini-table th:first-child {
@@ -453,35 +370,6 @@
 
 .text-muted {
   color: #6b7280;
-}
-
-/* Badges da Tabela */
-.badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background-color: #fef3c7;
-  color: #d97706;
-}
-
-.badge.aprovado,
-.badge.deferido {
-  background-color: #d1fae5;
-  color: #059669;
-}
-
-.badge.recusado,
-.badge.indeferido {
-  background-color: #fee2e2;
-  color: var(--danger-color);
-}
-
-.no-results {
-  text-align: center;
-  color: #9ca3af;
-  padding: 28px;
 }
 
 /* ==========================================
