@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ThemeService, TemaConfig } from '../../../core/services/theme.service';
 import { PreviewDeviceComponent } from '../../preview-device/preview-device';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-personalizacao',
   standalone: true,
-  imports: [CommonModule, FormsModule, PreviewDeviceComponent],
+  imports: [CommonModule, FormsModule, PreviewDeviceComponent, RouterLink, RouterLinkActive],
   templateUrl: './personalizacao.html',
   styleUrls: ['./personalizacao.css']
 })

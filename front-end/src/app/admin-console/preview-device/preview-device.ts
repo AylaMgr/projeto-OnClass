@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ThemeService } from '../../core/services/theme.service';
 import { TemaConfig } from '../../core/services/theme.service';
 
 @Component({
@@ -29,7 +30,10 @@ export class PreviewDeviceComponent implements OnChanges {
     'solicitacoes_prof': '/professor/solicitacoes/1'
   };
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(
+    private sanitizer: DomSanitizer,
+    private themeService: ThemeService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['telaSelecionada']) {
@@ -50,22 +54,36 @@ export class PreviewDeviceComponent implements OnChanges {
     this.aplicarCoresNoIframe();
   }
 
-  public aplicarCoresNoIframe(): void {
+public aplicarCoresNoIframe(): void {
     if (!this.cores || !this.previewIframe?.nativeElement) return;
-    
-    try {
-      const iframeDoc = this.previewIframe.nativeElement.contentDocument || 
-                        this.previewIframe.nativeElement.contentWindow?.document;
 
-      if (iframeDoc && iframeDoc.documentElement) {
+    try {
+      const iframeDoc =
+        this.previewIframe.nativeElement.contentDocument ||
+        this.previewIframe.nativeElement.contentWindow?.document;
+
+      if (iframeDoc?.documentElement) {
         const root = iframeDoc.documentElement;
-        if (this.cores.corPrimaria) root.style.setProperty('--cor-primaria', this.cores.corPrimaria);
-        if (this.cores.corNavbar) root.style.setProperty('--cor-navbar', this.cores.corNavbar);
-        if (this.cores.corCardsPend) root.style.setProperty('--cor-cards-pend', this.cores.corCardsPend);
-        if (this.cores.corCardsAprov) root.style.setProperty('--cor-cards-aprov', this.cores.corCardsAprov);
-        if (this.cores.corCardsRecus) root.style.setProperty('--cor-cards-recus', this.cores.corCardsRecus);
+        if (this.cores.corPrimaria) {
+          root.style.setProperty('--primary-color', this.cores.corPrimaria);
+        }
+        if (this.cores.corNavbar || this.cores.corPrimaria) {
+          root.style.setProperty('--navbar-bg', this.cores.corNavbar || this.cores.corPrimaria);
+        }
+        if (this.cores.corCardsPend) {
+          root.style.setProperty('--card-pend-color', this.cores.corCardsPend);
+          root.style.setProperty('--card-pendente-bg', this.cores.corCardsPend);
+        }
+        if (this.cores.corCardsAprov) {
+          root.style.setProperty('--card-aprov-color', this.cores.corCardsAprov);
+          root.style.setProperty('--card-aprovado-bg', this.cores.corCardsAprov);
+        }
+        if (this.cores.corCardsRecus) {
+          root.style.setProperty('--card-recus-color', this.cores.corCardsRecus);
+          root.style.setProperty('--card-recusado-bg', this.cores.corCardsRecus);
+        }
       }
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn('Sincronização direta de iframe:', e);
     }
   }
