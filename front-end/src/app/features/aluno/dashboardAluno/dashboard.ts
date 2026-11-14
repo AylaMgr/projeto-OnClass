@@ -5,11 +5,21 @@ import { HttpClient } from '@angular/common/http';
 import { CriarNotificacao } from '../../criar-notificacao/criar-notificacao';
 import { NotificacoesService, Notificacao } from '../../notificacoes/services/notificacoes.service';
 import { Router } from '@angular/router';
+import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { FilterBarComponent, FiltroDropdown } from '../../../shared/components/filter-bar/filter-bar.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, CriarNotificacao],
+  imports: [
+    CommonModule,
+    FormsModule, 
+    CriarNotificacao,
+    TopBarComponent,
+    StatusBadgeComponent,
+    FilterBarComponent
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
@@ -101,6 +111,28 @@ abrirDetalhes(item: Notificacao): void {
 fecharDetalhes(): void {
   this.notificacaoSelecionada = null;
 }
+
+  // ===============================================
+  //           FILTROS SISTEMA WHITE-LABEL
+  // ===============================================
+  filtrosStatusAluno: FiltroDropdown[] = [
+    {
+      chave: 'status',
+      label: 'Todos',
+      valorSelecionado: 'TODOS',
+      opcoes: [
+        { label: 'Todos', valor: 'TODOS' },
+        { label: 'Pendentes', valor: 'PENDENTE' },
+        { label: 'Aprovados', valor: 'APROVADO' },
+        { label: 'Rejeitados', valor: 'REJEITADO' }
+      ]
+    }
+  ];
+
+  onFiltroStatusChange(evento: { chave: string; valor: string }): void {
+    this.filtrarPorStatus(evento.valor);
+  }
+
 
   // ==========================================
   // FILTROS DA TABELA DE ACOMPANHAMENTO

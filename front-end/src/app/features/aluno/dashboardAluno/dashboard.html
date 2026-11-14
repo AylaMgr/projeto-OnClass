@@ -1,37 +1,11 @@
 <div class="dashboard-page">
-  <!-- Barra de Topo -->
-  <header class="top-bar">
-    
-    <!-- NOVO CONTAINER: Agrupa o botão de voltar e a mensagem lado a lado -->
-    <div class="header-left">
-      <button class="back-btn" (click)="voltar()" title="Voltar ao Login">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-      </button>
-
-      <div class="header-info">
-        <h1>Olá, Aluno</h1>
-        <small>Portal do Aluno</small>
-      </div>
-    </div>
-
-    <!-- Campo de Pesquisa -->
-    <div class="search-wrapper">
-      <input
-        type="text"
-        [(ngModel)]="termoPesquisa"
-        placeholder="Pesquisar por Motivo..." />
-    </div>
-
-    <!-- Botão Notificações -->
-    <button class="notification-btn" title="Notificações">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-      </svg>
-    </button>
-  </header>
+<app-top-bar
+  titulo="Olá, Aluno"
+  subtitulo="Portal do Aluno"
+  placeholder="Pesquisar por Motivo..."
+  [(termoPesquisa)]="termoPesquisa"
+  (voltarClick)="voltar()">
+</app-top-bar>
 
   <div class="dashboard-container">
     <!-- COLUNA DA ESQUERDA (Principal) -->
@@ -61,12 +35,10 @@
           <h3>Acompanhamentos Recentemente</h3>
           
           <!-- Filtros de Status -->
-          <div class="filtros-status">
-            <button [class.ativo]="filtroStatus === 'TODOS'" (click)="filtrarPorStatus('TODOS')">Todos</button>
-            <button [class.ativo]="filtroStatus === 'PENDENTE'" (click)="filtrarPorStatus('PENDENTE')">Pendentes</button>
-            <button [class.ativo]="filtroStatus === 'APROVADO'" (click)="filtrarPorStatus('APROVADO')">Aprovados</button>
-            <button [class.ativo]="filtroStatus === 'REJEITADO'" (click)="filtrarPorStatus('REJEITADO')">Rejeitados</button>
-          </div>
+          <app-filter-bar
+          [dropdowns]="filtrosStatusAluno"
+          (filtroChange)="onFiltroStatusChange($event)">
+          </app-filter-bar>
         </div>
 
         <table class="tabela-notificacoes">
@@ -93,10 +65,9 @@
   {{ (item.dataEnvio || item.criadoEm || item.createdAt || item.horarioEnvio || (item.administrador === 'IA' ? resultadoIa?.criadoEm : null)) | date: 'HH:mm' }}
 </td>
               <td>
-                <span class="status-badge" [ngClass]="getStatusClass(item.status)">
-                  {{ obterTextoStatus(item.status) }}
-                </span>
+              <app-status-badge [status]="item.status"></app-status-badge>
               </td>
+
             </tr>
             <tr *ngIf="notificacoesFiltradas.length === 0">
               <td colspan="4" class="empty-row">Nenhuma notificação encontrada com o filtro selecionado.</td>
