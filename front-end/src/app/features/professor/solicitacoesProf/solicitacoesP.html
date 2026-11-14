@@ -1,31 +1,10 @@
 <div class="solicitacoes-prof-container">
   <!-- Topbar Escura -->
-  <header class="top-bar">
-    <div class="top-bar-left">
-      <button class="btn-back" type="button" (click)="voltarDashboard()" title="Voltar">
-       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-      </svg>
-      </button>
-      <div class="header-info">
-        <h1>Avaliação de Abono de Falta</h1>
-        <small>Matrícula: {{ solicitacao.matricula }}</small>
-      </div>
-    </div>
-
-    <div class="search-box">
-      <input 
-        type="text" 
-        placeholder="Nº de Matrícula" 
-        [(ngModel)]="termoMatricula" 
-      />
-    </div>
-
-    <div class="top-bar-actions">
-      <button class="icon-btn" title="Notificações">🔔</button>
-      <div class="user-avatar">👤</div>
-    </div>
-  </header>
+  <app-top-bar
+  titulo="Avaliação de Abono de Falta"
+  [subtitulo]="'Matrícula: ' + (solicitacao?.matricula || '')"
+  (voltarClick)="voltarDashboard()">
+  </app-top-bar>
 
   <!-- Conteúdo Principal -->
   <main class="main-content" *ngIf="!carregando">

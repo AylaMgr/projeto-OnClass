@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificacoesService } from '../../notificacoes/services/notificacoes.service';
+import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
 
 export interface SolicitacaoDetalhadaProf {
   id: string;
@@ -24,7 +25,7 @@ export interface SolicitacaoDetalhadaProf {
 @Component({
   selector: 'app-solicitacoes-prof',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TopBarComponent],
   templateUrl: './solicitacoesP.html',
   styleUrl: './solicitacoesP.css'
 })

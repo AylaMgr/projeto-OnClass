@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NotificacoesService } from '../../notificacoes/services/notificacoes.service';
+import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { FilterBarComponent, FiltroDropdown } from '../../../shared/components/filter-bar/filter-bar.component';
 
 export interface SolicitacaoAluno {
   id: string;
@@ -18,7 +21,14 @@ export interface SolicitacaoAluno {
 @Component({
   selector: 'app-dashboard-prof',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule,
+    TopBarComponent,
+    StatusBadgeComponent,
+    FilterBarComponent
+  ],
   templateUrl: './dashboardP.html',
   styleUrl: './dashboardP.css'
 })
@@ -83,6 +93,49 @@ export class DashboardP implements OnInit {
       }
     });
   }
+  
+  filtrosProfessor: FiltroDropdown[] = [
+  {
+    chave: 'turno',
+    label: 'Turno',
+    valorSelecionado: '',
+    opcoes: [
+      { label: 'Todos os Turnos', valor: '' },
+      { label: 'Matutino', valor: 'Matutino' },
+      { label: 'Vespertino', valor: 'Vespertino' },
+      { label: 'Noturno', valor: 'Noturno' }
+    ]
+  },
+  {
+    chave: 'ordem',
+    label: 'Ordem',
+    valorSelecionado: '',
+    opcoes: [
+      { label: 'Mais Recentes', valor: 'recentes' },
+      { label: 'Mais Antigos', valor: 'antigos' }
+    ]
+  },
+  {
+    chave: 'turma',
+    label: 'Turma',
+    valorSelecionado: '',
+    opcoes: [
+      { label: 'Todas as Turmas', valor: '' },
+      { label: '7º Ano C', valor: '7º Ano C' },
+      { label: '8º Ano A', valor: '8º Ano A' },
+      { label: '9º Ano B', valor: '9º Ano B' }
+    ]
+  }
+];
+
+onFiltroProfessorChange(evento: { chave: string; valor: string }): void {
+  this.selecionarOpcao(evento.chave, evento.valor);
+}
+
+resetarFiltrosProfessor(): void {
+  this.limparFiltros();
+  this.filtrosProfessor.forEach(f => f.valorSelecionado = '');
+}
 
   // Navega para a tela solicitacoesP passando o ID da solicitação selecionada
   abrirSolicitacao(id: string): void {

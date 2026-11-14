@@ -7,7 +7,6 @@
   background-color: #f1f5f9;
   min-height: 100vh;
 
-  --navbar-bg: var(--navbar-bg, #002b66);
   --primary-blue: var(--primary-color, #2563eb);
   --primary-hover: #1d4ed8;
   --text-dark: #0f172a;
@@ -24,80 +23,6 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-/* ==========================================
-   1. CABEÇALHO (TOP-BAR)
-   ========================================== */
-.top-bar {
-  background-color: var(--navbar-bg);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.btn-back {
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.header-info h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.header-info small {
-  color: #94a3b8;
-  font-size: 11px;
-}
-
-.search-box input {
-  width: 320px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: none;
-  text-align: center;
-  font-size: 13px;
-  outline: none;
-}
-
-.top-bar-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.icon-btn {
-  background: #ef2b48;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: #ffffff;
-  cursor: pointer;
-}
-
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #ffffff;
-  color: #031830;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* ==========================================

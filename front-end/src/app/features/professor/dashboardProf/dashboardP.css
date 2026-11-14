@@ -1,150 +1,13 @@
-/* ==========================================
-   VARIÁVEIS LOCAIS DE TEMA (PROFESSOR)
-   ========================================== */
 :host {
-  display: block;
-  min-height: 100vh;
-  background-color: #f1f5f9;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
-  --navbar-bg: var(--navbar-bg, #002b66);
-  --primary-blue: var(--primary-color, #2563eb);
-  --primary-hover: #1d4ed8;
+  --primary-blue: var(--primary-color, #0066FF);
   --text-dark: #0f172a;
   --text-muted: #64748b;
-  --card-bg: #ffffff;
   --border-color: #e2e8f0;
 }
 
-.dashboard-page,
 .dashboard-prof-container {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
-  background-color: #f1f5f9;
-  color: var(--text-dark);
-}
-
-/* ==========================================
-   1. CABEÇALHO (TOP-BAR)
-   ========================================== */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: var(--navbar-bg);
-  padding: 12px 32px;
-  height: 60px;
-  box-sizing: border-box;
-}
-
-.header-left,
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #ffffff;
-  line-height: 1.2;
-}
-
-.header-info h1 {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.2px;
-}
-
-.header-info small {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* Botões do Topo */
-.back-btn,
-.notification-btn {
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  border-radius: 50%;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
-}
-
-.back-btn:hover,
-.notification-btn:hover {
-  opacity: 0.8;
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Campo de Pesquisa */
-.search-wrapper {
-  flex: 1;
-  max-width: 520px;
-  margin: 0 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.search-wrapper input,
-.search-box input {
-  width: 100%;
-  max-width: 380px;
-  padding: 8px 20px;
-  border-radius: 20px;
-  border: none;
-  background-color: #ffffff;
-  color: var(--text-dark);
-  font-size: 0.85rem;
-  text-align: center;
-  outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.search-wrapper input::placeholder {
-  color: var(--text-muted);
-}
-
-.top-bar-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.icon-btn {
-  background: #ef2b48;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: #ffffff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #ffffff;
-  color: #031830;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: #f4f6f9;
 }
 
 /* ==========================================
@@ -163,58 +26,6 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 24px;
-}
-
-.filter-label {
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--text-dark);
-}
-
-.btn-filter {
-  background-color: #e2e8f0;
-  border: none;
-  padding: 6px 16px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--primary-blue);
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.btn-filter:hover {
-  background-color: #cbd5e1;
-}
-
-/* Dropdown */
-.dropdown-container {
-  position: relative;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 8px 0;
-  margin-top: 4px;
-  z-index: 10;
-  min-width: 140px;
-}
-
-.dropdown-menu div {
-  padding: 8px 16px;
-  font-size: 13px;
-  cursor: pointer;
-  color: var(--text-dark);
-  transition: background-color 0.15s ease;
-}
-
-.dropdown-menu div:hover {
-  background-color: #f1f5f9;
 }
 
 .btn-clear {
@@ -325,31 +136,6 @@
 /* ==========================================
    4. BADGES DE STATUS & ESTADO VAZIO
    ========================================== */
-.badge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 16px;
-  border-radius: 20px;
-  display: inline-block;
-}
-
-.status-encaminhado,
-.badge.status-encaminhado {
-  color: var(--text-dark);
-  background-color: #e2e8f0;
-}
-
-.status-aprovado,
-.badge.status-aprovado {
-  background-color: #dcfce7;
-  color: #166534;
-}
-
-.status-rejeitado,
-.badge.status-rejeitado {
-  background-color: #fee2e2;
-  color: #991b1b;
-}
 
 .empty-state {
   text-align: center;
