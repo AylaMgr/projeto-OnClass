@@ -1,22 +1,75 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../common/prisma/prisma.service.js';
+import { LoginDto } from './dto/login.dto.js';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async login(credentials: { email?: string; pass?: string; role?: string }) {
-    // 1. Validação dos campos obrigatórios
-    if (!credentials.email || !credentials.pass) {
+  async login(credentials: LoginDto) {
+    const senhaInformada = credentials?.senha || credentials?.pass;
+
+    if (!credentials?.email || !senhaInformada) {
       throw new UnauthorizedException('E-mail e senha são obrigatórios.');
     }
 
-    // Declaração dos utilizadores de teste
+    const emailInput = credentials.email.toLowerCase().trim();
+
+    // 1. Procura primeiro no MongoDB Atlas (utilizadores reais cadastrados)
+    const usuarioBanco = await this.prisma.usuario.findFirst({
+      where: {
+        email: { equals: emailInput, mode: 'insensitive' },
+      },
+    });
+
+    if (usuarioBanco) {
+      if (usuarioBanco.senha !== senhaInformada) {
+        throw new UnauthorizedException('Senha incorreta.');
+      }
+
+      const roleRecebida =
+      credentials.role === 'ALUNO_RESPONSAVEL' || credentials.role === 'RESPONSAVEL'
+        ? 'ALUNO'
+        : credentials.role;
+
+    if (roleRecebida && usuarioBanco.role !== roleRecebida) {
+      throw new UnauthorizedException(
+        'O perfil selecionado não corresponde a este e-mail.',
+      );
+    }
+
+    const payload = {
+      sub: usuarioBanco.id,
+      userId: usuarioBanco.id,
+      email: usuarioBanco.email,
+      role: usuarioBanco.role,
+      nome: usuarioBanco.nome,
+    };
+
+      const token = this.jwtService.sign(payload, { secret: 'FOCASSIA' });
+
+      return {
+        access_token: token,
+        accessToken: token,
+        user: {
+          id: usuarioBanco.id,
+          email: usuarioBanco.email,
+          role: usuarioBanco.role,
+          nome: usuarioBanco.nome,
+        },
+      };
+    }
+
+    // 2. Fallback para os utilizadores de teste em memória
     const usuariosValidos = [
-      { email: 'professor@email.com', pass: '123456', role: 'PROFESSOR' },
-      { email: 'aluno@email.com', pass: '123456', role: 'ALUNO_RESPONSAVEL' },
-      { email: 'aluno@email.com', pass: '123456', role: 'ALUNO' },
-      { email: 'secretaria@email.com', pass: '123456', role: 'SECRETARIA' },
+      { email: 'professor@email.com', pass: '123456', role: 'PROFESSOR', nome: 'Professor OnClass' },
+      { email: 'aluno@email.com', pass: '123456', role: 'ALUNO_RESPONSAVEL', nome: 'Aluno Responsável' },
+      { email: 'aluno@email.com', pass: '123456', role: 'ALUNO', nome: 'Aluno OnClass' },
+      { email: 'secretaria@email.com', pass: '123456', role: 'SECRETARIA', nome: 'Secretaria OnClass' },
       { email: 'renato@email.com', pass: '123456', role: 'ALUNO', nome: 'Renato Alencar da Silva' },
       { email: 'deborah@email.com', pass: '123456', role: 'ALUNO', nome: 'Deborah W. Brito Espindola da Silva' },
       { email: 'julia@email.com', pass: '123456', role: 'ALUNO', nome: 'Julia Brito' },
@@ -24,57 +77,40 @@ export class AuthService {
       { email: 'rebeca@email.com', pass: '123456', role: 'ALUNO', nome: 'Rebeca Felix' },
     ];
 
-    const emailInput = credentials.email.toLowerCase();
-
-    // 2. Procura contas cadastradas com este e-mail
     const contasComEsteEmail = usuariosValidos.filter(
-      (u) => u.email.toLowerCase() === emailInput
+      (u) => u.email.toLowerCase() === emailInput,
     );
 
     if (contasComEsteEmail.length === 0) {
       throw new UnauthorizedException('E-mail não encontrado.');
     }
 
-    // 3. Verifica se a senha informada está correta
     const contaComSenhaCorreta = contasComEsteEmail.find(
-      (u) => u.pass === credentials.pass
+      (u) => u.pass === senhaInformada,
     );
 
     if (!contaComSenhaCorreta) {
       throw new UnauthorizedException('Senha incorreta.');
     }
 
-    // 4. Verifica se o perfil selecionado é compatível com o e-mail
-    if (credentials.role) {
-      const perfilValido = contasComEsteEmail.some((u) => {
-        if (u.role === credentials.role) return true;
-        if (credentials.role === 'ALUNO_RESPONSAVEL' && u.role === 'ALUNO') return true;
-        if (credentials.role === 'ALUNO' && u.role === 'SECRETARIA') return true;
-        return false;
-      });
-
-      if (!perfilValido) {
-        throw new UnauthorizedException('O perfil selecionado não corresponde a este e-mail.');
-      }
-    }
-
-    const user = contaComSenhaCorreta;
-
-    // 5. Geração do token JWT e retorno
     const payload = {
-      sub: user.email,
-      email: user.email,
-      role: user.role,
-      nome: (user as any).nome || 'Usuário OnClass',
+      sub: '673a9f12c8e4b20012a4b5c6',
+      userId: '673a9f12c8e4b20012a4b5c6',
+      email: contaComSenhaCorreta.email,
+      role: contaComSenhaCorreta.role,
+      nome: contaComSenhaCorreta.nome,
     };
 
+    const token = this.jwtService.sign(payload, { secret: 'FOCASSIA' });
+
     return {
-      accessToken: this.jwtService.sign(payload),
+      access_token: token,
+      accessToken: token,
       user: {
-        id: '123',
-        email: user.email,
-        role: user.role,
-        nome: (user as any).nome || 'Usuário OnClass',
+        id: '673a9f12c8e4b20012a4b5c6',
+        email: contaComSenhaCorreta.email,
+        role: contaComSenhaCorreta.role,
+        nome: contaComSenhaCorreta.nome,
       },
     };
   }
