@@ -1,20 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { CriarNotificacao } from '../../criar-notificacao/criar-notificacao';
 import { NotificacoesService, Notificacao } from '../../notificacoes/services/notificacoes.service';
-import { Router } from '@angular/router';
 import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { FilterBarComponent, FiltroDropdown } from '../../../shared/components/filter-bar/filter-bar.component';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, 
+    FormsModule,
     CriarNotificacao,
     TopBarComponent,
     StatusBadgeComponent,
@@ -24,7 +25,6 @@ import { FilterBarComponent, FiltroDropdown } from '../../../shared/components/f
   styleUrl: './dashboard.css'
 })
 export class Dashboard implements OnInit {
-  // Controle de Interface e Formulários
   termoPesquisa: string = '';
   mostrarFormulario: boolean = false;
   notificacoes: Notificacao[] = [];
@@ -32,89 +32,24 @@ export class Dashboard implements OnInit {
   carregandoIa: boolean = false;
   processandoEnvio: boolean = false;
   resultadoIa: any = null;
+
+  // Campos extraídos pela IA para o formulário estruturado
   nomeExtraidoIa: string = 'N/I';
   afastamentoExtraidoIa: string = 'N/I';
+  medicoExtraidoIa: string = 'N/I';
+  crmExtraidoIa: string = 'N/I';
+  cidExtraidoIa: string = 'N/I';
+  dataInicioExtraidaIa: string = '';
+  dataFimExtraidaIa: string = '';
   parecerIa: string = 'Análise automática realizada por IA.';
-  
-  // Controle de Seleção e Timeline Independente
-  notificacaoSelecionada: Notificacao | null = null;
-  
-  // Regra de Tentativas e Persistência
-  tentativasRecusadas: number = 0;
-  idSolicitacaoAtual: number | null = null;
 
-  // Filtros e Paginação
+  notificacaoSelecionada: Notificacao | null = null;
+  tentativasRecusadas: number = 0;
+
   filtroStatus: string = 'TODOS';
   paginaAtual: number = 1;
   itensPorPagina: number = 5;
 
-  constructor(
-    private readonly notificacoesService: NotificacoesService,
-    private readonly http: HttpClient,
-    private readonly router: Router,
-  ) {}
-
-  ngOnInit(): void {
-    this.carregarNotificacoes();
-    this.notificacoesService.notificacaoCriada$.subscribe(() => this.carregarNotificacoes());
-  }
-
-  // Normalização padronizada de Status
-  private normalizarStatus(statusRaw: any): string {
-  if (!statusRaw) return '';
-  return String(statusRaw)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-    .toUpperCase()
-    .trim();
-}
-
-  getStatusClass(statusRaw: string): string {
-  const status = this.normalizarStatus(statusRaw);
-  
-  if (status.includes('APROV') || status.includes('CONCLU')) {
-    return 'status-aprovado';
-  }
-  if (status.includes('REJEIT') || status.includes('RECUS')) {
-    return 'status-rejeitado';
-  }
-  if (status.includes('SECRETARIA') || status.includes('ANALISE') || status.includes('PENDENTE')) {
-    return 'status-pendente';
-  }
-  return 'status-pendente';
-}
-
-obterTextoStatus(statusRaw: string): string {
-  const status = this.normalizarStatus(statusRaw);
-  
-  if (status.includes('APROV') || status.includes('CONCLU')) {
-    return 'Solicitação Aprovada Definitivamente';
-  }
-  if (status.includes('REJEIT') || status.includes('RECUS')) {
-    return 'Recusado pela Secretaria';
-  }
-  return 'Em Análise pela Secretaria';
-}
-  obterAnalista(item: any): string {
-    if (item.administrador) return item.administrador;
-    return (item.tipo === 'ATESTADO' || item.temUpload || item.arquivoUrl) ? 'IA' : 'Secretaria';
-  }
-
-  // ==========================================
-  // CONTROLE DO CARD DE DETALHES & TIMELINE
-  // ==========================================
-abrirDetalhes(item: Notificacao): void {
-  console.log('Item clicado:', item);
-  this.notificacaoSelecionada = item;
-}
-
-fecharDetalhes(): void {
-  this.notificacaoSelecionada = null;
-}
-
-  // ===============================================
-  //           FILTROS SISTEMA WHITE-LABEL
-  // ===============================================
   filtrosStatusAluno: FiltroDropdown[] = [
     {
       chave: 'status',
@@ -129,43 +64,111 @@ fecharDetalhes(): void {
     }
   ];
 
+  constructor(
+    private readonly notificacoesService: NotificacoesService,
+    private readonly authService: AuthService,
+    private readonly http: HttpClient,
+    private readonly router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.carregarNotificacoes();
+    this.notificacoesService.notificacaoCriada$.subscribe(() => {
+      this.reiniciarAnalise();
+      this.carregarNotificacoes();
+    });
+  }
+
+  private normalizarStatus(statusRaw: any): string {
+    if (!statusRaw) return '';
+    return String(statusRaw)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .trim();
+  }
+
+  getStatusClass(statusRaw: string): string {
+    const status = this.normalizarStatus(statusRaw);
+    if (status === 'ENCAMINHADO_PROFESSOR') {
+      return 'status-pendente';
+    }
+    if (status.includes('APROV') || status.includes('CONCLU')) {
+      return 'status-aprovado';
+    }
+    if (status.includes('REJEIT') || status.includes('RECUS')) {
+      return 'status-rejeitado';
+    }
+    return 'status-pendente';
+  }
+
+  obterTextoStatus(statusRaw: string): string {
+    const status = this.normalizarStatus(statusRaw);
+    if (status === 'ENCAMINHADO_PROFESSOR') {
+      return 'Em Análise pelo Professor';
+    }
+    if (status.includes('APROV') || status.includes('CONCLU')) {
+      return 'Solicitação Aprovada Definitivamente';
+    }
+    if (status.includes('REJEIT') || status.includes('RECUS')) {
+      return 'Recusado pela Secretaria';
+    }
+    return 'Em Análise pela Secretaria';
+  }
+
+  obterAnalista(item: any): string {
+    if (item.administrador) return item.administrador;
+    return (item.tipo === 'ATESTADO' || item.temUpload || item.arquivoUrl || item.arquivoNome) ? 'IA' : 'Secretaria';
+  }
+
+  abrirDetalhes(item: Notificacao): void {
+    this.notificacaoSelecionada = item;
+  }
+
+  fecharDetalhes(): void {
+    this.notificacaoSelecionada = null;
+  }
+
   onFiltroStatusChange(evento: { chave: string; valor: string }): void {
     this.filtrarPorStatus(evento.valor);
   }
 
-
-  // ==========================================
-  // FILTROS DA TABELA DE ACOMPANHAMENTO
-  // ==========================================
   filtrarPorStatus(status: string): void {
     this.filtroStatus = status;
     this.paginaAtual = 1;
   }
 
   get notificacoesFiltradas(): Notificacao[] {
-  return this.notificacoes.filter(item => {
-    const termo = this.termoPesquisa.trim().toLowerCase();
-    const motivoMatch = !termo || (item.motivo && item.motivo.toLowerCase().includes(termo));
+    return this.notificacoes.filter(item => {
+      const termo = this.termoPesquisa.trim().toLowerCase();
+      const motivoMatch = !termo || (item.motivo && item.motivo.toLowerCase().includes(termo));
+      if (!motivoMatch) return false;
 
-    if (!motivoMatch) return false;
-    if (this.filtroStatus === 'TODOS') return true;
+      if (this.filtroStatus === 'TODOS') return true;
 
-    const itemStatus = this.normalizarStatus(item.status);
-    const filtro = this.normalizarStatus(this.filtroStatus);
+      const itemStatus = this.normalizarStatus(item.status);
+      const filtro = this.normalizarStatus(this.filtroStatus);
 
-    if (filtro === 'APROVADO') {
-      return itemStatus.includes('APROV') || itemStatus.includes('CONCLU') || itemStatus.includes('DEFINITIVAMENTE');
-    }
-    if (filtro === 'REJEITADO') {
-      return itemStatus.includes('REJEIT') || itemStatus.includes('RECUS');
-    }
-    if (filtro === 'PENDENTE') {
-      return itemStatus.includes('PENDENTE') || itemStatus.includes('SECRETARIA') || itemStatus.includes('ANALISE');
-    }
-
-    return itemStatus === filtro;
-  });
-}
+      if (filtro === 'APROVADO') {
+        return (
+          itemStatus !== 'ENCAMINHADO_PROFESSOR' &&
+          (itemStatus.includes('APROV') || itemStatus.includes('CONCLU') || itemStatus.includes('DEFINITIVAMENTE'))
+        );
+      }
+      if (filtro === 'REJEITADO') {
+        return itemStatus.includes('REJEIT') || itemStatus.includes('RECUS');
+      }
+      if (filtro === 'PENDENTE') {
+        return (
+          itemStatus === 'ENCAMINHADO_PROFESSOR' ||
+          itemStatus.includes('PENDENTE') ||
+          itemStatus.includes('SECRETARIA') ||
+          itemStatus.includes('ANALISE')
+        );
+      }
+      return itemStatus === filtro;
+    });
+  }
 
   get notificacoesPaginadas(): Notificacao[] {
     const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
@@ -182,9 +185,6 @@ fecharDetalhes(): void {
     }
   }
 
-  // ==========================================
-  // FLUXO DE FORMULÁRIO E IA
-  // ==========================================
   toggleFormulario(): void {
     this.mostrarFormulario = !this.mostrarFormulario;
     if (!this.mostrarFormulario) {
@@ -195,228 +195,208 @@ fecharDetalhes(): void {
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-
     if (input.files && input.files.length > 0) {
       this.arquivoAtestado = input.files[0];
       this.resultadoIa = null;
       this.enviarAtestadoParaIa();
     }
   }
- enviarAtestadoParaIa(nomeAlunoCadastrado?: string): void {
-  if (!this.arquivoAtestado || this.processandoEnvio) return;
 
-  const usuarioSalvo = JSON.parse(localStorage.getItem('user') || '{}');
-  const nomeFinal = nomeAlunoCadastrado || usuarioSalvo.nome || 'Deborah W. Brito Espindola da silva';
-  const idAluno = usuarioSalvo.id || usuarioSalvo.alunoId || '1';
-
-  this.processandoEnvio = true;
-  this.carregandoIa = true;
-  this.resultadoIa = null;
-
-  const formData = new FormData();
-  formData.append('file', this.arquivoAtestado);
-  formData.append('alunoId', String(idAluno));
-  formData.append('nomeAluno', nomeFinal);
-
-  this.http.post('http://localhost:3000/ai/upload-atestado', formData).subscribe({
-    next: (res: any) => {
-      const ia = res.analiseIa || res.analiseIA || res.resultadoIa || res;
-      this.carregandoIa = false;
-      this.processandoEnvio = false;
-
-      if (res.id || res.notificacaoId || ia.id) {
-        this.idSolicitacaoAtual = res.id || res.notificacaoId || ia.id;
-      }
-
-      this.nomeExtraidoIa = ia.nomeEncontrado || ia.nomeLido || ia.nome || 'N/I';
-      this.afastamentoExtraidoIa = ia.datasAfastamento || ia.afastamento || ia.diasAfastamento || 'N/I';
-      this.parecerIa = ia.relatorioSecretaria || ia.parecer || 'Análise realizada por IA.';
-
-      // Validação Estrita de IA
-      const iaAprovou = ia.sugestaoAcao === 'APROVAR' || ia.sugestao === 'APROVAR' || ia.acao === 'APROVAR';
-      const dadosValidos = this.nomeExtraidoIa !== 'N/I' && this.afastamentoExtraidoIa !== 'N/I';
-
-      this.resultadoIa = {
-      ...ia,
-      valido: iaAprovou && dadosValidos,
-      sugestaoAcao: (iaAprovou && dadosValidos) ? 'APROVAR' : 'REJEITAR',
-      periodo: this.afastamentoExtraidoIa,
-      assinaturaMedica: iaAprovou ? 'Verificada' : 'Divergente / Não Verificada',
-      nomeLido: this.nomeExtraidoIa,
-      mensagem: iaAprovou 
-        ? 'Aprovado automaticamente! O corpo docente será notificado.' 
-        : 'Não foi possível validar as informações do atestado automaticamente.'
-    };
-
-    if (this.resultadoIa.valido) {
-      // Aprovado automaticamente: Cria/Atualiza nos Acompanhamentos Recentes
-      this.salvarOuAtualizarJustificativa('Solicitação Aprovada Definitivamente');
+private obterDadosAlunoLogado(): { id: string; nome: string; matricula: string } {
+    const info = this.authService.getUserInfo();
+    if (info && info.id) {
+      return {
+        id: info.id,
+        nome: info.nome,
+        matricula: info.matricula,
+      };
     }
-  },
-  error: (err: any) => {
-    console.error('Erro ao processar atestado com a IA:', err);
-    this.carregandoIa = false;
-    this.processandoEnvio = false;
-    alert('Ocorreu um erro ao conectar com o servidor.');
+    return { id: '', nome: '', matricula: '' };
   }
-});
-}
-
-salvarOuAtualizarJustificativa(statusDefinido: string): void {
-  const usuarioSalvo = JSON.parse(localStorage.getItem('user') || '{}');
-  const alunoIdFinal = usuarioSalvo.id || usuarioSalvo.alunoId || 1;
-
-  const resIa = this.resultadoIa?.analiseIa || this.resultadoIa?.analiseIA || this.resultadoIa || {};
   
-  const nomeFinal = (this.nomeExtraidoIa && this.nomeExtraidoIa !== 'N/I') 
-    ? this.nomeExtraidoIa 
-    : (resIa.nomeEncontrado || resIa.nomeLido || resIa.nome || 'Deborah W. Brito Espindola da silva');
+  private getAuthHeaders(): HttpHeaders {
+  const token = this.authService.getToken();
+  return token
+    ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+    : new HttpHeaders();
+}
 
-  const afastamentoFinal = (this.afastamentoExtraidoIa && this.afastamentoExtraidoIa !== 'N/I') 
-    ? this.afastamentoExtraidoIa 
-    : (resIa.datasAfastamento || resIa.afastamento || resIa.diasAfastamento || '1 dia');
+  private gerarPastaAluno(): string {
+    const aluno = this.obterDadosAlunoLogado();
+    const nomeLimpo = (aluno.nome || 'aluno')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-zA-Z0-9_-]/g, '');
 
-  const eAprovado = statusDefinido === 'Solicitação Aprovada Definitivamente';
-  const statusFinal = eAprovado ? 'Solicitação Aprovada Definitivamente' : 'Em Análise pela Secretaria';
+    const matriculaLimpa = (aluno.matricula || 'geral')
+      .trim()
+      .replace(/[^a-zA-Z0-9_-]/g, '');
 
-  const parecerFinal = eAprovado 
-    ? 'Atestado validado e aceito automaticamente por IA.' 
-    : 'Atestado encaminhado para análise manual da Secretaria.';
+    return `alunos/${nomeLimpo}_${matriculaLimpa}`;
+  }
 
-  const descricaoFormatada = `${parecerFinal} | Nome Lido: ${nomeFinal} | Afastamento: ${afastamentoFinal}` +
-    (eAprovado ? ' | Notificação enviada ao corpo docente.' : ' | Aguardando validação da Secretaria.');
+  /**
+   * Renomeia o arquivo com a Data e Hora exatas em que foi encaminhado (AAAA-MM-DD_HH-mm-ss.ext)
+   */
+  private renomearArquivoComDataHora(arquivo: File): File {
+    const agora = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const dataStr = `${agora.getFullYear()}-${pad(agora.getMonth() + 1)}-${pad(agora.getDate())}`;
+    const horaStr = `${pad(agora.getHours())}-${pad(agora.getMinutes())}-${pad(agora.getSeconds())}`;
 
-  // Prepara o objeto com todos os sinalizadores de aprovação para evitar override do backend
-  const payloadNotificacao: any = {
-    administrador: eAprovado ? 'IA OnClass' : 'Secretaria',
-    motivo: resIa.motivo || 'Tratamento Médico (IA)',
-    dataEnvio: new Date().toISOString(),
-    dataInicio: new Date().toISOString(),
-    horarioEnvio: new Date().toISOString(),
-    dataFim: new Date().toISOString(),
-    status: statusFinal,
-    statusAprovado: eAprovado,
-    aprovadoPelaIa: eAprovado,
-    descricao: descricaoFormatada,
-    alunoId: alunoIdFinal,
-    tipo: 'ATESTADO',
-    declaracaoVeracidade: true,
-    notificarProfessor: eAprovado
-  };
+    const pontoIdx = arquivo.name.lastIndexOf('.');
+    const extensao = pontoIdx !== -1 ? arquivo.name.substring(pontoIdx) : '.pdf';
+    const novoNome = `${dataStr}_${horaStr}${extensao}`;
 
-  const concluirSalvamento = (resServidor?: any) => {
-    if (resServidor?.id) {
-      this.idSolicitacaoAtual = resServidor.id;
-    }
-
-    // 1. Atualiza a lista na memória com status correto garantido
-    const itemAtualizado: Notificacao = {
-      id: this.idSolicitacaoAtual || Date.now(),
-      ...payloadNotificacao
-    };
-
-    const index = this.notificacoes.findIndex(n => n.id === itemAtualizado.id);
-    if (index !== -1) {
-      this.notificacoes[index] = itemAtualizado;
-    } else {
-      this.notificacoes.unshift(itemAtualizado);
-    }
-
-    this.notificacoes = [...this.notificacoes];
-    this.paginaAtual = 1;
-    this.processandoEnvio = false;
-
-    // 2. Tenta fazer um PATCH extra de confirmação do status no backend
-    if (this.idSolicitacaoAtual) {
-      this.http.patch(`http://localhost:3000/notificacoes/${this.idSolicitacaoAtual}`, {
-        status: statusFinal,
-        administrador: eAprovado ? 'IA OnClass' : 'Secretaria'
-      }).subscribe({
-        next: () => {},
-        error: () => {}
-      });
-    }
-  };
-
-  // Se já temos um ID ativo, tenta o PUT primeiro. Caso contrário ou se der 404, faz o POST!
-  if (this.idSolicitacaoAtual) {
-    payloadNotificacao.id = this.idSolicitacaoAtual;
-    this.http.put(`http://localhost:3000/notificacoes/${this.idSolicitacaoAtual}`, payloadNotificacao).subscribe({
-      next: (res) => concluirSalvamento(res),
-      error: (err: any) => {
-        if (err.status === 404) {
-          delete payloadNotificacao.id;
-          this.http.post('http://localhost:3000/notificacoes', payloadNotificacao).subscribe({
-            next: (res) => concluirSalvamento(res),
-            error: () => this.processandoEnvio = false
-          });
-        } else {
-          this.processandoEnvio = false;
-        }
-      }
-    });
-  } else {
-    this.http.post('http://localhost:3000/notificacoes', payloadNotificacao).subscribe({
-      next: (res) => concluirSalvamento(res),
-      error: (err: any) => {
-        console.error('Erro ao cadastrar notificação:', err);
-        this.processandoEnvio = false;
-      }
+    return new File([arquivo], novoNome, {
+      type: arquivo.type,
+      lastModified: agora.getTime()
     });
   }
-}
-carregarNotificacoes(): void {
-  this.notificacoesService.listarTodas().subscribe({
-    next: (dados: any[]) => {
-      if (!dados) return;
 
-      this.notificacoes = dados.map(item => {
-        const itemDesc = item.descricao || '';
-        const eValidadoIa = item.administrador === 'IA OnClass' || 
-                            itemDesc.includes('validado e aceito automaticamente por IA') ||
-                            item.aprovadoPelaIa === true;
+  enviarAtestadoParaIa(nomeAlunoCadastrado?: string): void {
+    if (!this.arquivoAtestado || this.carregandoIa) return;
 
-        // Se for um atestado que foi aprovado pela IA OnClass, mantém o status de Aprovado Definitivamente
-        if (eValidadoIa) {
-          return {
-            ...item,
-            status: 'Solicitação Aprovada Definitivamente',
-            administrador: 'IA OnClass'
+    const usuarioSalvo = this.obterDadosAlunoLogado();
+    const nomeFinal = nomeAlunoCadastrado || usuarioSalvo.nome || '';
+    const idAluno = String(usuarioSalvo.id || '');
+    const pastaAluno = this.gerarPastaAluno();
+
+    // Renomeia o arquivo com a data e hora do envio e identifica a pasta do aluno
+    const arquivoRenomeado = this.renomearArquivoComDataHora(this.arquivoAtestado);
+    this.arquivoAtestado = arquivoRenomeado;
+
+    this.carregandoIa = true;
+    this.resultadoIa = null;
+
+    const formData = new FormData();
+    formData.append('file', arquivoRenomeado);
+    if (idAluno) formData.append('alunoId', idAluno);
+    if (nomeFinal) formData.append('nomeAluno', nomeFinal);
+    formData.append('pastaDestino', pastaAluno);
+    formData.append('nomeArquivoRenomeado', arquivoRenomeado.name);
+
+    this.http
+      .post<any>('http://localhost:3000/notificacoes/upload-atestado', formData, {
+        headers: this.getAuthHeaders(),
+      })
+      .subscribe({
+        next: (res: any) => {
+          const ia = res.analyseIa || res.analiseIA || res.resultadoIa || res;
+          this.carregandoIa = false;
+
+          // Recolhe todas as informações extraídas do atestado
+          this.nomeExtraidoIa = ia.nomeEncontrado || ia.nomePaciente || ia.nomeLido || ia.nome || nomeFinal || 'N/I';
+          this.afastamentoExtraidoIa = ia.datasAfastamento || ia.periodoAfastamento || ia.afastamento || ia.diasAfastamento || '1 dia';
+          this.medicoExtraidoIa = ia.medico || ia.nomeMedico || 'N/I';
+          this.crmExtraidoIa = ia.crm || 'N/I';
+          this.cidExtraidoIa = ia.cid || ia.cid10 || 'N/I';
+          this.dataInicioExtraidaIa = ia.dataInicio || '';
+          this.dataFimExtraidaIa = ia.dataFim || ia.dataInicio || '';
+          this.parecerIa = ia.relatorioSecretaria || ia.parecer || ia.resumo || 'Análise realizada por IA.';
+
+          const iaAprovou = ia.sugestaoAcao === 'APROVAR' || ia.sugestao === 'APROVAR' || ia.acao === 'APROVAR';
+          const dadosValidos = this.nomeExtraidoIa !== 'N/I' && this.afastamentoExtraidoIa !== 'N/I';
+          const atestadoVeridico = iaAprovou && dadosValidos;
+
+          this.resultadoIa = {
+            ...ia,
+            atestadoId: res.atestadoId || ia.atestadoId || '',
+            arquivoSalvo: `${pastaAluno}/${arquivoRenomeado.name}`,
+            valido: atestadoVeridico,
+            sugestaoAcao: atestadoVeridico ? 'APROVAR' : 'REJEITAR',
+            status: atestadoVeridico ? 'APROVADA' : 'PENDENTE',
+            periodo: this.afastamentoExtraidoIa,
+            assinaturaMedica: this.medicoExtraidoIa !== 'N/I'
+              ? `${this.medicoExtraidoIa}${this.crmExtraidoIa !== 'N/I' ? ' - CRM ' + this.crmExtraidoIa : ''}`
+              : (atestadoVeridico ? 'Verificada' : 'Divergente / Não Verificada'),
+            nomeLido: this.nomeExtraidoIa,
+            mensagem: atestadoVeridico
+              ? 'Atestado verídico validado com status Aprovado e encaminhado à Secretaria!'
+              : 'Não foi possível validar automaticamente. Escolha enviar para análise manual da Secretaria (Status: Pendente).',
           };
-        }
-        return item;
+
+          // Atualiza imediatamente a tabela "Acompanhamentos Recentemente" do aluno
+          this.carregarNotificacoes();
+        },
+        error: (err: any) => {
+          console.error('Erro ao processar atestado com a IA:', err);
+          this.carregandoIa = false;
+          alert(err?.error?.message || 'Ocorreu um erro ao conectar com o servidor de IA.');
+        },
       });
-    },
-    error: (err: any) => {
-      console.error('Erro ao carregar notificações:', err);
+  }
+
+  private salvarJustificativaComAnexo(
+    statusBackend: 'APROVADA' | 'PENDENTE',
+    exibirAlertaSecretaria = false,
+  ): void {
+    if (exibirAlertaSecretaria || statusBackend === 'PENDENTE') {
+      alert('Atestado encaminhado para análise manual da Secretaria com status Pendente.');
     }
-  });
-}
+    this.resultadoIa = null;
+    this.arquivoAtestado = null;
+    this.carregarNotificacoes();
+  }
 
-confirmarEnvioAprovado(): void {
-  this.salvarOuAtualizarJustificativa('Solicitação Aprovada Definitivamente');
-  this.reiniciarAnalise();
-}
+  carregarNotificacoes(): void {
+    const userAtual = this.obterDadosAlunoLogado();
+    const meuId = userAtual.id;
 
-enviarParaSecretariaPendente(): void {
-  // Apenas grava quando o aluno clica no botão de encaminhar para a secretaria
-  this.salvarOuAtualizarJustificativa('Em Análise pela Secretaria');
-  alert('Sua solicitação foi encaminhada para a análise da Secretaria!');
-  this.reiniciarAnalise();
-}
+    // Se não houver ID do aluno logado, não exibe solicitações de terceiros
+    if (!meuId) {
+      this.notificacoes = [];
+      return;
+    }
 
-reiniciarAnalise(): void {
-  this.arquivoAtestado = null;
-  this.resultadoIa = null;
-  this.carregandoIa = false;
-  this.processandoEnvio = false;
-  this.tentativasRecusadas = 0;
-  this.idSolicitacaoAtual = null;
-  this.mostrarFormulario = false;
-  this.nomeExtraidoIa = 'N/I';
-  this.afastamentoExtraidoIa = 'N/I';
-  this.parecerIa = 'Análise automática realizada por IA.';
-}
+    this.notificacoesService.listarPorAluno(meuId).subscribe({
+      next: (dados: any[]) => {
+        const lista = Array.isArray(dados) ? dados : [];
+        const minhasNotificacoes = lista.filter(
+          (item) => String(item.alunoId) === meuId
+        );
+
+        this.notificacoes = minhasNotificacoes.map((item: any) => ({
+          ...item,
+          status: this.normalizarStatus(item.status),
+          dataInicio: item.dataInicio || item.dataEnvio,
+          dataFim: item.dataFim || item.dataEnvio,
+          administrador:
+            item.administrador ||
+            (item.tipo === 'ATESTADO' || item.atestadoId ? 'IA OnClass' : 'Secretaria'),
+        }));
+      },
+      error: (err: any) => {
+        console.error('Erro ao carregar notificações do aluno:', err);
+      },
+    });
+  }
+
+  confirmarEnvioAprovado(): void {
+    this.salvarJustificativaComAnexo('APROVADA', false);
+  }
+
+  enviarParaSecretariaPendente(): void {
+    this.salvarJustificativaComAnexo('PENDENTE', true);
+  }
+
+  reiniciarAnalise(): void {
+    this.arquivoAtestado = null;
+    this.resultadoIa = null;
+    this.carregandoIa = false;
+    this.tentativasRecusadas = 0;
+    this.mostrarFormulario = false;
+    this.nomeExtraidoIa = 'N/I';
+    this.afastamentoExtraidoIa = 'N/I';
+    this.medicoExtraidoIa = 'N/I';
+    this.crmExtraidoIa = 'N/I';
+    this.cidExtraidoIa = 'N/I';
+    this.dataInicioExtraidaIa = '';
+    this.dataFimExtraidaIa = '';
+    this.parecerIa = 'Análise automática realizada por IA.';
+  }
 
   voltar(): void {
     this.router.navigate(['/login']);

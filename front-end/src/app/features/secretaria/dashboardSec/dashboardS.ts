@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { NotificacoesService, Notificacao } from '../../notificacoes/services/notificacoes.service';
 import { Subscription } from 'rxjs';
 import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
@@ -9,6 +9,7 @@ import { StatusBadgeComponent } from '../../../shared/components/status-badge/st
 import { FilterBarComponent, FiltroDropdown } from '../../../shared/components/filter-bar/filter-bar.component';
 
 export interface ItemTabelaResumo {
+  id: string;
   alunoNome: string;
   matricula: string;
   turma: string;
@@ -45,14 +46,14 @@ export interface MotivosAusencia {
   selector: 'app-dashboards',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    RouterLink,
+    CommonModule,
+    FormsModule,
     TopBarComponent,
     StatusBadgeComponent,
-    FilterBarComponent],
-  templateUrl: './dashboards.html',
-  styleUrl: './dashboards.css'
+    FilterBarComponent
+  ],
+  templateUrl: './dashboardS.html',
+  styleUrl: './dashboardS.css'
 })
 export class Dashboards implements OnInit, OnDestroy {
   notificacoes: Notificacao[] = [];
@@ -68,7 +69,7 @@ export class Dashboards implements OnInit, OnDestroy {
   constructor(
     private readonly notificacoesService: NotificacoesService,
     private readonly router: Router,
-    private readonly cdr: ChangeDetectorRef,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -84,23 +85,38 @@ export class Dashboards implements OnInit, OnDestroy {
     }
   }
 
+  private normalizarStatus(statusRaw: any): string {
+    if (!statusRaw) return '';
+    return String(statusRaw)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .trim();
+  }
+
+  private extrairCampoDescricao(descricao: string, chave: string): string {
+    if (!descricao) return '';
+    const regex = new RegExp(`${chave}:\\s*([^|]+)`, 'i');
+    const match = descricao.match(regex);
+    return match ? match[1].trim() : '';
+  }
+
   carregarNotificacoes(): void {
-  this.notificacoesService.listarTodasParaSecretaria().subscribe({
-    next: (dados) => {
-      console.log('Dados recebidos da API na Secretaria:', dados);
-      this.notificacoes = dados || [];
+    this.notificacoesService.listarTodasParaSecretaria().subscribe({
+      next: (dados) => {
+        this.notificacoes = dados || [];
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao carregar notificações na Secretaria:', err)
+    });
+  }
 
-      // 1. Recalcula as métricas, cartões e gráficos imediatamente com o período atual
-      if (typeof (this as any).selecionarPeriodo === 'function') {
-        (this as any).selecionarPeriodo(this.periodoSelecionado || 'Últimos 7 dias');
-      }
-
-      // 2. Notifica o Angular para renderizar os dados na tela na hora
-      this.cdr.detectChanges();
-    },
-    error: (err) => console.error('Erro ao carregar notificações:', err)
-  });
-}
+  // Navega diretamente para a análise detalhada do atestado selecionado
+  abrirSolicitacao(item: ItemTabelaResumo): void {
+    if (item?.id) {
+      this.router.navigate(['/secretaria/solicitacoes', item.id]);
+    }
+  }
 
   // Navegações e Menu
   verHistoricoRecentes(): void {
@@ -132,48 +148,59 @@ export class Dashboards implements OnInit, OnDestroy {
   fecharDetalhes(): void {
     this.solicitacaoSelecionada = null;
   }
- // Listas extraídas das notificações reais
- // Listas extraídas das notificações reais
-get recebidosRecentemente(): ItemTabelaResumo[] {
-  return this.notificacoes.map((n: any) => {
-    const statusOriginal = n.status || '';
-    const motivoTexto = n.motivo || n.descricao || 'Sem Motivo';
 
-    // Identifica se foi aprovado automaticamente pela IA ou se contém (IA) no motivo
-    const ehAprovadoIa = 
-      statusOriginal === 'Solicitação Aprovada Definitivamente' ||
-      statusOriginal.toLowerCase().includes('aprov') ||
-      statusOriginal.toLowerCase().includes('conclu') ||
-      motivoTexto.includes('(IA)');
+  // Listas extraídas das notificações reais
+  get recebidosRecentemente(): ItemTabelaResumo[] {
+    return this.notificacoes.map((n: any) => {
+      const statusNorm = this.normalizarStatus(n.status);
+      const descricaoTexto = n.descricao || '';
+      const motivoTexto = n.motivo || 'Sem Motivo';
 
-    // Define o responsável pela análise
-    const analiseResponsavel = ehAprovadoIa 
-      ? 'IA OnClass' 
-      : (n.administrador || 'Secretaria');
+      const ehAprovado =
+        statusNorm === 'APROVADA' ||
+        statusNorm === 'APROVADO' ||
+        statusNorm === 'ENCAMINHADO_PROFESSOR' ||
+        statusNorm.includes('CONCLU') ||
+        statusNorm.includes('DEFINITIVAMENTE');
 
-    // Define o status final para exibição na tabela
-    const statusFinal = ehAprovadoIa ? 'Concluído' : (statusOriginal || 'Pendente');
+      const ehRejeitado = statusNorm.includes('REJEIT') || statusNorm.includes('RECUS');
 
-    return {
-      alunoNome: n.alunoNome || n.aluno?.nome || 'Aluno Não Identificado',
-      matricula: n.matricula || n.alunoMatricula || '2024001',
-      turma: n.turma || n.aluno?.turma || 'Ensino Médio',
-      motivo: motivoTexto,
-      dataEnvio: n.dataEnvio 
-        ? new Date(n.dataEnvio).toLocaleDateString('pt-BR') 
-        : 'Hoje',
-      horarioEnvio: n.dataEnvio 
-        ? new Date(n.dataEnvio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) 
-        : '--:--',
-      status: statusFinal,
-      analisadoPor: analiseResponsavel
-    };
-  }).slice(0, 5); // Limita o resultado às 5 últimas solicitações
-}
+      const analiseResponsavel =
+        n.administrador ||
+        (ehAprovado && statusNorm !== 'ENCAMINHADO_PROFESSOR' ? 'IA OnClass' : 'Secretaria');
+
+      let statusFinal = 'Pendente';
+      if (statusNorm === 'ENCAMINHADO_PROFESSOR') statusFinal = 'Encaminhado';
+      else if (ehAprovado) statusFinal = 'Concluído';
+      else if (ehRejeitado) statusFinal = 'Rejeitada';
+
+      const nomePacienteDesc =
+        this.extrairCampoDescricao(descricaoTexto, 'Paciente') ||
+        this.extrairCampoDescricao(descricaoTexto, 'Nome Lido');
+
+      const dataRaw = n.createdAt || n.criadoEm || n.dataEnvio;
+      const dataObj = dataRaw ? new Date(dataRaw) : null;
+      const dataValida = dataObj && !isNaN(dataObj.getTime());
+
+      return {
+        id: String(n.id || n._id || ''),
+        alunoNome: n.alunoNome || n.aluno?.nome || nomePacienteDesc || 'Aluno Não Identificado',
+        matricula: n.matricula || n.alunoMatricula || n.aluno?.matricula || 'N/I',
+        turma: n.turma || n.aluno?.turma || n.aluno?.turmas?.[0] || 'Ensino Médio',
+        motivo: motivoTexto,
+        dataEnvio: dataValida ? dataObj!.toLocaleDateString('pt-BR') : 'Hoje',
+        horarioEnvio: dataValida
+          ? dataObj!.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+          : '--:--',
+        status: statusFinal,
+        analisadoPor: analiseResponsavel
+      };
+    }).slice(0, 5);
+  }
 
   get analisesManuais(): ItemTabelaResumo[] {
-    return this.recebidosRecentemente.filter(item => 
-      item.status.toUpperCase() === 'PENDENTE' || item.status.toUpperCase() === 'REJEITADA'
+    return this.recebidosRecentemente.filter(item =>
+      item.status.toUpperCase() === 'PENDENTE'
     );
   }
 
@@ -182,7 +209,7 @@ get recebidosRecentemente(): ItemTabelaResumo[] {
     if (!this.termoPesquisa.trim()) return this.recebidosRecentemente;
     const termo = this.termoPesquisa.toLowerCase();
     return this.recebidosRecentemente.filter(
-      item => item.alunoNome.toLowerCase().includes(termo) || item.matricula.includes(termo)
+      item => item.alunoNome.toLowerCase().includes(termo) || item.matricula.toLowerCase().includes(termo)
     );
   }
 
@@ -190,68 +217,40 @@ get recebidosRecentemente(): ItemTabelaResumo[] {
     if (!this.termoPesquisa.trim()) return this.analisesManuais;
     const termo = this.termoPesquisa.toLowerCase();
     return this.analisesManuais.filter(
-      item => item.alunoNome.toLowerCase().includes(termo) || item.matricula.includes(termo)
+      item => item.alunoNome.toLowerCase().includes(termo) || item.matricula.toLowerCase().includes(termo)
     );
   }
 
-  // Indicadores de KPIs (Calculados Dinamicamente + Variação do Período)
-  // Indicadores de KPIs (Calculados Dinamicamente + Variação do Período)
-get kpis(): IndicadoresKPI {
-  const total = this.notificacoes.length;
+  // Indicadores de KPIs (Calculados Dinamicamente com base nos status reais)
+  get kpis(): IndicadoresKPI {
+    const total = this.notificacoes.length;
 
-  const pendentes = this.notificacoes.filter(n => {
-    const status = (n.status || '').toLowerCase();
-    const motivo = (n.motivo || n.descricao || '');
-    return status.includes('pendent') && !motivo.includes('(IA)');
-  }).length;
+    const pendentes = this.notificacoes.filter(n => {
+      const s = this.normalizarStatus(n.status);
+      return s === 'PENDENTE' || s === '' || s.includes('SECRETARIA') || s.includes('ANALISE');
+    }).length;
 
-  const aprovados = this.notificacoes.filter(n => {
-    const status = (n.status || '').toLowerCase();
-    const motivo = (n.motivo || n.descricao || '');
-    return status.includes('aprov') || status.includes('conclu') || motivo.includes('(IA)');
-  }).length;
+    const aprovados = this.notificacoes.filter(n => {
+      const s = this.normalizarStatus(n.status);
+      return s === 'APROVADA' || s === 'APROVADO' || s === 'ENCAMINHADO_PROFESSOR' || s.includes('CONCLU');
+    }).length;
 
-  const recusados = this.notificacoes.filter(n => {
-    const status = (n.status || '').toLowerCase();
-    return status.includes('rejeit') || status.includes('recus');
-  }).length;
+    const recusados = this.notificacoes.filter(n => {
+      const s = this.normalizarStatus(n.status);
+      return s.includes('REJEIT') || s.includes('RECUS');
+    }).length;
 
-  if (this.periodoSelecionado === 'Últimos 30 dias') {
     return {
       totalJustificativas: total.toString(),
-      totalSubtexto: '18% a mais este mês',
+      totalSubtexto: `${this.periodoSelecionado}`,
       aguardandoAnalise: pendentes.toString(),
-      aguardandoSubtexto: 'Agilidade 10% a mais este mês',
+      aguardandoSubtexto: pendentes === 1 ? '1 pedido na fila' : `${pendentes} pedidos na fila`,
       aprovadas: aprovados.toString(),
-      aprovadasSubtexto: '31% a mais este mês',
+      aprovadasSubtexto: total > 0 ? `${Math.round((aprovados / total) * 100)}% do total` : '0% do total',
       recusadas: recusados.toString(),
-      recusadasSubtexto: '-4% este mês'
-    };
-  } else if (this.periodoSelecionado === 'Últimos 6 meses') {
-    return {
-      totalJustificativas: total.toString(),
-      totalSubtexto: '25% a mais no semestre',
-      aguardandoAnalise: pendentes.toString(),
-      aguardandoSubtexto: 'Agilidade 15% a mais no semestre',
-      aprovadas: aprovados.toString(),
-      aprovadasSubtexto: '35% a mais no semestre',
-      recusadas: recusados.toString(),
-      recusadasSubtexto: '-12% no semestre'
+      recusadasSubtexto: total > 0 ? `${Math.round((recusados / total) * 100)}% do total` : '0% do total'
     };
   }
-
-  // Padrão: Últimos 7 dias
-  return {
-    totalJustificativas: total.toString(),
-    totalSubtexto: '12% a mais este mês',
-    aguardandoAnalise: pendentes.toString(),
-    aguardandoSubtexto: 'Agilidade 6% a mais este mês',
-    aprovadas: aprovados.toString(),
-    aprovadasSubtexto: '27% a mais este mês',
-    recusadas: recusados.toString(),
-    recusadasSubtexto: '-7% este mês'
-  };
-}
 
   // Gráfico de Linhas (Eixo X)
   get eixoX(): string[] {
@@ -273,21 +272,36 @@ get kpis(): IndicadoresKPI {
     return '0,75 16.6,60 33.3,70 50,40 66.6,60 83.3,45 100,30';
   }
 
-  // Gráfico de Rosquinha
+  // Gráfico de Rosquinha calculado a partir das notificações reais
   get motivosAusencia(): MotivosAusencia {
-    let gripal = 56;
-    let odonto = 30;
-    let outros = 14;
-
-    if (this.periodoSelecionado === 'Últimos 30 dias') {
-      gripal = 42;
-      odonto = 38;
-      outros = 20;
-    } else if (this.periodoSelecionado === 'Últimos 6 meses') {
-      gripal = 65;
-      odonto = 20;
-      outros = 15;
+    const total = this.notificacoes.length;
+    if (total === 0) {
+      return {
+        gripalPct: 0,
+        odontoPct: 0,
+        outrosPct: 0,
+        dashGripal: '0, 100',
+        dashOdonto: '0, 100',
+        offsetOdonto: 0,
+        dashOutros: '0, 100',
+        offsetOutros: 0
+      };
     }
+
+    let qtdOdonto = 0;
+    let qtdOutros = 0;
+    let qtdMedico = 0;
+
+    for (const n of this.notificacoes) {
+      const m = (n.motivo || '').toLowerCase();
+      if (m.includes('odonto')) qtdOdonto++;
+      else if (m.includes('outro') || m.includes('pessoal') || m.includes('luto')) qtdOutros++;
+      else qtdMedico++;
+    }
+
+    const gripal = Math.round((qtdMedico / total) * 100);
+    const odonto = Math.round((qtdOdonto / total) * 100);
+    const outros = Math.max(0, 100 - gripal - odonto);
 
     return {
       gripalPct: gripal,
@@ -300,19 +314,19 @@ get kpis(): IndicadoresKPI {
       offsetOutros: -(gripal + odonto)
     };
   }
-  
-  get filtrosPeriodo(): FiltroDropdown[] {
-  return [
-    {
-      chave: 'periodo',
-      label: 'Período',
-      valorSelecionado: this.periodoSelecionado,
-      opcoes: this.opcoesPeriodo.map(op => ({ label: op, valor: op }))
-    }
-  ];
-}
 
-onPeriodoChange(evento: { chave: string; valor: string }): void {
-  this.selecionarPeriodo(evento.valor);
-}
+  get filtrosPeriodo(): FiltroDropdown[] {
+    return [
+      {
+        chave: 'periodo',
+        label: 'Período',
+        valorSelecionado: this.periodoSelecionado,
+        opcoes: this.opcoesPeriodo.map(op => ({ label: op, valor: op }))
+      }
+    ];
+  }
+
+  onPeriodoChange(evento: { chave: string; valor: string }): void {
+    this.selecionarPeriodo(evento.valor);
+  }
 }

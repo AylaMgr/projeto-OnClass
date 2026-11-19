@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificacoesService } from '../../notificacoes/services/notificacoes.service';
 import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
 
@@ -13,12 +14,16 @@ export interface SolicitacaoDetalhadaProf {
   turno?: string;
   disciplina?: string;
   motivo: string;
+  descricao?: string;
   diasAfastamento?: number;
   diasAtestado?: number;
   faltasAbonar?: string;
   dataEnvio: string;
   comImagem: boolean;
   imagemUrl?: string;
+  arquivoBase64?: string | null;
+  arquivoNome?: string | null;
+  arquivoTipo?: string | null;
   status: string;
 }
 
@@ -27,15 +32,16 @@ export interface SolicitacaoDetalhadaProf {
   standalone: true,
   imports: [CommonModule, FormsModule, TopBarComponent],
   templateUrl: './solicitacoesP.html',
-  styleUrl: './solicitacoesP.css'
+  styleUrls: ['./solicitacoesP.css']
 })
 export class SolicitacoesProf implements OnInit {
-  solicitacaoId: string = '1';
+  solicitacaoId: string = '';
   termoMatricula: string = '';
   observacaoProfessor: string = '';
   carregando: boolean = true;
   processando: boolean = false;
   statusDecisao: string | null = null;
+  pdfUrlSegura: SafeResourceUrl | null = null;
 
   solicitacao: SolicitacaoDetalhadaProf = {
     id: '',
@@ -51,6 +57,7 @@ export class SolicitacoesProf implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly notificacoesService: NotificacoesService,
+    private readonly sanitizer: DomSanitizer,
     private readonly cdr: ChangeDetectorRef
   ) {}
 
@@ -67,27 +74,41 @@ export class SolicitacoesProf implements OnInit {
     this.notificacoesService.buscarPorId(id).subscribe({
       next: (dados: any) => {
         if (dados) {
-          const temImagem = !!(dados.imagemUrl || dados.anexo || dados.comImagem);
-          const dias = dados.diasAfastamento || dados.diasAtestado || dados.dias || 3;
-          
+          const base64 = dados.arquivoBase64 || dados.imagemUrl || dados.anexo || null;
+          const tipo = dados.arquivoTipo || (base64?.startsWith('data:application/pdf') ? 'application/pdf' : 'image/png');
+          const temAnexo = !!base64;
+          const dias = Number(dados.diasAfastamento || dados.diasAtestado || dados.dias || 1);
+          const dataBruta = dados.dataEnvio || dados.createdAt || dados.criadoEm;
+
           this.solicitacao = {
-            id: dados.id || id,
-            matricula: dados.matricula || dados.alunoMatricula || '2024001234',
-            aluno: dados.aluno || dados.alunoNome || 'Mariana Souza Santos',
-            turma: dados.turma || '8º Ano A',
+            id: String(dados.id || dados._id || id),
+            matricula: String(dados.matricula || dados.alunoMatricula || 'Não informada'),
+            aluno: dados.aluno || dados.alunoNome || dados.nomeAluno || 'Aluno não identificado',
+            turma: dados.turma || dados.alunoTurma || 'Não informada',
             turno: dados.turno || 'Matutino',
-            disciplina: dados.disciplina || 'História',
-            motivo: dados.motivo || dados.titulo || 'Solicitação de Abono: Atestado Médico',
+            disciplina: dados.disciplina || 'Todas as disciplinas',
+            motivo: dados.motivo || dados.titulo || 'Solicitação de Abono',
+            descricao: dados.descricao || dados.justificativa || '',
             diasAfastamento: dias,
             diasAtestado: dias,
-            faltasAbonar: dados.faltasAbonar || `${Math.round(dias * 1.5) || 4} Aulas`,
-            dataEnvio: dados.dataEnvio
-              ? new Date(dados.dataEnvio).toLocaleDateString('pt-BR')
-              : '12/08/2026',
-            comImagem: temImagem,
-            imagemUrl: temImagem ? (dados.imagemUrl || dados.anexo) : undefined,
+            faltasAbonar: dados.faltasAbonar || `${Math.round(dias * 1.5) || 1} Aulas`,
+            dataEnvio: dataBruta
+              ? new Date(dataBruta).toLocaleDateString('pt-BR')
+              : 'Data não informada',
+            comImagem: temAnexo,
+            imagemUrl: temAnexo ? base64 : undefined,
+            arquivoBase64: base64,
+            arquivoNome: dados.arquivoNome || 'atestado-anexado',
+            arquivoTipo: tipo,
             status: dados.status || 'ENCAMINHADO_PROFESSOR'
           };
+
+          if (base64 && tipo === 'application/pdf') {
+            this.pdfUrlSegura = this.sanitizer.bypassSecurityTrustResourceUrl(base64);
+          } else {
+            this.pdfUrlSegura = null;
+          }
+
           this.termoMatricula = this.solicitacao.matricula;
         }
         this.carregando = false;
@@ -102,15 +123,19 @@ export class SolicitacoesProf implements OnInit {
   }
 
   baixarComprovante(tipoDecisao: string): void {
-    console.log(`A descarregar comprovativo de decisão (${tipoDecisao}) para a solicitação:`, this.solicitacaoId);
     alert(`Comprovativo de solicitação ${tipoDecisao} gerado com sucesso!`);
   }
 
   baixarOriginal(): void {
-    if (this.solicitacao.imagemUrl) {
-      window.open(this.solicitacao.imagemUrl, '_blank');
+    const origem = this.solicitacao.arquivoBase64 || this.solicitacao.imagemUrl;
+    if (origem) {
+      const link = document.createElement('a');
+      link.href = origem;
+      link.download = this.solicitacao.arquivoNome || 'atestado-aluno';
+      link.target = '_blank';
+      link.click();
     } else {
-      alert('Anexo não encontrado para download.');
+      alert('Nenhum anexo encontrado para download nesta solicitação.');
     }
   }
 
@@ -148,7 +173,7 @@ export class SolicitacoesProf implements OnInit {
     });
   }
 
-  resetarDecisao(): void {
+  reseterDecisao(): void {
     this.statusDecisao = null;
     this.cdr.detectChanges();
   }

@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NotificacoesService } from '../notificacoes/services/notificacoes.service';
+import { AuthService } from '../../core/services/auth.service';
 
 interface DiaCalendario {
   data: Date;
@@ -40,17 +41,18 @@ export class CriarNotificacao implements OnInit {
   diasCalendario: DiaCalendario[] = [];
 
   constructor(
-    private readonly fb: FormBuilder,
-    private readonly notificacoesService: NotificacoesService
-  ) {
-    this.form = this.fb.group({
-      motivo: ['', Validators.required],
-      dataInicio: ['', Validators.required],
-      dataFim: ['', Validators.required],
-      descricao: ['', [Validators.required, Validators.minLength(10)]],
-      declaracaoVeracidade: [false, Validators.requiredTrue]
-    });
-  }
+  private readonly fb: FormBuilder,
+  private readonly notificacoesService: NotificacoesService,
+  private readonly authService: AuthService
+) {
+  this.form = this.fb.group({
+    motivo: ['', Validators.required],
+    dataInicio: ['', Validators.required],
+    dataFim: ['', Validators.required],
+    descricao: ['', [Validators.required, Validators.minLength(10)]],
+    declaracaoVeracidade: [false, Validators.requiredTrue]
+  });
+}
 
   ngOnInit(): void {
     this.gerarCalendario();
@@ -229,13 +231,16 @@ onSubmit(): void {
     const parsedDate = new Date(data);
     return !isNaN(parsedDate.getTime()) ? parsedDate.toISOString() : new Date().toISOString();
   };
+  const userInfo = this.authService.getUserInfo();
 
   const payload = {
-    ...rawValues,
-    dataInicio: formatarDataEnvio(rawValues.dataInicio),
-    dataFim: formatarDataEnvio(rawValues.dataFim),
-    administrador: 'Secretaria',
-  };
+      ...rawValues,
+      alunoId: userInfo?.id || '',
+      dataInicio: formatarDataEnvio(rawValues.dataInicio),
+      dataFim: formatarDataEnvio(rawValues.dataFim),
+      administrador: 'Secretaria',
+    };
+  
 
   console.log('Payload enviado para a API:', payload);
 

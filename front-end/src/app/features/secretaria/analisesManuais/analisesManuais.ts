@@ -15,7 +15,9 @@ export interface SolicitacaoAluno {
   nomeAluno?: string;
   alunoId?: string | number;
   motivo: string;
-  dataEnvio?: string;
+  descricao?: string;
+  arquivoPasta?: string;
+  dataEnvio: string;
   criadoEm?: string | Date;
   createdAt?: string | Date;
   status: string;
@@ -28,8 +30,8 @@ export interface SolicitacaoAluno {
   selector: 'app-analises-manuais',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
+    CommonModule,
+    FormsModule,
     RouterModule,
     StatusBadgeComponent,
     TopBarComponent,
@@ -45,7 +47,7 @@ export class AnalisesManuais implements OnInit, OnDestroy {
   turmaSelecionada: string = '';
   dropdownAberto: string | null = null;
 
-  // Lista dinâmica vinda do backend NestJS/Prisma
+  // Lista dinâmica vinda exclusivamente do backend NestJS / MongoDB Atlas
   solicitacoes: SolicitacaoAluno[] = [];
   carregando: boolean = true;
 
@@ -72,89 +74,104 @@ export class AnalisesManuais implements OnInit, OnDestroy {
     }
   }
 
- carregarSolicitacoes(): void {
-  this.carregando = true;
-  this.notificacoesService.listarTodasParaSecretaria().subscribe({
-    next: (dados: any[]) => {
-      if (dados && dados.length > 0) {
-        this.solicitacoes = dados.map((item) => {
-          const statusOriginal = item.status || '';
-          const motivoTexto = item.motivo || item.descricao || '';
+  private normalizarStatus(statusRaw: any): string {
+    if (!statusRaw) return '';
+    return String(statusRaw)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .trim();
+  }
 
-          // Regra: Se o status for de aprovação OU se for um atestado de IA (contém '(IA)')
-          const ehAprovado = 
-            statusOriginal === 'Solicitação Aprovada Definitivamente' ||
-            statusOriginal.toLowerCase().includes('aprov') ||
-            statusOriginal.toLowerCase().includes('conclu') ||
-            motivoTexto.includes('(IA)'); // 👈 Força atestados de IA como aprovados/concluídos
+  private extrairCampoDescricao(descricao: string, chave: string): string {
+    if (!descricao) return '';
+    const regex = new RegExp(`${chave}:\\s*([^|]+)`, 'i');
+    const match = descricao.match(regex);
+    return match ? match[1].trim() : '';
+  }
 
-          return {
-            id: item.id,
-            matricula: item.matricula || item.alunoMatricula || '2024001234',
-            aluno: item.alunoNome || item.aluno?.nome || 'Aluno Não Identificado',
-            motivo: motivoTexto || 'Solicitação de Abono',
-            dataEnvio: item.dataEnvio || item.createdAt || 'Hoje',
-            // Define 'Concluído' para aprovados/IA e mantém 'Pendente' para os restantes
-            status: ehAprovado ? 'Concluído' : 'Pendente',
-            turno: item.turno || item.aluno?.turno || 'Matutino',
-            turma: item.turma || item.aluno?.turma || 'Ensino Médio',
-            administrador: item.administrador || (ehAprovado ? 'IA OnClass' : 'Secretaria'),
-          };
-        });
-      } else {
-        this.solicitacoes = this.obterDadosFicticios();
+  private formatarDataHora(dataRaw: any): string {
+    if (!dataRaw) return '-';
+    const d = new Date(dataRaw);
+    if (isNaN(d.getTime())) return String(dataRaw);
+    return d.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  carregarSolicitacoes(): void {
+    this.carregando = true;
+    this.notificacoesService.listarTodasParaSecretaria().subscribe({
+      next: (dados: any[]) => {
+        if (dados && Array.isArray(dados)) {
+          this.solicitacoes = dados.map((item) => {
+            const statusNorm = this.normalizarStatus(item.status);
+            const descricaoTexto = item.descricao || '';
+
+            // Verifica o estado real do banco (sem forçar aprovação só porque tem '(IA)' no texto)
+            const ehAprovado =
+              statusNorm === 'APROVADA' ||
+              statusNorm === 'APROVADO' ||
+              statusNorm.includes('CONCLU') ||
+              statusNorm.includes('DEFINITIVAMENTE');
+
+            const ehEncaminhadoProf = statusNorm === 'ENCAMINHADO_PROFESSOR';
+            const ehRejeitado = statusNorm.includes('REJEIT') || statusNorm.includes('RECUS');
+
+            let statusExibicao = 'Pendente';
+            if (ehAprovado) statusExibicao = 'Concluído';
+            else if (ehEncaminhadoProf) statusExibicao = 'Encaminhado ao Professor';
+            else if (ehRejeitado) statusExibicao = 'Rejeitado';
+
+            const nomePacienteDesc =
+              this.extrairCampoDescricao(descricaoTexto, 'Paciente') ||
+              this.extrairCampoDescricao(descricaoTexto, 'Nome Lido');
+
+            const arquivoPasta = this.extrairCampoDescricao(descricaoTexto, 'Arquivo Pasta Aluno');
+
+            const nomeAlunoFinal =
+              item.alunoNome ||
+              item.aluno?.nome ||
+              nomePacienteDesc ||
+              'Aluno Não Identificado';
+
+            return {
+              id: item.id || item._id,
+              alunoId: item.alunoId,
+              matricula: item.matricula || item.alunoMatricula || item.aluno?.matricula || 'N/I',
+              aluno: nomeAlunoFinal,
+              nomeAluno: nomeAlunoFinal,
+              motivo: item.motivo || 'Solicitação de Abono',
+              descricao: descricaoTexto,
+              arquivoPasta,
+              dataEnvio: this.formatarDataHora(item.createdAt || item.criadoEm || item.dataEnvio),
+              createdAt: item.createdAt || item.criadoEm,
+              status: statusExibicao,
+              turno: item.turno || item.aluno?.turno || 'Matutino',
+              turma: item.turma || item.aluno?.turma || item.aluno?.turmas?.[0] || 'Não informada',
+              administrador: item.administrador || (ehAprovado ? 'IA OnClass' : 'Secretaria')
+            };
+          });
+        } else {
+          this.solicitacoes = [];
+        }
+
+        this.carregando = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erro ao carregar solicitações para a Secretaria:', err);
+        this.solicitacoes = [];
+        this.carregando = false;
+        this.cdr.detectChanges();
       }
+    });
+  }
 
-      this.carregando = false;
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      console.error('Erro ao carregar solicitações para a Secretaria:', err);
-      this.solicitacoes = this.obterDadosFicticios();
-      this.carregando = false;
-      this.cdr.detectChanges();
-    },
-  });
-}
-
-// Método auxiliar com os dados fictícios
-private obterDadosFicticios(): SolicitacaoAluno[] {
-  return [
-    {
-      id: 1,
-      matricula: '2024001234',
-      aluno: 'Lucas Silva Pereira',
-      motivo: 'Tratamento Médico (IA)',
-      dataEnvio: '27/10/2026, 09:35',
-      status: 'Pendente',
-      turno: 'Matutino',
-      turma: '3º Ano A',
-      administrador: 'Secretaria',
-    },
-    {
-      id: 2,
-      matricula: '2024005678',
-      aluno: 'Beatriz Maria Santos',
-      motivo: 'Consulta Médica / Exames',
-      dataEnvio: '27/10/2026, 10:09',
-      status: 'Solicitação Aprovada Definitivamente',
-      turno: 'Vespertino',
-      turma: '2º Ano B',
-      administrador: 'IA OnClass',
-    },
-    {
-      id: 3,
-      matricula: '2024009988',
-      aluno: 'Gabriel Oliveira Costa',
-      motivo: 'Tratamento Odontológico',
-      dataEnvio: '26/10/2026, 18:37',
-      status: 'Rejeitado',
-      turno: 'Noturno',
-      turma: '1º Ano C',
-      administrador: 'Secretaria',
-    },
-  ];
-}
   toggleDropdown(tipo: string, event: Event): void {
     event.stopPropagation();
     this.dropdownAberto = this.dropdownAberto === tipo ? null : tipo;
@@ -179,21 +196,37 @@ private obterDadosFicticios(): SolicitacaoAluno[] {
   }
 
   // Filtro que combina os dados reais com os filtros da tela e ordenação
-get solicitacoesFiltradas(): SolicitacaoAluno[] {
-  let resultado = this.solicitacoes.filter(item => {
-    const atendeMatricula = !this.termoMatricula || 
-      (item.matricula?.includes(this.termoMatricula) ?? false);
-    
-    const atendeTurno = !this.turnoSelecionado || item.turno === this.turnoSelecionado;
-    const atendeTurma = !this.turmaSelecionada || item.turma === this.turmaSelecionada;
+  get solicitacoesFiltradas(): SolicitacaoAluno[] {
+    const termo = this.termoMatricula.trim().toLowerCase();
 
-    return atendeMatricula && atendeTurno && atendeTurma;
-  });
+    const resultado = this.solicitacoes.filter(item => {
+      const atendeBusca =
+        !termo ||
+        (item.matricula?.toLowerCase().includes(termo) ?? false) ||
+        (item.aluno?.toLowerCase().includes(termo) ?? false);
 
-  return resultado;
-}
+      const atendeTurno = !this.turnoSelecionado || item.turno === this.turnoSelecionado;
+      const atendeTurma = !this.turmaSelecionada || item.turma === this.turmaSelecionada;
 
-get filtrosSecretaria(): FiltroDropdown[] {
+      return atendeBusca && atendeTurno && atendeTurma;
+    });
+
+    if (this.ordemSelecionada === 'recentes') {
+      return [...resultado].sort((a, b) =>
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      );
+    }
+
+    if (this.ordemSelecionada === 'antigos') {
+      return [...resultado].sort((a, b) =>
+        new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+      );
+    }
+
+    return resultado;
+  }
+
+  get filtrosSecretaria(): FiltroDropdown[] {
     return [
       {
         chave: 'turno',
@@ -222,9 +255,9 @@ get filtrosSecretaria(): FiltroDropdown[] {
         valorSelecionado: this.turmaSelecionada || '',
         opcoes: [
           { label: 'Todas', valor: '' },
-          { label: '8º Ano A', valor: '8º Ano A' },
-          { label: '9º Ano B', valor: '9º Ano B' },
-          { label: '7º Ano C', valor: '7º Ano C' }
+          { label: '1º Ano A', valor: '1º Ano A' },
+          { label: '2º Ano A - Manhã', valor: '2º Ano A - Manhã' },
+          { label: '3º Ano A', valor: '3º Ano A' }
         ]
       }
     ];

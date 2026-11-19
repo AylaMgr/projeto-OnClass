@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 
 export interface CriarNotificacaoDto {
@@ -17,15 +17,15 @@ export interface Notificacao {
   tipo: string;
   motivo: string;
   dataInicio: string;
-  horarioEnvio?: string;  
+  horarioEnvio?: string;
   dataFim: string;
   descricao: string;
   declaracaoVeracidade: boolean;
   status: string;
   administrador?: string;
-  dataEnvio?: string;     
-  criadoEm?: string;      
-  createdAt?: string;      
+  dataEnvio?: string;
+  criadoEm?: string;
+  createdAt?: string;
   alunoNome?: string;
   matricula?: string;
   turma?: string;
@@ -34,7 +34,7 @@ export interface Notificacao {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificacoesService {
   private readonly apiUrl = 'http://localhost:3000/notificacoes';
@@ -44,35 +44,61 @@ export class NotificacoesService {
   notificacaoCriada$ = this.notificacaoCriadaSubject.asObservable();
 
   constructor(private readonly http: HttpClient) {}
-  listarTodasParaSecretaria(): Observable<Notificacao[]> {
-    return this.http.get<Notificacao[]>(this.apiUrl);
+
+  private getAuthHeaders(): HttpHeaders {
+    const token =
+      typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    return token
+      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+      : new HttpHeaders();
   }
+
+  listarTodasParaSecretaria(): Observable<Notificacao[]> {
+    return this.http.get<Notificacao[]>(this.apiUrl, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
   // 2. Método para disparar a atualização para os painéis
   notificarMudanca(): void {
     this.notificacaoCriadaSubject.next();
   }
 
   criar(dto: CriarNotificacaoDto): Observable<any> {
-    return this.http.post<any>(this.apiUrl, dto);
+    return this.http.post<any>(this.apiUrl, dto, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   listarRecentes(): Observable<Notificacao[]> {
-    return this.http.get<Notificacao[]>(`${this.apiUrl}/recentes`);
+    return this.http.get<Notificacao[]>(`${this.apiUrl}/recents`, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   listarPorAluno(alunoId: string): Observable<Notificacao[]> {
-    return this.http.get<Notificacao[]>(`${this.apiUrl}/aluno/${alunoId}`);
+    return this.http.get<Notificacao[]>(`${this.apiUrl}/aluno/${alunoId}`, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   listarTodas(): Observable<Notificacao[]> {
-  return this.http.get<Notificacao[]>(this.apiUrl);
-}
+    return this.http.get<Notificacao[]>(this.apiUrl, {
+      headers: this.getAuthHeaders(),
+    });
+  }
 
   buscarPorId(id: string): Observable<Notificacao> {
-    return this.http.get<Notificacao>(`${this.apiUrl}/${id}`);
+    return this.http.get<Notificacao>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   atualizarStatus(id: string, status: string): Observable<Notificacao> {
-    return this.http.patch<Notificacao>(`${this.apiUrl}/${id}/status`, { status });
+    return this.http.patch<Notificacao>(
+      `${this.apiUrl}/${id}/status`,
+      { status },
+      { headers: this.getAuthHeaders() },
+    );
   }
 }

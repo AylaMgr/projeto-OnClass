@@ -1,7 +1,7 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { NotificacoesService } from '../../notificacoes/services/notificacoes.service';
 import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
@@ -13,36 +13,64 @@ export interface SolicitacaoAluno {
   aluno: string;
   motivo: string;
   dataEnvio: string;
+  dataTimestamp: number;
   status: string;
-  turno?: string;
-  turma?: string;
+  turno: string;
+  turma: string;
 }
 
 @Component({
   selector: 'app-dashboard-prof',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    RouterModule,
+    CommonModule,
+    FormsModule,
     TopBarComponent,
     StatusBadgeComponent,
     FilterBarComponent
   ],
   templateUrl: './dashboardP.html',
-  styleUrl: './dashboardP.css'
+  styleUrls: ['./dashboardP.css']
 })
 export class DashboardP implements OnInit {
-
   termoMatricula: string = '';
   turnoSelecionado: string = '';
   ordemSelecionada: string = '';
   turmaSelecionada: string = '';
-  dropdownAberto: string | null = null;
   carregando: boolean = false;
 
-  // Começa vazia e será preenchida exclusivamente pelos dados retornados do serviço
   solicitacoes: SolicitacaoAluno[] = [];
+
+  filtrosProfessor: FiltroDropdown[] = [
+    {
+      chave: 'turno',
+      label: 'Turno',
+      valorSelecionado: '',
+      opcoes: [
+        { label: 'Todos os Turnos', valor: '' },
+        { label: 'Matutino', valor: 'Matutino' },
+        { label: 'Vespertino', valor: 'Vespertino' },
+        { label: 'Noturno', valor: 'Noturno' }
+      ]
+    },
+    {
+      chave: 'ordem',
+      label: 'Ordem',
+      valorSelecionado: '',
+      opcoes: [
+        { label: 'Mais Recentes', valor: 'recentes' },
+        { label: 'Mais Antigos', valor: 'antigos' }
+      ]
+    },
+    {
+      chave: 'turma',
+      label: 'Turma',
+      valorSelecionado: '',
+      opcoes: [
+        { label: 'Todas as Turmas', valor: '' }
+      ]
+    }
+  ];
 
   constructor(
     private readonly router: Router,
@@ -55,134 +83,139 @@ export class DashboardP implements OnInit {
 
   carregarSolicitacoes(): void {
     this.carregando = true;
-    
-    // Busca a lista real do serviço NotificacoesService
+
     this.notificacoesService.listarTodas().subscribe({
       next: (dados: any[]) => {
         if (dados && Array.isArray(dados)) {
-          // Filtra estritamente apenas as solicitações com status aceito/encaminhado pela Secretaria
-          const aprovadasPelaSecretaria = dados.filter(item => {
+          const aprovadasOuEncaminhadas = dados.filter((item) => {
             const statusUpper = String(item.status || '').toUpperCase().trim();
-            return statusUpper === 'ENCAMINHADO_PROFESSOR' || 
-                   statusUpper === 'APROVADO_SECRETARIA' ||
-                   statusUpper.includes('ENCAMINHADO');
+            const ehAprovadaOuEncaminhada =
+              statusUpper === 'ENCAMINHADO_PROFESSOR' ||
+              statusUpper === 'APROVADO_SECRETARIA' ||
+              statusUpper === 'APROVADA' ||
+              statusUpper === 'APROVADO' ||
+              statusUpper === 'ACEITO' ||
+              statusUpper.includes('ENCAMINHADO') ||
+              statusUpper.includes('APROVAD');
+
+            // Ignora registos antigos de teste sem aluno válido no MongoDB
+            const nomeReal = item.alunoNome || item.aluno?.nome || '';
+            const temAlunoValido =
+              Boolean(nomeReal) && nomeReal !== 'Aluno não identificado';
+
+            return ehAprovadaOuEncaminhada && temAlunoValido;
           });
 
-          // Mapeia os dados reais do backend para a interface utilizada no template do professor
-          this.solicitacoes = aprovadasPelaSecretaria.map(item => ({
-            id: String(item.id),
-            matricula: item.matricula || item.alunoMatricula || 'Sem matrícula',
-            aluno: item.aluno || item.alunoNome || 'Aluno Não Identificado',
-            motivo: item.motivo || item.titulo || 'Solicitação de Abono',
-            dataEnvio: item.dataEnvio 
-              ? new Date(item.dataEnvio).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) 
-              : 'Data não informada',
-            status: item.status || 'ENCAMINHADO_PROFESSOR',
-            turno: item.turno || 'Matutino',
-            turma: item.turma || '8º Ano A'
-          }));
+          this.solicitacoes = aprovadasOuEncaminhadas.map((item) => {
+            const dataBruta = item.dataEnvio || item.createdAt || item.criadoEm;
+            const dataObj = dataBruta ? new Date(dataBruta) : null;
+
+            const nomeAlunoString =
+              typeof item.aluno === 'string'
+                ? item.aluno
+                : item.alunoNome ||
+                  item.aluno?.nome ||
+                  item.nomeAluno ||
+                  'Aluno Não Identificado';
+
+            return {
+              id: String(item.id || item._id),
+              matricula: String(
+                item.matricula ||
+                  item.alunoMatricula ||
+                  item.aluno?.matricula ||
+                  'Sem matrícula',
+              ),
+              aluno: nomeAlunoString,
+              motivo: item.motivo || item.titulo || 'Solicitação de Abono',
+              dataEnvio:
+                dataObj && !isNaN(dataObj.getTime())
+                  ? dataObj.toLocaleString('pt-BR', {
+                      dateStyle: 'short',
+                      timeStyle: 'short',
+                    })
+                  : 'Data não informada',
+              dataTimestamp:
+                dataObj && !isNaN(dataObj.getTime()) ? dataObj.getTime() : 0,
+              status: item.status || 'ENCAMINHADO_PROFESSOR',
+              turno: item.turno || item.aluno?.turno || 'Matutino',
+              turma:
+                item.turma ||
+                item.alunoTurma ||
+                item.aluno?.turmas?.[0] ||
+                'Não informada',
+            };
+          });
+
+          this.atualizarOpcoesTurma();
         } else {
           this.solicitacoes = [];
         }
         this.carregando = false;
       },
       error: (err) => {
-        console.error('Erro ao buscar solicitações da Secretaria:', err);
+        console.error('Erro ao buscar solicitações do banco:', err);
         this.solicitacoes = [];
         this.carregando = false;
-      }
+      },
     });
   }
-  
-  filtrosProfessor: FiltroDropdown[] = [
-  {
-    chave: 'turno',
-    label: 'Turno',
-    valorSelecionado: '',
-    opcoes: [
-      { label: 'Todos os Turnos', valor: '' },
-      { label: 'Matutino', valor: 'Matutino' },
-      { label: 'Vespertino', valor: 'Vespertino' },
-      { label: 'Noturno', valor: 'Noturno' }
-    ]
-  },
-  {
-    chave: 'ordem',
-    label: 'Ordem',
-    valorSelecionado: '',
-    opcoes: [
-      { label: 'Mais Recentes', valor: 'recentes' },
-      { label: 'Mais Antigos', valor: 'antigos' }
-    ]
-  },
-  {
-    chave: 'turma',
-    label: 'Turma',
-    valorSelecionado: '',
-    opcoes: [
-      { label: 'Todas as Turmas', valor: '' },
-      { label: '7º Ano C', valor: '7º Ano C' },
-      { label: '8º Ano A', valor: '8º Ano A' },
-      { label: '9º Ano B', valor: '9º Ano B' }
-    ]
-  }
-];
 
-onFiltroProfessorChange(evento: { chave: string; valor: string }): void {
-  this.selecionarOpcao(evento.chave, evento.valor);
-}
+  private atualizarOpcoesTurma(): void {
+    const turmasUnicas = Array.from(
+      new Set(this.solicitacoes.map(s => s.turma).filter(t => t && t !== 'Não informada'))
+    ).sort();
 
-resetarFiltrosProfessor(): void {
-  this.limparFiltros();
-  this.filtrosProfessor.forEach(f => f.valorSelecionado = '');
-}
-
-  // Navega para a tela solicitacoesP passando o ID da solicitação selecionada
-  abrirSolicitacao(id: string): void {
-    if (id) {
-    this.router.navigate(['/professor/solicitacoes', id]);
-  }
-}
-
-  toggleDropdown(tipo: string, event: Event): void {
-    event.stopPropagation();
-    this.dropdownAberto = this.dropdownAberto === tipo ? null : tipo;
-  }
-
-  selecionarOpcao(tipo: string, valor: string): void {
-    if (tipo === 'turno') this.turnoSelecionado = valor;
-    if (tipo === 'ordem') this.ordemSelecionada = valor;
-    if (tipo === 'turma') this.turmaSelecionada = valor;
-    this.dropdownAberto = null;
-  }
-
-  @HostListener('document:click')
-  fecharDropdowns(): void {
-    this.dropdownAberto = null;
-  }
-
-  get solicitacoesFiltradas(): SolicitacaoAluno[] {
-    let lista = this.solicitacoes.filter(item => {
-      const atendeMatricula = !this.termoMatricula || item.matricula.includes(this.termoMatricula);
-      const atendeTurno = !this.turnoSelecionado || item.turno === this.turnoSelecionado;
-      const atendeTurma = !this.turmaSelecionada || item.turma === this.turmaSelecionada;
-
-      return atendeMatricula && atendeTurno && atendeTurma;
-    });
-
-    if (this.ordemSelecionada === 'recentes') {
-      lista = lista.reverse();
+    const filtroTurma = this.filtrosProfessor.find(f => f.chave === 'turma');
+    if (filtroTurma) {
+      filtroTurma.opcoes = [
+        { label: 'Todas as Turmas', valor: '' },
+        ...turmasUnicas.map(turma => ({ label: turma, valor: turma }))
+      ];
     }
-
-    return lista;
   }
 
-  limparFiltros(): void {
+  onFiltroProfessorChange(evento: { chave: string; valor: string }): void {
+    if (evento.chave === 'turno') this.turnoSelecionado = evento.valor;
+    if (evento.chave === 'ordem') this.ordemSelecionada = evento.valor;
+    if (evento.chave === 'turma') this.turmaSelecionada = evento.valor;
+  }
+
+  resetarFiltrosProfessor(): void {
     this.termoMatricula = '';
     this.turnoSelecionado = '';
     this.ordemSelecionada = '';
     this.turmaSelecionada = '';
-    this.dropdownAberto = null;
+    this.filtrosProfessor.forEach(f => (f.valorSelecionado = ''));
+  }
+
+  abrirSolicitacao(id: string): void {
+    if (id) {
+      this.router.navigate(['/professor/solicitacoes', id]);
+    }
+  }
+
+  get solicitacoesFiltradas(): SolicitacaoAluno[] {
+    const termo = this.termoMatricula.toLowerCase().trim();
+
+    let lista = this.solicitacoes.filter(item => {
+      const atendeBusca =
+        !termo ||
+        item.matricula.toLowerCase().includes(termo) ||
+        item.aluno.toLowerCase().includes(termo);
+      const atendeTurno = !this.turnoSelecionado || item.turno === this.turnoSelecionado;
+      const atendeTurma = !this.turmaSelecionada || item.turma === this.turmaSelecionada;
+
+      return atendeBusca && atendeTurno && atendeTurma;
+    });
+
+    if (this.ordemSelecionada === 'recentes') {
+      lista = [...lista].sort((a, b) => b.dataTimestamp - a.dataTimestamp);
+    } else if (this.ordemSelecionada === 'antigos') {
+      lista = [...lista].sort((a, b) => a.dataTimestamp - b.dataTimestamp);
+    }
+
+    return lista;
   }
 
   voltarLogin(): void {
