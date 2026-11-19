@@ -1,0 +1,462 @@
+<div class="console-shell">
+  <!-- SIDEBAR ESQUERDA -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <strong>OnClass</strong>
+          <span>CONSOLE ADMIN</span>
+        </div>
+      </div>
+
+      <div class="whitelabel-box">
+        <span class="wl-label">AMBIENTE WHITE-LABEL</span>
+        <div class="wl-selector">
+          <span>{{ ambienteSelecionado }}</span>
+          <span class="wl-arrows">⌄</span>
+        </div>
+      </div>
+
+      <div class="nav-section-title">ADMINISTRAÇÃO</div>
+      <nav class="nav-menu">
+        <a routerLink="/admin/personalizacao" routerLinkActive="active" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/>
+            <circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/>
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+          </svg>
+          Personalização
+        </a>
+
+        <a routerLink="/admin/equipe" routerLinkActive="active" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Equipe
+        </a>
+
+        <a routerLink="/admin/suporte" routerLinkActive="active" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+          </svg>
+          Números de suporte
+        </a>
+
+        <a routerLink="/admin/telemetria" routerLinkActive="active" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Uso e telemetria
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <a routerLink="/admin/suporte" class="help-link">
+        <span class="help-icon">?</span>
+        Central de ajuda
+      </a>
+
+      <div class="admin-profile">
+        <div class="admin-avatar">RA</div>
+        <div class="admin-info">
+          <strong>Ricardo Alves</strong>
+          <span>Administrador geral</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ÁREA PRINCIPAL -->
+  <div class="main-area">
+    <!-- TOP HEADER BAR -->
+    <header class="topbar">
+      <div class="breadcrumb">
+        <span>Administração</span>
+        <span class="sep">›</span>
+        <strong>Equipe</strong>
+      </div>
+
+      <div class="topbar-right">
+        <span class="prod-pill">
+          <span class="dot-green"></span> Produção
+        </span>
+        <span class="school-name">{{ nomeInstituicao }}</span>
+        <button type="button" class="bell-btn" title="Notificações do sistema">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTEÚDO DA PÁGINA -->
+    <main class="content">
+      <div class="title-row">
+        <div>
+          <h1>Equipe</h1>
+          <p>Gerencie professores e secretários, seus acessos e permissões.</p>
+        </div>
+
+        <button type="button" class="btn-export" (click)="exportarEquipeCSV()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Exportar equipe
+        </button>
+      </div>
+
+      <!-- 4 CARDS DE KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <span>Professores</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <div class="kpi-val">{{ totalProfessores }}</div>
+          <div class="kpi-sub green">{{ professoresAtivos }} ativos • {{ professoresInativos }} inativos</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <span>Secretários</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="12" cy="10" r="3"/><path d="M7 20v-1a5 5 0 0 1 10 0v1"/>
+            </svg>
+          </div>
+          <div class="kpi-val">{{ totalSecretarios }}</div>
+          <div class="kpi-sub green">Todos com acesso ativo</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <span>Convites pendentes</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="kpi-val">{{ convitesPendentes }}</div>
+          <div class="kpi-sub green">Enviados nos últimos 7 dias</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <span>Licenças utilizadas</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+          </div>
+          <div class="kpi-val">
+            {{ usuarios.length }} <span class="kpi-denom">/ {{ limiteLicencas }}</span>
+          </div>
+          <div class="kpi-sub green">{{ licencasDisponiveis }} licenças disponíveis no plano</div>
+        </div>
+      </div>
+
+      <!-- CORPO PRINCIPAL: TABELA À ESQUERDA + FORMULÁRIO À DIREITA -->
+      <div class="workspace-grid">
+        <!-- COLUNA ESQUERDA -->
+        <div class="left-column">
+          <div class="panel-card table-panel">
+            <!-- ABAS -->
+            <div class="tabs-bar">
+              <button
+                type="button"
+                class="tab-btn"
+                [class.active]="abaAtiva === 'TODOS'"
+                (click)="mudarAba('TODOS')"
+              >
+                Todos ({{ usuarios.length }})
+              </button>
+              <button
+                type="button"
+                class="tab-btn"
+                [class.active]="abaAtiva === 'PROFESSOR'"
+                (click)="mudarAba('PROFESSOR')"
+              >
+                Professores ({{ totalProfessores }})
+              </button>
+              <button
+                type="button"
+                class="tab-btn"
+                [class.active]="abaAtiva === 'SECRETARIA'"
+                (click)="mudarAba('SECRETARIA')"
+              >
+                Secretários ({{ totalSecretarios }})
+              </button>
+            </div>
+
+            <!-- BUSCA E FILTRO STATUS -->
+            <div class="filter-bar">
+              <div class="search-box">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input
+                  type="text"
+                  [(ngModel)]="termoBusca"
+                  (input)="paginaAtual = 1"
+                  placeholder="Buscar por nome ou e-mail"
+                />
+              </div>
+
+              <button type="button" class="status-filter-btn" (click)="alternarFiltroStatus()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/>
+                  <line x1="10" y1="18" x2="14" y2="18"/>
+                </svg>
+                Status: {{ filtroStatus === 'TODOS' ? 'todos' : filtroStatus.toLowerCase() }}
+              </button>
+            </div>
+
+            <!-- TABELA -->
+            <div *ngIf="carregando" class="loading-box">Carregando membros da equipe...</div>
+
+            <div class="table-container" *ngIf="!carregando">
+              <table>
+                <thead>
+                  <tr>
+                    <th>MEMBRO</th>
+                    <th>PAPEL / VÍNCULO</th>
+                    <th class="right-col">STATUS / ACESSO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let u of usuariosPaginados">
+                    <td>
+                      <div class="member-cell">
+                        <div class="initials-circle">{{ obterIniciais(u.nome) }}</div>
+                        <div>
+                          <div class="member-name">{{ u.nome }}</div>
+                          <div class="member-email">{{ u.email }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="role-title">{{ obterPapelLabel(u) }}</div>
+                      <div class="role-sub">{{ obterVinculoLabel(u) }}</div>
+                    </td>
+                    <td class="right-col">
+                      <div class="status-actions">
+                        <div class="status-stack">
+                          <span
+                            class="status-pill"
+                            [ngClass]="{
+                              ativo: obterStatusUsuario(u) === 'Ativo',
+                              convidado: obterStatusUsuario(u) === 'Convidado',
+                              inativo: obterStatusUsuario(u) === 'Inativo'
+                            }"
+                          >
+                            <span class="pill-dot"></span> {{ obterStatusUsuario(u) }}
+                          </span>
+                          <span class="access-time">{{ obterSubtextoAcesso(u) }}</span>
+                        </div>
+                        <button type="button" class="dots-btn" title="Opções do membro">•••</button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr *ngIf="usuariosPaginados.length === 0">
+                    <td colspan="3" class="empty-msg">Nenhum membro encontrado.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- RODAPÉ PAGINAÇÃO -->
+            <div class="table-footer" *ngIf="!carregando && usuariosFiltrados.length > 0">
+              <span class="showing-text">
+                Mostrando {{ inicioExibicao }}–{{ fimExibicao }} de {{ usuariosFiltrados.length }} membros
+              </span>
+
+              <div class="pagination">
+                <button
+                  type="button"
+                  class="page-arrow"
+                  [disabled]="paginaAtual === 1"
+                  (click)="irParaPagina(paginaAtual - 1)"
+                >
+                  ‹
+                </button>
+                <button type="button" class="page-num active">{{ paginaAtual }}</button>
+                <span class="page-info" *ngIf="totalPaginas > 1">2 ... {{ totalPaginas }}</span>
+                <button
+                  type="button"
+                  class="page-arrow"
+                  [disabled]="paginaAtual === totalPaginas"
+                  (click)="irParaPagina(paginaAtual + 1)"
+                >
+                  ›
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD INFORMATIVO INFERIOR -->
+          <div class="info-banner">
+            <div class="shield-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Acesso certo para cada função</strong>
+              <p>Professores veem suas turmas. A secretaria revisa e gerencia justificativas.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUNA DIREITA: ADICIONAR NOVO USUÁRIO -->
+        <aside class="panel-card form-panel">
+          <h2>Adicionar novo usuário</h2>
+          <p class="form-desc">Preencha os dados para enviar um convite de acesso à instituição.</p>
+
+          <form (ngSubmit)="cadastrarUsuario()" class="user-form">
+            <div class="form-group">
+              <label>Nome completo *</label>
+              <input
+                type="text"
+                [(ngModel)]="novoUsuario.nome"
+                name="nome"
+                (input)="aoAlterarNome()"
+                placeholder="Ex.: Fernanda Oliveira"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>E-mail institucional *</label>
+              <input
+                type="email"
+                [(ngModel)]="novoUsuario.email"
+                name="email"
+                [placeholder]="'nome@' + dominioInstituicao"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Papel de acesso *</label>
+              <div class="role-cards">
+                <button
+                  type="button"
+                  class="role-option"
+                  [class.selected]="novoUsuario.role === 'PROFESSOR'"
+                  (click)="selecionarPapel('PROFESSOR')"
+                >
+                  <span class="radio-circle">
+                    <span class="radio-inner" *ngIf="novoUsuario.role === 'PROFESSOR'"></span>
+                  </span>
+                  <span>Professor</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="role-option"
+                  [class.selected]="novoUsuario.role === 'SECRETARIA'"
+                  (click)="selecionarPapel('SECRETARIA')"
+                >
+                  <span class="radio-circle">
+                    <span class="radio-inner" *ngIf="novoUsuario.role === 'SECRETARIA'"></span>
+                  </span>
+                  <span>Secretário</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- CAMPOS EXCLUSIVOS DE PROFESSOR -->
+            <ng-container *ngIf="novoUsuario.role === 'PROFESSOR'">
+              <div class="form-group">
+                <label>Disciplina</label>
+                <select [(ngModel)]="disciplinaSelecionada" name="disciplina">
+                  <option value="">Selecionar disciplina</option>
+                  <option *ngFor="let d of disciplinasDisponiveis" [value]="d">{{ d }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  Turmas vinculadas
+                  <span class="selected-count" *ngIf="turmasSelecionadas.length > 0">
+                    ({{ turmasSelecionadas.length }} selecionada{{ turmasSelecionadas.length > 1 ? 's' : '' }})
+                  </span>
+                </label>
+
+                <div class="multi-turmas-box">
+                  <button
+                    type="button"
+                    *ngFor="let t of turmasDisponiveis"
+                    class="turma-chip"
+                    [class.active]="turmaEstaSelecionada(t)"
+                    (click)="toggleTurma(t)"
+                  >
+                    <span class="chip-check">{{ turmaEstaSelecionada(t) ? '✓' : '+' }}</span>
+                    <span>{{ t }}</span>
+                  </button>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- CAIXA DE PERMISSÕES -->
+            <div class="permissions-box">
+              <div class="perm-title">
+                Permissões de {{ novoUsuario.role === 'PROFESSOR' ? 'professor' : 'secretário' }}
+              </div>
+
+              <label class="check-row">
+                <input type="checkbox" [(ngModel)]="permissoes.visualizarAlunos" name="perm1" />
+                <span>Visualizar alunos das turmas vinculadas</span>
+              </label>
+
+              <label class="check-row">
+                <input type="checkbox" [(ngModel)]="permissoes.consultarJustificativas" name="perm2" />
+                <span>Consultar justificativas e frequência</span>
+              </label>
+
+              <label class="check-row">
+                <input type="checkbox" [(ngModel)]="permissoes.revisarAprovar" name="perm3" />
+                <span>Revisar e aprovar justificativas</span>
+              </label>
+            </div>
+
+            <label class="check-row invite-check">
+              <input type="checkbox" [(ngModel)]="enviarConviteEmail" name="enviarConvite" />
+              <span>Enviar convite por e-mail ao cadastrar</span>
+            </label>
+
+            <button type="submit" class="btn-submit" [disabled]="salvando">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+              </svg>
+              {{ salvando ? 'Cadastrando...' : 'Cadastrar e enviar convite' }}
+            </button>
+
+            <p class="form-footnote">
+              O usuário cria sua senha pelo convite, válido por 48 horas. Campos com * são obrigatórios.
+            </p>
+          </form>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
