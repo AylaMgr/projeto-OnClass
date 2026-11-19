@@ -1,8 +1,3 @@
----
-
-## 2. `back-end/README.md` (Pasta do Back-end)
-
-```markdown
 # ⚙️ OnClass — Back-end API (NestJS + Prisma + MongoDB Atlas)
 
 API RESTful responsável pela autenticação JWT, regras de negócio do fluxo de abono de faltas, armazenamento seguro de atestados em Base64 no MongoDB Atlas, análise documental via OpenAI API e configurações do Console Admin White-Label.
