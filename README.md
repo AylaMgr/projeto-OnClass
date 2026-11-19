@@ -1,60 +1,27 @@
-# 🚀 Projeto OnClass - Plataforma de Gestão Acadêmica & Atestados
+# 🎓 OnClass — Plataforma Escolar de Gestão de Faltas e Atestados
 
-O **OnClass** é uma plataforma acadêmica completa composta por um **Dashboard do Aluno** dinâmico e inteligente, com validação e processamento automatizado de atestados médicos utilizando Inteligência Artificial (OpenAI Vision `gpt-4o-mini`), além de integração em tempo real com a Secretaria e Professores.
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-* **Backend:** NestJS, TypeScript, Prisma ORM, Multer (Uploads), OpenAI API
-* **Frontend:** Angular, RxJS, TypeScript, HTML5/CSS3
-* **Banco de Dados:** SQLite / PostgreSQL (Gerenciado via Prisma)
-* **Runtime:** Node.js (v18 ou superior)
+O **OnClass** é uma plataforma web completa (Full-Stack) para gestão digital de justificativas de ausência e atestados médicos escolares, com análise automatizada por Inteligência Artificial, fluxo de revisão entre Secretaria e Docentes e console administrativo **White-Label**.
 
 ---
 
-## 📋 Pré-requisitos da Máquina
+## ✨ Principais Funcionalidades
 
-Antes de começar, certifique-se de ter as seguintes ferramentas instaladas na sua máquina:
-
-1. **Node.js** (Versão 18.x ou superior) -> [Download Node.js](https://nodejs.org/)
-2. **npm** (Vem instalado com o Node) ou **yarn**
-3. **Git** -> [Download Git](https://git-scm.com/)
-4. **VS Code** (Recomendado) com suporte a Angular e NestJS.
+* **Portal do Aluno / Responsável:** Envio de justificativas de falta e upload de atestados médicos (PDF/imagem) com acompanhamento de status em tempo real e acesso à Central de Ajuda.
+* **Análise Automatizada com IA (OpenAI API):** Leitura e extração inteligente de dados clínicos (médico, CRM, CID, data de início e dias de afastamento) para apoio à triagem da secretaria.
+* **Painel da Secretaria:** Triagem, revisão manual, aprovação/recusa de justificativas e encaminhamento aos professores das respectivas turmas.
+* **Painel do Professor:** Visualização das faltas justificadas e atestados aprovados vinculados às suas turmas.
+* **Console Admin (White-Label & Gestão):**
+  * **Personalização White-Label:** Identidade visual da instituição e customização de cores da interface com prévia ao vivo.
+  * **Gestão de Equipe:** Cadastro e gerenciamento de professores (com vínculo múltiplo de turmas) e secretários.
+  * **Números de Suporte:** Configuração de canais de atendimento (WhatsApp/Telefone), horários e público-alvo.
+  * **Uso e Telemetria:** Indicadores em tempo real de usuários ativos, distribuição por perfil, eventos recentes e exportação de relatórios CSV.
 
 ---
 
-## 🔧 Passo a Passo para Clonar e Configurar o Projeto
+## 🏗️ Arquitetura do Repositório
 
-### 1. Clonar o Repositório
-
-Abra o terminal da sua máquina e execute:
-
-```bash
-git clone https://github.com/AylaMgr/projeto-OnClass
-cd projeto-OnClass
-cd on-class-back-end
-npm install
-npx prisma generate
-npx prisma db push
-npm run start:dev
-
-
-====== front-end ======
-cd ..
-cd on-class-front-end
-npm install
-ng serve
-```
-
-### 2. login de acesso ao sistema
-
-{ email: 'professor@email.com', pass: '123456', role: 'PROFESSOR' },
-      { email: 'aluno@email.com', pass: '123456', role: 'ALUNO_RESPONSAVEL' },
-      { email: 'aluno@email.com', pass: '123456', role: 'ALUNO' },
-      { email: 'secretaria@email.com', pass: '123456', role: 'SECRETARIA' },
-      { email: 'renato@email.com', pass: '123456', role: 'ALUNO', nome: 'Renato Alencar da Silva' },
-      { email: 'deborah@email.com', pass: '123456', role: 'ALUNO', nome: 'Deborah W. Brito Espindola da Silva' },
-      { email: 'julia@email.com', pass: '123456', role: 'ALUNO', nome: 'Julia Brito' },
-      { email: 'ayla@email.com', pass: '123456', role: 'ALUNO', nome: 'Ayla Margarida Sales Pessoa' },
-      { email: 'rebeca@email.com', pass: '123456', role: 'ALUNO', nome: 'Rebeca Felix' },
+```text
+onclass/
+├── back-end/          # API RESTful em NestJS + Prisma ORM + MongoDB Atlas + Swagger + OpenAI API
+├── front-end/         # Aplicação SPA em Angular (Standalone Components) + White-Label Theme Engine
+└── README.md          # Visão geral do projeto

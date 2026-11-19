@@ -1,41 +1,36 @@
-# 🎓 OnClass - Front-end (Angular)
+# 💻 OnClass — Front-end Web (Angular)
 
-Interface web da plataforma **OnClass**, desenvolvida para a gestão e triagem automatizada de atestados médicos e justificativas escolares com auxílio de Inteligência Artificial.
+Interface web da plataforma **OnClass**, estruturada com componentes *standalone* do Angular, motor dinâmico de temas **White-Label** via variáveis CSS e painéis dedicados para **Aluno**, **Secretaria**, **Professor** e **Administrador**.
 
 ---
 
 ## 🚀 Tecnologias Utilizadas
 
-- **Framework:** Angular 17+ (Componentes Standalone)
-- **Linguagem:** TypeScript
-- **Estilização:** CSS3 puro com variáveis personalizadas
-- **Roteamento:** Angular Router
-- **Reatividade:** RxJS
+* **Framework:** [Angular](https://angular.dev/) (Standalone Components & Reactive/Template-driven Forms)
+* **Linguagem:** TypeScript, HTML5 e CSS3 moderno (Grid, Flexbox e CSS Custom Properties)
+* **Programação Reativa:** RxJS (`Observable`, `HttpClient` com autenticação JWT via `Authorization: Bearer`)
+* **Arquitetura White-Label:** `ThemeService` + `PreviewDeviceComponent` com sincronização ao vivo em `iframe`
 
 ---
 
-## 📋 Funcionalidades Principais
+## 📂 Estrutura de Pastas (`src/app/`)
 
-### 🏛️ Painel da Secretaria (`/secretaria/dashboard` & `/secretaria/analises-manuais`)
-- **Dashboard de Gestão:** Indicadores de KPI em tempo real (Total de justificativas, pendentes, aprovadas e recusadas), gráfico de frequência semanal e distribuição de motivos de ausência.
-- **Análises Manuais:** Interface para a secretaria revisar apenas as solicitações que demandam atenção humana (ex: faltas sem formulário padronizado ou justificativas indeferidas).
-- **Badging Dinâmico de Status:**
-  - 🟢 **Concluído:** Atestados válidos processados e aprovados automaticamente pela IA OnClass (`#d1fae5`).
-  - 🟡 **Pendente:** Justificativas que aguardam análise manual da secretaria (`#fef3c7`).
-  - 🔴 **Rejeitado:** Solicitações recusadas ou indeferidas (`#fee2e2`).
-- **Modal de Detalhes:** Visualização completa da linha do tempo e documento enviado.
-- **Filtros Avançados:** Busca por aluno, matrícula, turno e turma.
+```text
+src/app/
+├── admin-console/         # Console Admin (Personalização White-Label, Equipe, Números de Suporte e Telemetria)
+├── auth/                  # Tela de Login e redirecionamento por perfil
+├── core/
+│   ├── guards/            # Proteção de rotas autenticadas
+│   └── services/          # Serviços HTTP (AdminApiService, NotificacoesService, ThemeService)
+├── dashboard-aluno/       # Portal do Aluno / Responsável, envio de justificativas e Central de Ajuda
+├── dashboard-professor/   # Painel de acompanhamento docente por turma
+└── dashboard-secretaria/  # Triagem, revisão manual e visualização do laudo gerado pela OpenAI
 
----
+<!-- Pré-Requisitos da Maquina -->
+npm install -g @angular/cli
 
-## 🛠️ Configuração e Execução
-
-### Pré-requisitos
-- Node.js (`>= 18.x`)
-- npm (`>= 9.x`) ou yarn
-
-### Passos para Rodar
-
-1. **Instalar dependências:**
-   ```bash
-   npm install
+<!-- Como configurar e executar na sua maquina -->
+INSTALAR DEPENDENCIAS DO PROJETO
+npm install
+INICIAR O SERVIDOR DE DESENVOLVIMENTO
+ng serve

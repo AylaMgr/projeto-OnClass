@@ -1,28 +1,36 @@
-# ⚙️ OnClass - Back-end (NestJS)
+---
 
-API RESTful do ecossistema **OnClass**, responsável pela regra de negócio, gestão de justificativas e atestados escolares, integração com banco de dados SQLite/Prisma ORM e pipeline de triagem inteligente utilizando Inteligência Artificial.
+## 2. `back-end/README.md` (Pasta do Back-end)
+
+```markdown
+# ⚙️ OnClass — Back-end API (NestJS + Prisma + MongoDB Atlas)
+
+API RESTful responsável pela autenticação JWT, regras de negócio do fluxo de abono de faltas, armazenamento seguro de atestados em Base64 no MongoDB Atlas, análise documental via OpenAI API e configurações do Console Admin White-Label.
 
 ---
 
-## 💻 Requisitos do Sistema e Instalação na Máquina
+## 🚀 Tecnologias Utilizadas
 
-Siga o passo a passo abaixo para configurar a máquina e instalar todas as dependências necessárias para rodar o projeto do zero.
+* **Framework:** [NestJS](https://nestjs.com/) (Node.js + TypeScript)
+* **ORM / Banco de Dados:** [Prisma ORM](https://www.prisma.io/) conectado ao **MongoDB Atlas**
+* **Autenticação & Segurança:** `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`, Guards por perfil (`JwtAuthGuard`, `RolesGuard`)
+* **Validação & Documentação:** `class-validator`, `class-transformer` e **Swagger** (`@nestjs/swagger`)
+* **Inteligência Artificial:** SDK oficial da **OpenAI** (`openai`) para leitura e extração estruturada de dados de atestados médicos
 
-### 1. Ferramentas Necessárias
+---
 
-Antes de começar, certifique-se de instalar na máquina:
+## 📂 Estrutura de Módulos (`src/`)
 
-* **Node.js:** Versão 18.x ou superior (LTS recomendada). [Download Node.js](https://nodejs.org/)
-* **npm:** Gerenciador de pacotes (já vem instalado com o Node.js) ou **Yarn**.
-* **Git:** Para clonar o repositório. [Download Git](https://git-scm.com/)
-* **VS Code** (opcional): Editor de código recomendado com as extensões *Prisma* e *NestJS Snippets*.
-
-Para verificar se o Node e o npm estão instalados corretamente na sua máquina, abra o terminal e execute:
-```bash
-node -v
-npm -v
-
-Acessar o Diretório
+```text
+src/
+├── auth/                  # Login, estratégia JWT, Guards e Decorators de perfil
+├── common/
+│   └── prisma/            # PrismaService e conexão com MongoDB Atlas
+└── modules/
+    ├── admin-ti/          # White-Label (tema/logo), Equipe, Suporte e Telemetria
+    ├── ai/                # Integração com OpenAI API para análise de atestados
+    ├── atestados/         # Upload Base64, consulta segura e laudos da IA
+    └── notificacoes/      # Criação, revisão e encaminhamento de justificativas
 
 # Clone o repositório (caso ainda não tenha feito)
 git clone <URL_DO_REPOSITORIO>
@@ -37,19 +45,17 @@ npm install openai
 
 Configurar variáveis de ambiente
 
-# Porta de execução do servidor NestJS
-PORT=3000
-
-# URL de Conexão do Banco de Dados SQLite (via Prisma)
-DATABASE_URL="file:./dev.db"
-
-# Chaves de API / Integração de IA (se aplicável)
-# OPENAI_API_KEY="sua_chave_aqui"
+PORT= 3000 
+DATABASE_URL=
+OPENAI_API_KEY=
+JWT_SECRET =
+JWT_EXPIRES_IN=
 
 Configurar e Rodar as Migrações do Banco de Dados (Prisma)
 
 # Gera os tipos atualizados do Prisma Client
 npx prisma generate
+npx prisma db push
 
 Executando a API
 
