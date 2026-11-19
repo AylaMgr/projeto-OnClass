@@ -1,24 +1,29 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsIn } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsOptional, IsIn, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUsuarioDto {
-  @ApiProperty({ example: 'Mariana Costa' })
+  @ApiProperty({ example: 'Jorge Souza' })
   @IsString()
   @IsNotEmpty({ message: 'O nome é obrigatório!' })
   nome: string;
 
-  @ApiProperty({ example: 'mariana.costa@onclass.edu.br' })
+  @ApiProperty({ example: 'jorge.souza@onclass.edu.br' })
   @IsEmail({}, { message: 'Informe um e-mail válido!' })
   @IsNotEmpty({ message: 'O e-mail é obrigatório!' })
   email: string;
 
-  @ApiProperty({ example: '15/05/1990', description: 'Senha padrão (data de nascimento ou código de 6 dígitos)' })
+  @ApiProperty({ example: '123456', required: false })
   @IsString()
-  @IsNotEmpty({ message: 'A data de nascimento / senha inicial é obrigatória!' })
-  dataNascimento: string;
+  @IsOptional()
+  dataNascimento?: string;
+
+  @ApiProperty({ example: '123456', required: false })
+  @IsString()
+  @IsOptional()
+  senha?: string;
 
   @ApiProperty({
-    example: 'SECRETARIA',
+    example: 'PROFESSOR',
     enum: ['SECRETARIA', 'PROFESSOR', 'ADMIN_TI', 'ALUNO'],
   })
   @IsString()
@@ -27,8 +32,13 @@ export class CreateUsuarioDto {
   })
   role: string;
 
-  @ApiProperty({ example: 'FUNC-202601', required: false })
+  @ApiProperty({ example: 'PROF202699', required: false })
   @IsString()
   @IsOptional()
   matricula?: string;
+
+  @ApiProperty({ example: ['Matemática', '2º Ano A - Manhã', '3º Ano A - Manhã'], required: false })
+  @IsArray()
+  @IsOptional()
+  turmas?: string[];
 }
