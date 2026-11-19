@@ -1,28 +1,41 @@
-import { Controller, Post, UseInterceptors, UploadedFile, Body, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  Body,
+  BadRequestException,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IaService } from './ai.service.js';
-import { PrismaService } from '../../common/prisma/prisma.service.js';
-import * as fs from 'fs';
-import * as path from 'path';
+import { NotificacoesService } from '../notificacoes/notificacoes.service.js';
 
 @Controller('ai')
 export class AiController {
   constructor(
     private readonly aiService: IaService,
-    private readonly prisma: PrismaService,
+    private readonly notificacoesService: NotificacoesService,
   ) {}
 
   @Post('upload-atestado')
   @UseInterceptors(FileInterceptor('file'))
   async analisarAtestado(
     @UploadedFile() file: any,
-    @Body('nomeAluno') nomeAluno: string,
+    @Body('alunoId') alunoId?: string,
+    @Body('nomeAluno') nomeAluno?: string,
   ) {
     if (!file) {
       throw new BadRequestException('Nenhum arquivo enviado.');
     }
 
-    // Chama a IA enviando o arquivo (Imagem ou PDF)
+    const pastaAluno = await this.notificacoesService.obterPastaAluno(
+      alunoId || '',
+      nomeAluno,
+    );
+    const arquivoNome = this.notificacoesService.gerarNomeArquivoDataHora(
+      file.originalname,
+    );
+
     const resultadoIa = await this.aiService.analisarDocumento(
       file.buffer,
       file.mimetype,
@@ -32,6 +45,8 @@ export class AiController {
     return {
       sucesso: true,
       arquivoOriginal: file.originalname,
+      arquivoNome,
+      pastaAluno,
       analiseIA: resultadoIa,
     };
   }
@@ -51,55 +66,10 @@ export class AiController {
       throw new BadRequestException('ID do aluno não fornecido.');
     }
 
-    // 1. Processa a leitura visual via IA
-    const resultadoIa = await this.aiService.analisarDocumento(
-      file.buffer,
-      file.mimetype,
-      nomeAluno || 'Aluno não identificado',
+    return this.notificacoesService.processarUploadAtestado(
+      file,
+      alunoId,
+      nomeAluno,
     );
-
-    // 2. Define o status inicial no banco com base no resultado da IA
-    const ehAprovado = resultadoIa.sugestaoAcao === 'APROVAR';
-    const statusInicial = ehAprovado
-      ? 'Solicitação Aprovada Definitivamente'
-      : 'Pendente';
-
-    const administradorOrigem = ehAprovado ? 'IA OnClass' : 'Secretaria';
-
-    // 3. Salva a imagem/PDF em disco no servidor
-    const pastaUploads = path.join(process.cwd(), 'uploads', 'atestados');
-    if (!fs.existsSync(pastaUploads)) {
-      fs.mkdirSync(pastaUploads, { recursive: true });
-    }
-
-    const nomeArquivoSalvo = `${Date.now()}-${file.originalname}`;
-    const caminhoCompleto = path.join(pastaUploads, nomeArquivoSalvo);
-    const caminhoRelativo = `uploads/atestados/${nomeArquivoSalvo}`;
-
-    fs.writeFileSync(caminhoCompleto, file.buffer);
-
-    // 4. Salva a solicitação na tabela NOTIFICACAO do Prisma
-    const dataHoje = new Date();
-
-    const novaNotificacao = await this.prisma.notificacao.create({
-      data: {
-        alunoId: alunoId,
-        motivo: 'Tratamento Médico (IA)',
-        descricao: resultadoIa.relatorioSecretaria || 'Envio de atestado via IA',
-        dataInicio: dataHoje,
-        dataFim: dataHoje,
-        declaracaoVeracidade: true,
-        administrador: administradorOrigem,
-        status: statusInicial,
-      },
-    });
-
-    return {
-      sucesso: true,
-      mensagem: 'Solicitação registrada com sucesso no banco de dados.',
-      dados: novaNotificacao,
-      resultadoIa,
-      caminhoArquivo: caminhoRelativo,
-    };
   }
 }
