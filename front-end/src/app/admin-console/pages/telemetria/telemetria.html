@@ -1,0 +1,345 @@
+<div class="console-shell">
+  <!-- SIDEBAR ESQUERDA UNIFICADA -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <strong>OnClass</strong>
+          <span>CONSOLE ADMIN</span>
+        </div>
+      </div>
+
+      <div class="whitelabel-box">
+        <span class="wl-label">AMBIENTE WHITE-LABEL</span>
+        <div class="wl-selector">
+          <span>{{ ambienteSelecionado }}</span>
+          <span class="wl-arrows">⌄</span>
+        </div>
+      </div>
+
+      <div class="nav-section-title">ADMINISTRAÇÃO</div>
+      <nav class="nav-menu">
+        <a routerLink="/admin/personalizacao" routerLinkActive="active" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/>
+            <circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/>
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+          </svg>
+          Personalização
+        </a>
+
+        <a routerLink="/admin/equipe" routerLinkActive="active" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          Equipe
+        </a>
+
+        <a routerLink="/admin/suporte" routerLinkActive="active" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+          </svg>
+          Números de suporte
+        </a>
+
+        <a routerLink="/admin/telemetria" routerLinkActive="active" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Uso e telemetria
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <a routerLink="/admin/suporte" class="help-link">
+        <span class="help-icon">?</span>
+        Central de ajuda
+      </a>
+
+      <div class="admin-profile">
+        <div class="admin-avatar">RA</div>
+        <div class="admin-info">
+          <strong>Ricardo Alves</strong>
+          <span>Administrador geral</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ÁREA PRINCIPAL -->
+  <div class="main-area">
+    <header class="topbar">
+      <div class="breadcrumb">
+        <span>Administração</span>
+        <span class="sep">›</span>
+        <strong>Uso e telemetria</strong>
+      </div>
+
+      <div class="topbar-right">
+        <span class="prod-pill"><span class="dot-green"></span> Produção</span>
+        <span class="school-name">{{ nomeInstituicao }}</span>
+        <button type="button" class="bell-btn" title="Notificações">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="title-row">
+        <div>
+          <h1>Uso e telemetria</h1>
+          <p>Acompanhe a adoção da plataforma e a saúde da sua operação em tempo real.</p>
+        </div>
+
+        <button type="button" class="btn-export" (click)="exportarRelatorioCSV()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Exportar relatório
+        </button>
+      </div>
+
+      <!-- FILTROS DE PERÍODO -->
+      <div class="period-bar">
+        <div class="period-pills">
+          <button type="button" [class.active]="periodoSelecionado === 'HOJE'" (click)="selecionarPeriodo('HOJE')">Hoje</button>
+          <button type="button" [class.active]="periodoSelecionado === '7D'" (click)="selecionarPeriodo('7D')">7 dias</button>
+          <button type="button" [class.active]="periodoSelecionado === '30D'" (click)="selecionarPeriodo('30D')">30 dias</button>
+          <button type="button" [class.active]="periodoSelecionado === '90D'" (click)="selecionarPeriodo('90D')">90 dias</button>
+        </div>
+
+        <div class="period-right">
+          <span class="date-range-chip">📅 {{ intervaloDatasLabel }} ⌄</span>
+          <button type="button" class="sync-btn" (click)="carregarTelemetria()" title="Atualizar métricas do banco">
+            <span class="dot-green"></span> {{ carregando ? 'Sincronizando...' : 'Atualizado agora' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 KPI CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <span>Usuários ativos</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="kpi-val">{{ metricas.usuariosAtivos | number:'1.0-0':'pt-BR' }}</div>
+          <div class="kpi-sub green">↑ 12,8% vs. período anterior</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <span>Sessões iniciadas</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <div class="kpi-val">{{ metricas.sessoesIniciadas | number:'1.0-0':'pt-BR' }}</div>
+          <div class="kpi-sub green">↑ 18,4% vs. período anterior</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <span>Tempo médio de sessão</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="kpi-val">{{ metricas.tempoMedioSessao }}</div>
+          <div class="kpi-sub green">↑ 8,2% vs. período anterior</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <span>Taxa de erros</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div class="kpi-val">{{ metricas.taxaErros }}</div>
+          <div class="kpi-sub green">↓ 0,06 p.p. vs. período anterior</div>
+        </div>
+      </div>
+
+      <!-- GRÁFICO DE ATIVIDADE + USO POR PERFIL -->
+      <div class="telemetry-mid-grid">
+        <div class="panel-card">
+          <div class="chart-header">
+            <div>
+              <h2>Atividade na plataforma</h2>
+              <p class="sub-caption">Sessões e usuários ativos por dia</p>
+            </div>
+            <div class="chart-legend">
+              <span><i class="dot-blue"></i> Sessões</span>
+              <span><i class="dot-light"></i> Usuários</span>
+            </div>
+          </div>
+
+          <div class="svg-chart-box">
+            <svg viewBox="0 0 600 180" class="activity-svg" preserveAspectRatio="none">
+              <line x1="0" y1="30" x2="600" y2="30" stroke="#162338" stroke-width="1" />
+              <line x1="0" y1="80" x2="600" y2="80" stroke="#162338" stroke-width="1" />
+              <line x1="0" y1="130" x2="600" y2="130" stroke="#162338" stroke-width="1" />
+
+              <polyline
+                fill="none"
+                stroke="#1d63ff"
+                stroke-width="2.5"
+                points="10,145 45,130 80,105 115,112 150,75 185,95 220,138 255,80 290,62 325,95 360,128 395,70 430,55 465,88 500,45 535,72 570,28 595,55"
+              />
+              <polyline
+                fill="none"
+                stroke="#60a5fa"
+                stroke-width="2"
+                stroke-dasharray="4 4"
+                points="10,160 45,150 80,135 115,140 150,115 185,125 220,155 255,118 290,105 325,125 360,148 395,112 430,98 465,122 500,88 535,108 570,76 595,98"
+              />
+            </svg>
+            <div class="chart-x-labels">
+              <span>01 nov</span>
+              <span>05 nov</span>
+              <span>10 nov</span>
+              <span>15 nov</span>
+              <span>20 nov</span>
+              <span>25 nov</span>
+              <span>30 nov</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h2>Uso por perfil</h2>
+          <p class="sub-caption">Distribuição real das contas no MongoDB Atlas</p>
+
+          <div class="profile-bars">
+            <div class="bar-item">
+              <div class="bar-label">
+                <span>Alunos / Responsáveis</span>
+                <strong>{{ metricas.perfis?.alunos || 0 }} • {{ percAlunos }}%</strong>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="percAlunos"></div>
+              </div>
+            </div>
+
+            <div class="bar-item">
+              <div class="bar-label">
+                <span>Professores</span>
+                <strong>{{ metricas.perfis?.professores || 0 }} • {{ percProfessores }}%</strong>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="percProfessores"></div>
+              </div>
+            </div>
+
+            <div class="bar-item">
+              <div class="bar-label">
+                <span>Secretaria e gestão</span>
+                <strong>{{ metricas.perfis?.secretaria || 0 }} • {{ percSecretaria }}%</strong>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="percSecretaria"></div>
+              </div>
+            </div>
+          </div>
+
+          <p class="table-footnote">
+            {{ metricas.usuariosAtivos }} usuários ativos • {{ metricas.engajamento?.totalNotificacoes || 0 }} justificativas registradas
+          </p>
+        </div>
+      </div>
+
+      <!-- EVENTOS RECENTES + SAÚDE DOS SERVIÇOS -->
+      <div class="workspace-grid">
+        <div class="panel-card">
+          <div class="card-header-flex">
+            <div>
+              <h2>Eventos recentes</h2>
+              <p class="sub-caption">Operações reais sincronizadas com o banco de dados</p>
+            </div>
+            <select [(ngModel)]="filtroEventos" class="mini-select">
+              <option value="TODOS">Todos os eventos</option>
+              <option value="Sucesso">Sucesso</option>
+              <option value="Erro">Erro</option>
+            </select>
+          </div>
+
+          <div *ngIf="carregando" class="loading-box">Carregando eventos reais do MongoDB Atlas...</div>
+
+          <table *ngIf="!carregando">
+            <thead>
+              <tr>
+                <th>HORÁRIO</th>
+                <th>EVENTO / ORIGEM</th>
+                <th>STATUS</th>
+                <th class="right-col">DURAÇÃO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ev of eventosFiltrados">
+                <td class="mono-time">{{ ev.horario }}</td>
+                <td>
+                  <div class="role-title">{{ ev.titulo }}</div>
+                  <div class="role-sub">{{ ev.origem }}</div>
+                </td>
+                <td>
+                  <span class="status-pill" [ngClass]="ev.status === 'Sucesso' ? 'ativo' : 'inativo'">
+                    <span class="pill-dot"></span> {{ ev.status }}
+                  </span>
+                </td>
+                <td class="right-col mono-time">{{ ev.duracaoMs }} ms</td>
+              </tr>
+              <tr *ngIf="eventosFiltrados.length === 0">
+                <td colspan="4" class="empty-msg">Nenhum evento encontrado para este filtro.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <aside class="panel-card">
+          <h2>Saúde dos serviços</h2>
+          <div class="health-badge"><span class="dot-green"></span> Operação normal</div>
+
+          <div class="health-list">
+            <div class="health-row">
+              <span>Disponibilidade</span>
+              <strong class="green">99,98%</strong>
+            </div>
+            <div class="health-row">
+              <span>Latência p95</span>
+              <strong>248 ms</strong>
+            </div>
+            <div class="health-row">
+              <span>Justificativas / Atestados</span>
+              <strong class="amber">{{ metricas.engajamento?.totalNotificacoes || 0 }} / {{ metricas.engajamento?.totalAtestados || 0 }}</strong>
+            </div>
+          </div>
+
+          <div class="lgpd-box">
+            <strong>🔒 Telemetria com privacidade</strong>
+            <p>Dados agregados, sem conteúdo de atestados. Eventos retidos por 90 dias, em conformidade com a LGPD.</p>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
