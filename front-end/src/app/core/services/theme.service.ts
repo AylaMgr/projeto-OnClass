@@ -49,9 +49,9 @@ export class ThemeService {
   }
 
  public aplicarVariaveisCss(config: Partial<TemaConfig>, targetRoot?: HTMLElement): void {
-    const root = targetRoot || document.documentElement;
+    const root = targetRoot || (typeof document !== 'undefined' ? document.documentElement : null);
     if (!root) return;
-
+    
     if (config.corPrimaria) {
       root.style.setProperty('--primary-color', config.corPrimaria);
     }

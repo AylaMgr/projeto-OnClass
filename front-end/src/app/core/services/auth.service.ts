@@ -79,4 +79,27 @@ export class AuthService {
       return null;
     }
   }
+  /**
+   * Decodifica o payload do JWT e retorna os dados básicos do utilizador autenticado
+   */
+  getUserInfo(): { id: string; nome: string; email: string; role: string; matricula: string; turma: string } | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const decodedPayload = JSON.parse(atob(payloadBase64));
+      return {
+        id: String(decodedPayload.sub || decodedPayload.userId || decodedPayload.id || '').trim(),
+        nome: decodedPayload.nome || '',
+        email: decodedPayload.email || '',
+        role: decodedPayload.role || '',
+        matricula: decodedPayload.matricula || '',
+        turma: decodedPayload.turma || (Array.isArray(decodedPayload.turmas) ? decodedPayload.turmas[0] : '') || '',
+      };
+    } catch (error) {
+      console.error('Erro ao extrair dados do utilizador do token JWT:', error);
+      return null;
+    }
+  }
 }
