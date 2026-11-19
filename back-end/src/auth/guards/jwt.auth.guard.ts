@@ -24,18 +24,23 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     // Remove eventuais aspas ou espaços copiados por engano no Swagger
-    const token = rawToken.replace(/^["']+|["']+$/g, '').trim();
+    const token = rawToken.replace(/^['"]+|['"]+$/g, '').trim();
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: 'FOCASSIA',
-      });
+      // Usa automaticamente o JWT_SECRET configurado no .env via AuthModule
+      const payload = await this.jwtService.verifyAsync(token);
+
+      const idReal = payload.sub || payload.userId || payload.id;
 
       request.user = {
-        userId: payload.sub || payload.userId,
+        sub: idReal,
+        id: idReal,
+        userId: idReal,
         email: payload.email,
         role: payload.role,
         nome: payload.nome,
+        matricula: payload.matricula,
+        turma: payload.turma,
       };
       return true;
     } catch (err: any) {
