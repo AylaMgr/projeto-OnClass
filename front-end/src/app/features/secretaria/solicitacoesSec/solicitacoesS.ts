@@ -5,6 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificacoesService } from '../../notificacoes/services/notificacoes.service';
 import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.component';
+import { CalendarioAbonoComponent } from '../../../shared/components/calendario-abono/calendario-abono.component';
+import { AnaliseSolicitacaoCard, } from '../../../shared/components/analise-solicitacao-card/analise-solicitacao-card';
+import { MapearParaCardsAnalise } from '../../../shared/components/analise-solicitacao.mapper';
 
 export type StatusAnalise = 'PENDENTE' | 'APROVADO' | 'REJEITADO';
 
@@ -26,12 +29,14 @@ export interface SolicitacaoDetalhada {
   arquivoTipo?: string;
   pastaAluno?: string;
   parecerIa?: string;
+  dataInicio?: string;
+  dataFim?: string;
 }
 
 @Component({
   selector: 'app-solicitacoes-sec',
   standalone: true,
-  imports: [CommonModule, FormsModule, TopBarComponent],
+  imports: [CommonModule, FormsModule, TopBarComponent, CalendarioAbonoComponent, AnaliseSolicitacaoCard],
   templateUrl: './solicitacoesS.html',
   styleUrl: './solicitacoesS.css'
 })
@@ -89,6 +94,18 @@ export class SolicitacoesSec implements OnInit {
       minute: '2-digit'
     });
   }
+  private extrairDataIsoDaDescricao(texto: string, indice: number): string | undefined {
+    if (!texto) return undefined;
+    const isos = texto.match(/\d{4}-\d{2}-\d{2}/g);
+    if (isos && isos.length > 0) return isos[indice] || isos[0];
+    const brs = texto.match(/(\d{2})\/(\d{2})\/(\d{4})/g);
+    if (brs && brs.length > 0) {
+      const escolhido = brs[indice] || brs[0];
+      const [d, m, a] = escolhido.split('/');
+      return `${a}-${m}-${d}`;
+    }
+    return undefined;
+  }
 
   carregarSolicitacao(id: string): void {
     this.carregando = true;
@@ -133,6 +150,13 @@ export class SolicitacoesSec implements OnInit {
 
           this.solicitacao = {
             id: dados.id || dados._id || id,
+            dataInicio: dados.dataInicio
+              ? String(dados.dataInicio).split('T')[0]
+              : this.extrairDataIsoDaDescricao(descricaoTexto, 0),
+            dataFim: dados.dataFim
+              ? String(dados.dataFim).split('T')[0]
+              : this.extrairDataIsoDaDescricao(descricaoTexto, 1),
+          
             matricula: dados.matricula || dados.alunoMatricula || dados.aluno?.matricula || 'N/I',
             aluno: dados.alunoNome || dados.aluno?.nome || nomePacienteDesc || 'Aluno Não Identificado',
             curso: dados.curso || dados.aluno?.curso || 'Ensino Médio',
@@ -194,6 +218,28 @@ export class SolicitacoesSec implements OnInit {
 
   resetarAnalise(): void {
     this.statusAnalise = 'PENDENTE';
+  }
+
+  get dadosCardSecretaria() {
+    if (!this.solicitacao) return null;
+    return MapearParaCardsAnalise({
+      ...this.solicitacao,
+      alunoNome: this.solicitacao.aluno,
+      alunoMatricula: this.solicitacao.matricula,
+      alunoCurso: this.solicitacao.turma,
+      arquivoUrl: this.solicitacao.comImagem ? (this.solicitacao.imagemUrl || 'anexo') : undefined,
+      possuiAnexo: Boolean(this.solicitacao.comImagem),
+    });
+  }
+
+  onAprovarCard(evento: { dados: any; justificativa: string }): void {
+    this.justificativaSecretaria = evento.justificativa;
+    this.aprovarAtestado();
+  }
+
+  onRecusarCard(evento: { dados: any; justificativa: string }): void {
+    this.justificativaSecretaria = evento.justificativa;
+    this.rejeitarAtestado();
   }
 
   baixarComprovante(tipo: 'APROVADO' | 'REJEITADO'): void {

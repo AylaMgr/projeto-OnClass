@@ -177,384 +177,148 @@
   cursor: pointer;
 }
 
-/* ==========================================
-   4. COLUNA DA DIREITA: PAINEL DE IA E DECISÃO
-   ========================================== */
-.ia-report-card-full {
-  background-color: #ffffff;
-  border-radius: 16px;
+/* ==========================================================================
+   4. COLUNA DA DIREITA: LAYOUT E CARDS DE RESPOSTA FINAL PADRONIZADOS
+   ========================================================================== */
+.decision-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.status-result-card {
+  background-color: var(--card-bg);
   border: 1px solid var(--border-color);
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
-.ia-card-header {
+  border-radius: 14px;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
 }
 
-.ia-card-header h2 {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #0f172a;
-  margin: 0;
-}
-
-.badge-rejected {
-  background-color: #fde8e8;
-  color: var(--danger-color);
-  font-size: 0.75rem;
+.status-icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
   font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 20px;
+  margin: 0 auto 14px auto;
 }
 
-/* Identificação do Aluno */
-.student-id-box {
-  background-color: #eef2f6;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
+.status-result-card.approved-card {
+  border-top: 4px solid #16a34a;
 }
 
-.id-title {
-  font-size: 0.72rem;
-  font-weight: 800;
+.status-result-card.rejected-card {
+  border-top: 4px solid #dc2626;
+}
+
+.status-icon-circle.green-circle {
+  background-color: #16a34a;
+}
+
+.status-icon-circle.red-circle {
+  background-color: #dc2626;
+}
+
+.status-title {
+  font-weight: 700;
+  font-size: 19px;
+  margin: 0 0 6px 0;
+}
+
+.status-title.green-text {
+  color: #15803d;
+}
+
+.status-title.red-text {
+  color: #dc2626;
+}
+
+.status-subtitle {
+  font-size: 0.82rem;
   color: var(--text-muted);
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
+  margin: 0 0 20px 0;
+  line-height: 1.45;
 }
 
-.id-row {
+.info-details-table {
+  width: 100%;
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.detail-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 6px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 4px 0;
   font-size: 0.85rem;
 }
 
-.id-row:last-child {
-  margin-bottom: 0;
-}
-
-.id-label {
+.detail-row .label {
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
-.id-val {
-  color: #0f172a;
+.detail-row .value {
+  color: var(--text-dark);
+  text-align: right;
+  word-break: break-word;
 }
 
 .font-bold {
   font-weight: 700;
 }
 
-/* Análise do Bot & Barra de Confiança */
-.bot-analysis-section {
-  margin-bottom: 20px;
-}
-
-.section-title {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #475569;
-  letter-spacing: 0.5px;
-}
-
-.confidence-wrapper {
-  margin: 12px 0 16px 0;
-}
-
-.confidence-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.82rem;
-  color: #475569;
-  margin-bottom: 6px;
-}
-
-.confidence-percent {
-  color: var(--danger-color);
-  font-weight: 800;
-}
-
-.progress-bar-bg {
-  width: 100%;
-  height: 8px;
-  background-color: var(--border-color);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background-color: var(--danger-color);
-  border-radius: 4px;
-}
-
-/* Checklist de Itens da IA */
-.bot-checklist {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.check-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.82rem;
-  color: #334155;
-  margin-bottom: 10px;
-}
-
-.check-item.invalid,
-.check-item.valid {
-  color: #334155;
-}
-
-.check-item .icon {
-  font-size: 0.9rem;
-}
-
-/* Observações da IA */
-.ia-obs-box {
-  background-color: #fffbeb;
-  border: 1px solid #fbd38d;
-  border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-.ia-obs-box h4 {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #d69e2e;
-  margin: 0 0 8px 0;
-  letter-spacing: 0.5px;
-}
-
-.ia-obs-box p {
-  font-size: 0.8rem;
-  color: #744210;
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* Form de Justificativa */
-.justification-section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 20px;
-}
-
-.justification-section label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.justification-section textarea {
-  width: 100%;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  padding: 12px;
-  font-size: 0.82rem;
-  outline: none;
-  resize: vertical;
-  font-family: inherit;
-}
-
-.justification-section textarea:focus {
-  border-color: #3b82f6;
-}
-
-/* Botões Principais de Aprovar / Rejeitar */
-.action-buttons-row {
-  display: flex;
-  gap: 12px;
-}
-
-.btn-approve {
-  flex: 1;
-  background-color: var(--success-color);
-  color: #ffffff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  font-weight: 700;
-  font-size: 0.88rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.btn-approve:hover {
-  background-color: var(--success-hover);
-}
-
-.btn-reject {
-  flex: 1;
-  background-color: #ffffff;
-  color: var(--danger-color);
-  border: 1px solid var(--danger-color);
-  border-radius: 10px;
-  padding: 12px;
-  font-weight: 700;
-  font-size: 0.88rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-reject:hover {
-  background-color: var(--danger-hover);
-}
-
-/* ==========================================
-   5. CARDS DE RESULTADO DA ANÁLISE
-   ========================================== */
-.status-result-card {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 32px 24px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
-.approved-card {
-  border: 1px solid var(--border-color);
-}
-
-.status-icon-circle.green-circle {
-  width: 56px;
-  height: 56px;
-  background-color: #06b323;
-  color: #ffffff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  margin: 0 auto 16px auto;
-}
-
-.status-title.green-text {
-  color: #047857;
-  font-weight: 800;
-  font-size: 1.1rem;
-  margin: 0 0 4px 0;
-}
-
-.status-subtitle {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin: 0 0 24px 0;
-}
-
-.info-details-table {
-  background-color: #f8fafc;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 24px;
-}
-
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 0.85rem;
-}
-
-.rejected-card {
-  border: 2px solid #3b82f6;
-}
-
-.status-icon-box.red-box {
-  width: 48px;
-  height: 48px;
-  border: 2px dashed #f87171;
-  color: #ef4444;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  margin: 0 auto 12px auto;
-}
-
-.status-title.red-text {
+.text-red {
   color: #dc2626;
-  font-weight: 800;
-  font-size: 1.1rem;
-  margin: 0 0 20px 0;
-  border-bottom: 2px dashed #3b82f6;
-  padding-bottom: 8px;
-}
-
-.problems-box {
-  text-align: left;
-  border: 2px dashed #3b82f6;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 24px;
-}
-
-.problems-box h4 {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #1e3a8a;
-  margin: 0 0 12px 0;
-}
-
-.problems-box ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.problems-box li {
-  font-size: 0.8rem;
-  color: #1e293b;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.justification-view {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #cbd5e1;
-  font-size: 0.8rem;
-  color: #475569;
 }
 
 .btn-download-comprovante {
   width: 100%;
-  padding: 12px;
-  border-radius: 15px;
+  padding: 12px 16px;
+  border-radius: 8px;
   border: none;
-  font-weight: 700;
-  font-size: 0.85rem;
+  font-weight: 600;
+  font-size: 14px;
   color: #ffffff;
   cursor: pointer;
+  margin-bottom: 12px;
+  transition: opacity 0.2s ease;
+}
+
+.btn-download-comprovante:hover {
+  opacity: 0.92;
 }
 
 .btn-download-comprovante.green-btn {
-  background-color: #06b323;
+  background-color: #16a34a;
 }
 
 .btn-download-comprovante.red-btn {
-  background-color: #ef4444;
+  background-color: #dc2626;
 }
 
-.btn-reset,
 .btn-voltar {
   background: transparent;
   border: none;
-  color: #64748b;
-  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
   text-decoration: underline;
   cursor: pointer;
   margin-top: 12px;

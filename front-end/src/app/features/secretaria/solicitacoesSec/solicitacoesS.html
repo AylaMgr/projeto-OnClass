@@ -95,171 +95,115 @@
 
       <section class="decision-panel">
 
-        <!-- ESTADO 1: PENDENTE -->
-        <ng-container *ngIf="statusAnalise === 'PENDENTE'">
+       <!-- ESTADO 1: PENDENTE (COMPONENTE REUTILIZÁVEL UNIFICADO) -->
+    <ng-container *ngIf="statusAnalise === 'PENDENTE' && dadosCardSecretaria">
+      <app-analise-solicitacao-card
+        perfil="SECRETARIA"
+        [dados]="dadosCardSecretaria"
+        (aprovar)="onAprovarCard($event)"
+        (recusar)="onRecusarCard($event)">
+      </app-analise-solicitacao-card>
 
-          <!-- CENÁRIO A: Relatório de Avaliação - IA (Se houver Anexo) -->
-          <div class="ia-card-full" *ngIf="solicitacao.comImagem; else formularioDiretoSec">
-            <div class="ia-card-header">
-              <h2>Relatório de Avaliação - IA</h2>
-              <span class="badge-rejected">Análise da Secretaria</span>
-            </div>
+      <!-- Calendário Visual dos Dias de Abono Solicitados -->
+      <app-calendario-abono
+        [dataInicio]="solicitacao.dataInicio"
+        [dataFim]="solicitacao.dataFim || solicitacao.dataInicio">
+      </app-calendario-abono>
+    </ng-container>
 
-            <!-- Tabela de Identificação do Aluno -->
-            <div class="student-id-box">
-              <div class="id-title">IDENTIFICAÇÃO DO ALUNO</div>
-              <div class="id-row">
-                <span class="id-label">Nome:</span>
-                <span class="id-val font-bold">{{ solicitacao.aluno }}</span>
-              </div>
-              <div class="id-row">
-                <span class="id-label">Matrícula:</span>
-                <span class="id-val font-bold">{{ solicitacao.matricula }}</span>
-              </div>
-              <div class="id-row">
-                <span class="id-label">Turma / Turno:</span>
-                <span class="id-val font-bold">{{ solicitacao.turma }} - {{ solicitacao.turno }}</span>
-              </div>
-              <div class="id-row">
-                <span class="id-label">Data de Envio:</span>
-                <span class="id-val font-bold">{{ solicitacao.dataEnvio }}</span>
-              </div>
-            </div>
+       <!-- ESTADO 2: VALIDADO E ENCAMINHADO AO PROFESSOR -->
+    <ng-container *ngIf="statusAnalise === 'APROVADO'">
+      <div class="status-result-card approved-card">
+        <div class="status-icon-circle green-circle">✓</div>
 
-            <!-- Dados Extraídos do Atestado e Parecer da IA -->
-            <div class="ia-obs-box" style="margin-top: 15px;">
-              <h4>DADOS COLETADOS & PARECER DA IA:</h4>
-              <p style="white-space: pre-line; line-height: 1.5;">
-                {{ solicitacao.descricao || solicitacao.parecerIa || 'Atestado encaminhado para validação manual da Secretaria.' }}
-              </p>
-            </div>
+        <h3 class="status-title green-text">Validado e Encaminhado ao Professor</h3>
+        <p class="status-subtitle">A documentação foi validada pela Secretaria e enviada para parecer docente.</p>
+
+        <div class="info-details-table">
+          <div class="detail-row">
+            <span class="label">Aluno:</span>
+            <span class="value font-bold">{{ solicitacao.aluno }}</span>
           </div>
-
-          <!-- CENÁRIO B: Formulário Preenchido pelo Aluno (Se NÃO houver Anexo) -->
-          <ng-template #formularioDiretoSec>
-            <div class="ia-card-full">
-              <div class="ia-card-header">
-                <h2>Formulário de Solicitação</h2>
-                <span class="badge-rejected" style="background: #e0f2fe; color: #0369a1;">Formulário Direto</span>
-              </div>
-
-              <div class="student-id-box">
-                <div class="id-title">DETALHES DA SOLICITAÇÃO</div>
-                <div class="id-row">
-                  <span class="id-label">Aluno:</span>
-                  <span class="id-val font-bold">{{ solicitacao.aluno }} ({{ solicitacao.matricula }})</span>
-                </div>
-                <div class="id-row">
-                  <span class="id-label">Tipo:</span>
-                  <span class="id-val font-bold">{{ solicitacao.motivo }}</span>
-                </div>
-                <div class="id-row">
-                  <span class="id-label">Data de Envio:</span>
-                  <span class="id-val font-bold">{{ solicitacao.dataEnvio }}</span>
-                </div>
-              </div>
-
-              <div class="ia-obs-box" style="margin-top: 15px; background: #f8fafc; border-color: #cbd5e1;">
-                <h4 style="color: #334155;">JUSTIFICATIVA / DADOS DO PEDIDO:</h4>
-                <p style="color: #475569; font-size: 13px; line-height: 1.5; margin-top: 5px;">
-                  {{ solicitacao.descricao || 'O aluno solicitou a revisão diretamente pelo portal.' }}
-                </p>
-              </div>
-            </div>
-          </ng-template>
-
-          <!-- Campo de Justificativa da Secretaria -->
-          <div class="justification-section">
-            <label for="justificativa">Justificativa / Parecer da Secretaria</label>
-            <textarea
-              id="justificativa"
-              rows="3"
-              placeholder="Digite o parecer da Secretaria ou motivo do indeferimento..."
-              [(ngModel)]="justificativaSecretaria"
-            ></textarea>
+          <div class="detail-row">
+            <span class="label">Data de Envio:</span>
+            <span class="value">{{ solicitacao.dataEnvio }}</span>
           </div>
-
-          <!-- Botões Principais de Ação -->
-          <div class="action-buttons-row">
-            <button type="button" class="btn-approve" (click)="aprovarAtestado()">
-              ✔ {{ solicitacao.comImagem ? 'Aprovar e Encaminhar ao Professor' : 'Aprovar Solicitação' }}
-            </button>
-            <button type="button" class="btn-reject" (click)="rejeitarAtestado()">
-              ✖ Recusar
-            </button>
+          <div class="detail-row">
+            <span class="label">Motivo:</span>
+            <span class="value font-bold">{{ solicitacao.motivo }}</span>
           </div>
-
-        </ng-container>
-
-        <!-- ESTADO 2: ATESTADO VALIDADO E ENCAMINHADO AO PROFESSOR -->
-        <div class="status-result-card approved-card" *ngIf="statusAnalise === 'APROVADO'">
-          <div class="status-icon-circle green-circle">✔</div>
-
-          <h3 class="status-title green-text">Validado e Encaminhado ao Professor</h3>
-          <p class="status-subtitle">A documentação foi validada pela Secretaria e enviada para parecer docente.</p>
-
-          <div class="info-details-table">
-            <div class="detail-row">
-              <span class="label">Aluno:</span>
-              <span class="value font-bold">{{ solicitacao.aluno }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Data de Envio:</span>
-              <span class="value">{{ solicitacao.dataEnvio }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Motivo:</span>
-              <span class="value font-bold">{{ solicitacao.motivo }}</span>
-            </div>
-            <div class="detail-row" *ngIf="solicitacao.arquivoNome">
-              <span class="label">Arquivo:</span>
-              <span class="value">{{ solicitacao.arquivoNome }}</span>
-            </div>
-            <div class="detail-row" *ngIf="justificativaSecretaria">
-              <span class="label">Parecer Secretaria:</span>
-              <span class="value">{{ justificativaSecretaria }}</span>
-            </div>
+          <div class="detail-row" *ngIf="solicitacao.arquivoNome">
+            <span class="label">Arquivo:</span>
+            <span class="value">{{ solicitacao.arquivoNome }}</span>
           </div>
-
-          <button type="button" class="btn-download-comprovante green-btn" (click)="baixarComprovante('APROVADO')">
-            📥 Baixar Comprovante
-          </button>
-
-          <button class="btn-voltar" type="button" (click)="resetarAnalise()">
-            Alterar Decisão / Voltar ao Relatório
-          </button>
+          <div class="detail-row" *ngIf="justificativaSecretaria">
+            <span class="label">Parecer Secretaria:</span>
+            <span class="value">{{ justificativaSecretaria }}</span>
+          </div>
         </div>
 
-        <!-- ESTADO 3: ATESTADO NÃO VALIDADO (APÓS REJEITAR) -->
-        <div class="status-result-card rejected-card" *ngIf="statusAnalise === 'REJEITADO'">
-          <div class="status-icon-box red-box">⚠</div>
+        <button type="button" class="btn-download-comprovante green-btn" (click)="baixarComprovante('APROVADO')">
+          📥 Baixar Comprovante
+        </button>
 
-          <h3 class="status-title red-text">Solicitação Recusada</h3>
+        <button class="btn-voltar" type="button" (click)="resetarAnalise()">
+          Alterar Decisão / Voltar ao Relatório
+        </button>
+      </div>
 
-          <div class="info-details-table" style="margin-bottom: 15px;">
-            <div class="detail-row">
-              <span class="label">Aluno:</span>
-              <span class="value font-bold">{{ solicitacao.aluno }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Motivo:</span>
-              <span class="value">{{ solicitacao.motivo }}</span>
-            </div>
+      <app-calendario-abono
+        *ngIf="solicitacao.dataInicio"
+        [dataInicio]="solicitacao.dataInicio"
+        [dataFim]="solicitacao.dataFim || solicitacao.dataInicio">
+      </app-calendario-abono>
+    </ng-container>
+
+    <!-- ESTADO 3: SOLICITAÇÃO RECUSADA (SECRETARIA) -->
+    <ng-container *ngIf="statusAnalise === 'REJEITADO'">
+      <div class="status-result-card rejected-card">
+        <div class="status-icon-circle red-circle">✕</div>
+
+        <h3 class="status-title red-text">Solicitação Recusada</h3>
+        <p class="status-subtitle">O pedido foi indeferido pela Secretaria e o aluno foi notificado.</p>
+
+        <div class="info-details-table">
+          <div class="detail-row">
+            <span class="label">Aluno:</span>
+            <span class="value font-bold">{{ solicitacao.aluno }}</span>
           </div>
-
-          <div class="justification-view" *ngIf="justificativaSecretaria">
-            <strong>Motivo / Justificativa:</strong> {{ justificativaSecretaria }}
+          <div class="detail-row">
+            <span class="label">Data de Envio:</span>
+            <span class="value">{{ solicitacao.dataEnvio }}</span>
           </div>
-
-          <button type="button" class="btn-download-comprovante red-btn" (click)="baixarComprovante('REJEITADO')">
-            📥 Baixar Comprovante de Rejeição
-          </button>
-
-          <button class="btn-voltar" type="button" (click)="resetarAnalise()">
-            Alterar Decisão / Voltar ao Relatório
-          </button>
+          <div class="detail-row">
+            <span class="label">Motivo:</span>
+            <span class="value font-bold">{{ solicitacao.motivo }}</span>
+          </div>
+          <div class="detail-row" *ngIf="solicitacao.arquivoNome">
+            <span class="label">Arquivo:</span>
+            <span class="value">{{ solicitacao.arquivoNome }}</span>
+          </div>
+          <div class="detail-row" *ngIf="justificativaSecretaria">
+            <span class="label">Motivo da Recusa:</span>
+            <span class="value text-red">{{ justificativaSecretaria }}</span>
+          </div>
         </div>
 
+        <button type="button" class="btn-download-comprovante red-btn" (click)="baixarComprovante('REJEITADO')">
+          📥 Baixar Comprovante de Rejeição
+        </button>
+
+        <button class="btn-voltar" type="button" (click)="resetarAnalise()">
+          Alterar Decisão / Voltar ao Relatório
+        </button>
+      </div>
+
+      <app-calendario-abono
+        *ngIf="solicitacao.dataInicio"
+        [dataInicio]="solicitacao.dataInicio"
+        [dataFim]="solicitacao.dataFim || solicitacao.dataInicio">
+      </app-calendario-abono>
+    </ng-container>
       </section>
 
     </div>
