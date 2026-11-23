@@ -98,12 +98,16 @@ export class DashboardP implements OnInit {
               statusUpper.includes('ENCAMINHADO') ||
               statusUpper.includes('APROVAD');
 
-            // Ignora registos antigos de teste sem aluno válido no MongoDB
-            const nomeReal = item.alunoNome || item.aluno?.nome || '';
-            const temAlunoValido =
-              Boolean(nomeReal) && nomeReal !== 'Aluno não identificado';
+            // Verifica o nome do aluno em qualquer formato retornado pelo MongoDB
+          const nomeReal =
+            typeof item.aluno === 'string'
+              ? item.aluno
+              : item.alunoNome || item.aluno?.nome || item.nomeAluno || '';
+          const temAlunoValido =
+            Boolean(nomeReal.trim()) &&
+            nomeReal.toLowerCase() !== 'aluno não identificado';
 
-            return ehAprovadaOuEncaminhada && temAlunoValido;
+          return ehAprovadaOuEncaminhada && temAlunoValido;
           });
 
           this.solicitacoes = aprovadasOuEncaminhadas.map((item) => {
@@ -145,7 +149,7 @@ export class DashboardP implements OnInit {
                 item.aluno?.turmas?.[0] ||
                 'Não informada',
             };
-          });
+       });
 
           this.atualizarOpcoesTurma();
         } else {
