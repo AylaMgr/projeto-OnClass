@@ -1,0 +1,383 @@
+.analise-card-wrapper {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.analise-dark-header {
+  background: #001e54;
+  color: #ffffff;
+  padding: 20px 22px;
+}
+
+.header-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: #cbd5e1;
+  margin-bottom: 8px;
+}
+
+.header-brand {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.header-main-title {
+  margin: 0 0 12px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.header-status-pill {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.header-status-pill.aprovado {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.header-status-pill.rejeitado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.analise-card-body {
+  padding: 20px 22px;
+}
+
+.secao-titulo {
+  margin: 0 0 12px 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.secao-divisor {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 18px 0;
+}
+
+.aluno-info-box {
+  background: #eef3f7;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.aluno-nome {
+  font-size: 0.98rem;
+  color: #0f172a;
+}
+
+.aluno-sub {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.resumo-linhas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resumo-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.resumo-label {
+  color: #64748b;
+}
+
+.resumo-valor {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.parecer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.parecer-header .secao-titulo {
+  margin: 0;
+}
+
+.parecer-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.parecer-badge.aprovado {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.parecer-badge.rejeitado {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.confianca-wrapper {
+  margin-bottom: 14px;
+}
+
+.confianca-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.confianca-labels strong.alta {
+  color: #16a34a;
+}
+.confianca-labels strong.media {
+  color: #d97706;
+}
+.confianca-labels strong.baixa {
+  color: #dc2626;
+}
+
+.confianca-track {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.confianca-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.confianca-fill.alta {
+  background: #16a34a;
+}
+.confianca-fill.media {
+  background: #d97706;
+}
+.confianca-fill.baixa {
+  background: #dc2626;
+}
+
+.ia-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.83rem;
+  color: #334155;
+}
+
+.ia-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.check-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.check-icon.ok {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #86efac;
+}
+
+.check-icon.fail {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.alerta-leitura-box {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.alerta-leitura-box strong {
+  display: block;
+  font-size: 0.82rem;
+  color: #9a3412;
+  margin-bottom: 4px;
+}
+
+.alerta-leitura-box p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #9a3412;
+  line-height: 1.45;
+}
+
+.nota-legal-ia {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.texto-justificativa-box {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 0.84rem;
+  color: #334155;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.texto-justificativa-box strong {
+  display: block;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.subtexto-box {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.encaminhamento-info {
+  margin-bottom: 0;
+}
+
+.btn-ver-original {
+  width: 100%;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.btn-ver-original:hover {
+  background: #f1f5f9;
+}
+
+.mb-12 {
+  margin-bottom: 14px;
+}
+
+.label-decisao {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.textarea-decisao {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  color: #0f172a;
+  resize: vertical;
+}
+
+.textarea-decisao.input-erro {
+  border-color: #ef4444;
+}
+
+.hint-obrigatoria,
+.hint-periodo {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 5px;
+}
+
+.texto-erro {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.acoes-decisao-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+.btn-recusar-abono {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+  background: #ffffff;
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+
+.btn-recusar-abono:hover {
+  background: #fef2f2;
+}
+
+.btn-aceitar-abono {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #047857;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+
+.btn-aceitar-abono:hover {
+  background: #065f46;
+}

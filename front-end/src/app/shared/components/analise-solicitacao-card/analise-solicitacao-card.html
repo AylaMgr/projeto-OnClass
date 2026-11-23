@@ -1,0 +1,177 @@
+<div class="analise-card-wrapper">
+  <!-- Cabeçalho Escuro -->
+  <div class="analise-dark-header">
+    <div class="header-meta-row">
+      <span class="header-brand">ONCLASS / {{ perfil }}</span>
+      <span class="header-mode">{{ subtituloDireitaHeader }}</span>
+    </div>
+
+    <h2 class="header-main-title">{{ tituloHeader }}</h2>
+
+    <span class="header-status-pill" [ngClass]="dados.parecerTipo || 'atencao'">
+      {{ dados.statusBadgeHeader }}
+    </span>
+  </div>
+
+  <!-- Corpo Branco -->
+  <div class="analise-card-body">
+    <!-- Bloco 1: Resumo do pedido -->
+    <div class="secao-bloco">
+      <h4 class="secao-titulo">Resumo do pedido</h4>
+
+      <div class="aluno-info-box">
+        <strong class="aluno-nome">{{ dados.alunoNome }}</strong>
+        <span class="aluno-sub" *ngIf="dados.alunoMatricula || dados.alunoCurso">
+          {{ dados.alunoMatricula }}
+          <ng-container *ngIf="dados.alunoMatricula && dados.alunoCurso"> • </ng-container>
+          {{ dados.alunoCurso }}
+        </span>
+      </div>
+
+      <div class="resumo-linhas">
+        <div class="resumo-row">
+          <span class="resumo-label">Tipo de justificativa</span>
+          <strong class="resumo-valor">{{ dados.tipoJustificativa }}</strong>
+        </div>
+        <div class="resumo-row">
+          <span class="resumo-label">Período solicitado</span>
+          <strong class="resumo-valor">{{ dados.periodoSolicitado }}</strong>
+        </div>
+        <div class="resumo-row">
+          <span class="resumo-label">Forma de envio</span>
+          <strong class="resumo-valor">
+            {{ dados.possuiAnexo ? 'Arquivo anexado' : 'Formulário sem anexos' }}
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="secao-divisor"></div>
+
+    <!-- Bloco 2A: Parecer da IA (Quando possui anexo) -->
+    <ng-container *ngIf="dados.possuiAnexo; else blocoSemAnexo">
+      <div class="secao-bloco">
+        <div class="parecer-header">
+          <h4 class="secao-titulo">Parecer da IA</h4>
+          <span class="parecer-badge" [ngClass]="dados.parecerTipo || 'atencao'">
+            {{ dados.statusParecerIa || 'Revisão necessária' }}
+          </span>
+        </div>
+
+        <div class="confianca-wrapper" *ngIf="dados.confiancaIa !== undefined">
+          <div class="confianca-labels">
+            <span>Confiança da leitura do arquivo</span>
+            <strong [ngClass]="corConfianca">{{ dados.confiancaIa }}%</strong>
+          </div>
+          <div class="confianca-track">
+            <div
+              class="confianca-fill"
+              [ngClass]="corConfianca"
+              [style.width.%]="dados.confiancaIa">
+            </div>
+          </div>
+        </div>
+
+        <ul class="ia-checklist" *ngIf="dados.checklist?.length">
+          <li *ngFor="let item of dados.checklist">
+            <span class="check-icon" [class.ok]="item.valido" [class.fail]="!item.valido">
+              {{ item.valido ? '✓' : '✕' }}
+            </span>
+            <span>
+              <strong>{{ item.label }}</strong> — {{ item.detalhe }}
+            </span>
+          </li>
+        </ul>
+
+        <div class="alerta-leitura-box" *ngIf="dados.observacaoIa || dados.exibirAlertaLeitura">
+          <strong>Atenção à leitura</strong>
+          <p>
+            {{
+              dados.observacaoIa ||
+                'A qualidade do arquivo limita a leitura. Confira o envio original antes de decidir sobre o abono.'
+            }}
+          </p>
+        </div>
+
+        <p class="nota-legal-ia">
+          A análise de IA é uma recomendação e não representa a decisão final sobre o abono.
+        </p>
+      </div>
+    </ng-container>
+
+    <!-- Bloco 2B: Formulário sem anexo -->
+    <ng-template #blocoSemAnexo>
+      <div class="secao-bloco">
+        <h4 class="secao-titulo">Justificativa informada</h4>
+
+        <div class="texto-justificativa-box">
+          {{ dados.justificativaTexto || 'Solicito o abono da ausência no período informado.' }}
+        </div>
+
+        <div class="aluno-info-box encaminhamento-info">
+          <strong>Encaminhado diretamente à Secretaria</strong>
+          <span class="aluno-sub">Sem imagem anexada, este envio não passa pela análise de IA.</span>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="secao-divisor"></div>
+
+    <!-- Rodapé ALUNO -->
+    <div class="secao-bloco" *ngIf="perfil === 'ALUNO'">
+      <h4 class="secao-titulo">O que acontece agora?</h4>
+
+      <div class="texto-justificativa-box">
+        <strong>
+          {{
+            dados.possuiAnexo
+              ? 'Seu pedido segue em análise'
+              : 'Aguardando avaliação da Secretaria'
+          }}
+        </strong>
+        <p class="subtexto-box">
+          {{
+            dados.possuiAnexo
+              ? 'O responsável avaliará sua justificativa. Você poderá acompanhar a decisão no portal.'
+              : 'A Secretaria avaliará seu formulário e decidirá sobre o abono. Acompanhe a resposta pelo portal.'
+          }}
+        </p>
+      </div>
+
+      <button
+        *ngIf="dados.possuiAnexo"
+        type="button"
+        class="btn-ver-original"
+        (click)="onVerOriginal()">
+        Ver envio original
+      </button>
+    </div>
+
+   <!-- Rodapé SECRETARIA / PROFESSOR -->
+    <div class="secao-bloco" *ngIf="perfil === 'SECRETARIA' || perfil === 'PROFESSOR'">
+      <h4 class="secao-titulo">{{ tituloSecaoDecisao }}</h4>
+
+      <label class="label-decisao">Justificativa da decisão</label>
+      <textarea
+        rows="3"
+        class="textarea-decisao"
+        [class.input-erro]="erroJustificativa"
+        [(ngModel)]="justificativaDecisao"
+        placeholder="Registre o motivo da sua decisão..."></textarea>
+      <span class="hint-obrigatoria" [class.texto-erro]="erroJustificativa">
+        Obrigatória ao recusar. Será exibida ao aluno.
+      </span>
+
+      <div class="acoes-decisao-grid">
+        <button type="button" class="btn-recusar-abono" (click)="onRecusar()">
+          Recusar abono
+        </button>
+        <button type="button" class="btn-aceitar-abono" (click)="onAceitar()">
+          Aceitar abono
+        </button>
+      </div>
+
+      <span class="hint-periodo">A decisão se aplica ao período solicitado.</span>
+    </div>
+  </div>
+</div>
