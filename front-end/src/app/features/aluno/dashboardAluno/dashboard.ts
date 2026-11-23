@@ -9,6 +9,8 @@ import { TopBarComponent } from '../../../shared/components/top-bar/top-bar.comp
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { FilterBarComponent, FiltroDropdown } from '../../../shared/components/filter-bar/filter-bar.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { AnaliseSolicitacaoCard } from '../../../shared/components/analise-solicitacao-card/analise-solicitacao-card';
+import { MapearParaCardsAnalise } from '../../../shared/components/analise-solicitacao.mapper';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,7 +21,8 @@ import { AuthService } from '../../../core/services/auth.service';
     CriarNotificacao,
     TopBarComponent,
     StatusBadgeComponent,
-    FilterBarComponent
+    FilterBarComponent,
+    AnaliseSolicitacaoCard,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
@@ -63,6 +66,118 @@ export class Dashboard implements OnInit {
       ]
     }
   ];
+
+  // Calendário visual do Aluno
+  mesCalendarioAtual: Date = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    1,
+  );
+  readonly diasSemanaLabels = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+  get tituloMesCalendario(): string {
+    const mes = this.mesCalendarioAtual.toLocaleDateString('pt-BR', {
+      month: 'long',
+    });
+    const ano = this.mesCalendarioAtual.getFullYear();
+    return `${mes.charAt(0).toUpperCase() + mes.slice(1)} de ${ano}`;
+  }
+
+  mudarMesCalendario(delta: number): void {
+    this.mesCalendarioAtual = new Date(
+      this.mesCalendarioAtual.getFullYear(),
+      this.mesCalendarioAtual.getMonth() + delta,
+      1,
+    );
+  }
+
+  get diasCalendarioAluno(): Array<{
+    dia: number | null;
+    status: 'aprovado' | 'pendente' | 'recusado' | null;
+    tooltip: string;
+    pedido: Notificacao | null;
+  }> {
+    const ano = this.mesCalendarioAtual.getFullYear();
+    const mes = this.mesCalendarioAtual.getMonth();
+    const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
+    const totalDiasMes = new Date(ano, mes + 1, 0).getDate();
+
+    const celulas: Array<{
+      dia: number | null;
+      status: 'aprovado' | 'pendente' | 'recusado' | null;
+      tooltip: string;
+      pedido: Notificacao | null;
+    }> = [];
+
+    for (let i = 0; i < primeiroDiaSemana; i++) {
+      celulas.push({ dia: null, status: null, tooltip: '', pedido: null });
+    }
+
+    for (let dia = 1; dia <= totalDiasMes; dia++) {
+      const dataStr = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+      const pedidosNoDia = this.notificacoes.filter((n: any) => {
+        const iniRaw = n.dataInicio || n.dataEnvio || n.criadoEm || n.createdAt;
+        if (!iniRaw) return false;
+        const ini = String(iniRaw).split('T')[0];
+        const fim = String(n.dataFim || ini).split('T')[0];
+        return dataStr >= ini && dataStr <= fim;
+      });
+
+      let statusDia: 'aprovado' | 'pendente' | 'recusado' | null = null;
+      let pedidoPrincipal: Notificacao | null = null;
+
+      if (pedidosNoDia.length > 0) {
+        // Prioridade visual: Aprovado > Pendente > Recusado
+        const aprovado = pedidosNoDia.find((p) => {
+          const st = this.normalizarStatus(p.status);
+          return (
+            st !== 'ENCAMINHADO_PROFESSOR' &&
+            (st.includes('APROV') ||
+              st.includes('CONCLU') ||
+              st.includes('DEFINITIVAMENTE') ||
+              st === 'ACEITO')
+          );
+        });
+        const pendente = pedidosNoDia.find((p) => {
+          const st = this.normalizarStatus(p.status);
+          return (
+            st === 'ENCAMINHADO_PROFESSOR' ||
+            st.includes('PENDENTE') ||
+            st.includes('SECRETARIA') ||
+            st.includes('ANALISE')
+          );
+        });
+        const recusado = pedidosNoDia.find((p) => {
+          const st = this.normalizarStatus(p.status);
+          return st.includes('REJEIT') || st.includes('RECUS') || st.includes('INDEFERID');
+        });
+
+        if (aprovado) {
+          statusDia = 'aprovado';
+          pedidoPrincipal = aprovado;
+        } else if (pendente) {
+          statusDia = 'pendente';
+          pedidoPrincipal = pendente;
+        } else if (recusado) {
+          statusDia = 'recusado';
+          pedidoPrincipal = recusado;
+        }
+      }
+
+      const tooltip = pedidosNoDia
+        .map((p) => `${p.motivo || 'Solicitação'} (${this.obterTextoStatus(p.status)})`)
+        .join(' | ');
+
+      celulas.push({
+        dia,
+        status: statusDia,
+        tooltip,
+        pedido: pedidoPrincipal,
+      });
+    }
+
+    return celulas;
+  }
 
   constructor(
     private readonly notificacoesService: NotificacoesService,
@@ -263,6 +378,7 @@ private obterDadosAlunoLogado(): { id: string; nome: string; matricula: string }
     const nomeFinal = nomeAlunoCadastrado || usuarioSalvo.nome || '';
     const idAluno = String(usuarioSalvo.id || '');
     const pastaAluno = this.gerarPastaAluno();
+    
 
     // Renomeia o arquivo com a data e hora do envio e identifica a pasta do aluno
     const arquivoRenomeado = this.renomearArquivoComDataHora(this.arquivoAtestado);
@@ -287,14 +403,20 @@ private obterDadosAlunoLogado(): { id: string; nome: string; matricula: string }
           const ia = res.analyseIa || res.analiseIA || res.resultadoIa || res;
           this.carregandoIa = false;
 
+          const periodoReal = this.extrairPeriodoRealAtestado(ia);
+          this.dataInicioExtraidaIa = periodoReal.dataInicio;
+          this.dataFimExtraidaIa = periodoReal.dataFim;
+          this.afastamentoExtraidoIa = periodoReal.textoPeriodo;
+          
+
           // Recolhe todas as informações extraídas do atestado
           this.nomeExtraidoIa = ia.nomeEncontrado || ia.nomePaciente || ia.nomeLido || ia.nome || nomeFinal || 'N/I';
           this.afastamentoExtraidoIa = ia.datasAfastamento || ia.periodoAfastamento || ia.afastamento || ia.diasAfastamento || '1 dia';
           this.medicoExtraidoIa = ia.medico || ia.nomeMedico || 'N/I';
           this.crmExtraidoIa = ia.crm || 'N/I';
           this.cidExtraidoIa = ia.cid || ia.cid10 || 'N/I';
-          this.dataInicioExtraidaIa = ia.dataInicio || '';
-          this.dataFimExtraidaIa = ia.dataFim || ia.dataInicio || '';
+          this.dataInicioExtraidaIa = periodoReal.dataInicio;
+          this.dataFimExtraidaIa = periodoReal.dataFim;
           this.parecerIa = ia.relatorioSecretaria || ia.parecer || ia.resumo || 'Análise realizada por IA.';
 
           const iaAprovou = ia.sugestaoAcao === 'APROVAR' || ia.sugestao === 'APROVAR' || ia.acao === 'APROVAR';
@@ -358,20 +480,87 @@ private obterDadosAlunoLogado(): { id: string; nome: string; matricula: string }
           (item) => String(item.alunoId) === meuId
         );
 
-        this.notificacoes = minhasNotificacoes.map((item: any) => ({
-          ...item,
-          status: this.normalizarStatus(item.status),
-          dataInicio: item.dataInicio || item.dataEnvio,
-          dataFim: item.dataFim || item.dataEnvio,
-          administrador:
-            item.administrador ||
-            (item.tipo === 'ATESTADO' || item.atestadoId ? 'IA OnClass' : 'Secretaria'),
-        }));
+       this.notificacoes = minhasNotificacoes.map((item: any) => {
+          const periodoTexto = this.extrairPeriodoRealAtestado(item);
+          const iniReal = item.dataInicio
+            ? String(item.dataInicio).split('T')[0]
+            : periodoTexto.dataInicio;
+          const fimReal = item.dataFim
+            ? String(item.dataFim).split('T')[0]
+            : periodoTexto.dataFim || iniReal;
+
+          return {
+            ...item,
+            status: this.normalizarStatus(item.status),
+            dataInicio: iniReal,
+            dataFim: fimReal,
+            administrador:
+              item.administrador ||
+              (item.tipo === 'ATESTADO' || item.atestadoId ? 'IA OnClass' : 'Secretaria'),
+          };
+        });
       },
       error: (err: any) => {
         console.error('Erro ao carregar notificações do aluno:', err);
       },
     });
+  }
+
+  private extrairPeriodoRealAtestado(ia: any, usarHojeComoFallback = true,): { dataInicio: string; dataFim: string; textoPeriodo: string } {
+    const hojeIso = new Date().toISOString().split('T')[0];
+
+    // 1. Se a IA já devolveu dataInicio em ISO (AAAA-MM-DD)
+    let dataInicio = '';
+    if (ia.dataInicio && /^\d{4}-\d{2}-\d{2}/.test(String(ia.dataInicio))) {
+      dataInicio = String(ia.dataInicio).split('T')[0];
+    } else if (ia.dataEmissao && /^\d{4}-\d{2}-\d{2}/.test(String(ia.dataEmissao))) {
+      dataInicio = String(ia.dataEmissao).split('T')[0];
+    }
+
+    // 2. Procura datas no formato DD/MM/AAAA em todos os campos retornados pela IA
+    const textoBusca = `${ia.dataInicio || ''} ${ia.dataFim || ''} ${ia.dataEmissao || ''} ${ia.datasAfastamento || ''} ${ia.periodoAfastamento || ''} ${ia.afastamento || ''} ${ia.relatorioSecretaria || ''}`;
+    const datasBr = textoBusca.match(/(\d{2})\/(\d{2})\/(\d{4})/g);
+
+    const paraIso = (br: string) => {
+      const [d, m, a] = br.split('/');
+      return `${a}-${m}-${d}`;
+    };
+
+    if (!dataInicio && datasBr && datasBr.length > 0) {
+      dataInicio = paraIso(datasBr[0]);
+    }
+
+    if (!dataInicio) {
+      if (!usarHojeComoFallback) {
+        return { dataInicio: '', dataFim: '', textoPeriodo: '' };
+      }
+      dataInicio = hojeIso;
+    }
+
+    // 3. Calcula dataFim (se já vier explícita, usa; senão soma diasAfastamento - 1)
+    let dataFim = '';
+    if (ia.dataFim && /^\d{4}-\d{2}-\d{2}/.test(String(ia.dataFim))) {
+      dataFim = String(ia.dataFim).split('T')[0];
+    } else if (datasBr && datasBr.length > 1) {
+      dataFim = paraIso(datasBr[datasBr.length - 1]);
+    } else {
+      const matchDias = textoBusca.match(/(\d+)\s*(?:\([a-zç]+\)\s*)?dias?/i);
+      const qtdDias = Number(ia.diasAfastamento) || (matchDias ? parseInt(matchDias[1], 10) : 1);
+      const dt = new Date(`${dataInicio}T12:00:00`);
+      if (qtdDias > 1) {
+        dt.setDate(dt.getDate() + (qtdDias - 1));
+      }
+      dataFim = dt.toISOString().split('T')[0];
+    }
+
+    const fmtBr = (iso: string) => iso.split('-').reverse().join('/');
+    return {
+      dataInicio,
+      dataFim,
+      textoPeriodo: dataInicio === dataFim
+        ? `${fmtBr(dataInicio)} (1 dia)`
+        : `${fmtBr(dataInicio)} até ${fmtBr(dataFim)}`
+    };
   }
 
   confirmarEnvioAprovado(): void {
@@ -400,5 +589,41 @@ private obterDadosAlunoLogado(): { id: string; nome: string; matricula: string }
 
   voltar(): void {
     this.router.navigate(['/login']);
+  }
+  get dadosCardIaAluno() {
+    if (!this.resultadoIa) return null;
+    const aluno = this.obterDadosAlunoLogado();
+    return MapearParaCardsAnalise(
+      {
+        ...this.resultadoIa,
+        periodo: this.afastamentoExtraidoIa,
+        nomeLido: this.nomeExtraidoIa,
+        medico: this.medicoExtraidoIa,
+        crmMedico: this.crmExtraidoIa,
+        cid: this.cidExtraidoIa,
+        dataInicio: this.dataInicioExtraidaIa,
+        dataFim: this.dataFimExtraidaIa,
+        parecer: this.parecerIa,
+        arquivoUrl: this.resultadoIa?.arquivoUrl,
+      },
+      {
+        nome: aluno.nome,
+        matricula: aluno.matricula,
+        curso: (aluno as any).curso,
+      },
+    );
+  }
+
+  visualizarAnexoOriginal(): void {
+    const urlSalva = this.resultadoIa?.arquivoUrl;
+    if (urlSalva) {
+      window.open(urlSalva, '_blank');
+      return;
+    }
+
+    if (this.arquivoAtestado instanceof File) {
+      const blobUrl = URL.createObjectURL(this.arquivoAtestado);
+      window.open(blobUrl, '_blank');
+    }
   }
 }

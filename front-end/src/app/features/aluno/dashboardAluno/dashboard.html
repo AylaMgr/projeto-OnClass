@@ -129,81 +129,82 @@
           </div>
         </div>
 
-  <!-- 1. CASO: ATESTADO APROVADO PELA IA -->
-  <div *ngIf="resultadoIa?.sugestaoAcao === 'APROVAR'" class="card-resultado-ia sucesso">
-    <div class="circle-check">✓</div>
+  <!-- RESULTADO UNIFICADO DA ANÁLISE DE IA (COMPONENTE REUTILIZÁVEL) -->
+<div *ngIf="dadosCardIaAluno" class="resultado-ia-container">
+  <app-analise-solicitacao-card
+    perfil="ALUNO"
+    [dados]="dadosCardIaAluno"
+    (verOriginal)="visualizarAnexoOriginal()">
+  </app-analise-solicitacao-card>
 
-    <h3 class="status-titulo">Atestado Validado</h3>
-    <p class="status-subtitulo">O documento cumpre as exigências do sistema.</p>
+  <!-- Ações de conclusão do aluno conforme o parecer da IA -->
+  <div class="acoes-ia-aluno">
+    <button
+      *ngIf="resultadoIa?.sugestaoAcao === 'APROVAR'"
+      type="button"
+      class="btn btn-primary btn-concluir"
+      (click)="confirmarEnvioAprovado()">
+      Concluir e Salvar Atestado
+    </button>
 
-    <!-- Resumo dos dados lidos pela IA -->
-    <div class="data-summary-box">
-      <div class="data-row">
-        <span class="data-label">Data / Período:</span>
-        <span class="data-value">{{ afastamentoExtraidoIa || '1 dia (Data do Atendimento)' }}</span>
-      </div>
-      <div class="data-row">
-        <span class="data-label">Assinatura Médica:</span>
-        <span class="data-value destaque-verde">Verificada</span>
-      </div>
-      <div class="data-row">
-        <span class="data-label">Nome Lido:</span>
-        <span class="data-value">{{ nomeExtraidoIa }}</span>
-      </div>
-    </div>
+    <button
+      *ngIf="resultadoIa?.sugestaoAcao !== 'APROVAR'"
+      type="button"
+      class="btn btn-danger btn-concluir"
+      (click)="enviarParaSecretariaPendente()">
+      Encaminhar para a Secretaria
+    </button>
 
-    <p class="mensagem-direta">
-      Aprovado automaticamente! O corpo docente será notificado.
-    </p>
-
-    <!-- Botões de Ação para Aprovado -->
-    <div class="acoes-ia">
-      <button type="button" class="btn btn-primary btn-concluir" (click)="confirmarEnvioAprovado()">
-        Concluir e Salvar Atestado
-      </button>
-      <button type="button" class="btn-secondary-link" (click)="reiniciarAnalise()">
-        <span class="icon-refresh">↺</span> Enviar Outro Documento
-      </button>
-    </div>
+    <button
+      type="button"
+      class="btn-secondary-link"
+      (click)="reiniciarAnalise()">
+      <span class="icon-refresh">↺</span> Enviar Outro Documento
+    </button>
   </div>
+</div>
+</div>
 
- <!-- 2. CASO: ATESTADO REJEITADO PELA IA -->
-  <div *ngIf="resultadoIa?.sugestaoAcao === 'REJEITAR'" class="card-resultado-ia rejeitado">
-    <div class="circle-alert">✕</div>
-
-    <h3 class="status-titulo-erro">Documento Não Validado</h3>
-    <p class="status-subtitulo">Não foi possível validar as informações do atestado automaticamente.</p>
-
-    <!-- Resumo dos dados lidos pela IA -->
-    <div class="data-summary-box erro-box">
-      <div class="data-row">
-        <span class="data-label">Data / Período:</span>
-        <span class="data-value">{{ afastamentoExtraidoIa || 'Não identificado' }}</span>
+     <!-- 3. CALENDÁRIO VISUAL DE PEDIDOS DO ALUNO -->
+    <div class="calendario-aluno-card">
+      <div class="cal-header">
+        <div>
+          <span class="cal-subtitle">HISTÓRICO VISUAL DE ABONOS</span>
+          <h4 class="cal-title">{{ tituloMesCalendario }}</h4>
+        </div>
+        <div class="cal-nav">
+          <button type="button" class="cal-nav-btn" (click)="mudarMesCalendario(-1)" title="Mês anterior">‹</button>
+          <button type="button" class="cal-nav-btn" (click)="mudarMesCalendario(1)" title="Próximo mês">›</button>
+        </div>
       </div>
-      <div class="data-row">
-        <span class="data-label">Assinatura Médica:</span>
-        <span class="data-value destaque-vermelho">Divergente / Não Verificada</span>
+
+      <div class="cal-weekdays">
+        <span *ngFor="let diaSem of diasSemanaLabels">{{ diaSem }}</span>
       </div>
-      <div class="data-row">
-        <span class="data-label">Nome Lido:</span>
-        <span class="data-value">{{ nomeExtraidoIa || 'Não identificado' }}</span>
+
+      <div class="cal-grid">
+        <button
+          type="button"
+          *ngFor="let item of diasCalendarioAluno"
+          class="cal-day"
+          [class.vazio]="!item.dia"
+          [class.dia-aprovado]="item.status === 'aprovado'"
+          [class.dia-pendente]="item.status === 'pendente'"
+          [class.dia-recusado]="item.status === 'recusado'"
+          [title]="item.tooltip"
+          [disabled]="!item.pedido"
+          (click)="item.pedido && abrirDetalhes(item.pedido)">
+          {{ item.dia || '' }}
+        </button>
+      </div>
+
+      <div class="cal-legend">
+        <span class="leg-item"><i class="dot aprovado"></i> Aprovado</span>
+        <span class="leg-item"><i class="dot pendente"></i> Pendente</span>
+        <span class="leg-item"><i class="dot recusado"></i> Recusado</span>
       </div>
     </div>
 
-    <p class="mensagem-direta">
-      Você pode encaminhar a solicitação para avaliação manual da Secretaria ou tentar enviar outro documento.
-    </p>
-
-    <!-- Botões de Ação para Rejeitado -->
-    <div class="acoes-ia">
-      <button type="button" class="btn btn-danger btn-concluir" (click)="enviarParaSecretariaPendente()">
-        Encaminhar para a Secretaria
-      </button>
-      <button type="button" class="btn-secondary-link" (click)="reiniciarAnalise()">
-        <span class="icon-refresh">↺</span> Tentar Enviar Outro Documento
-      </button>
-    </div>
-     </div>
 <!-- MODAL CENTRAL DE DETALHES & TIMELINE -->
 <div class="modal-overlay" *ngIf="notificacaoSelecionada" (click)="fecharDetalhes()">
   <div class="modal-card" (click)="$event.stopPropagation()">
@@ -278,14 +279,9 @@
           </div>
           <div class="timeline-content">
             <h4 class="step-title">Status Atual:</h4>
-            
+          
             <!-- Badge Dinâmico de Cores -->
-            <div class="status-badge" 
-                 [ngClass]="{
-                   'badge-analise': notificacaoSelecionada.status === 'Pendente' || notificacaoSelecionada.status === 'Em Análise pela Secretaria',
-                   'badge-aprovado': notificacaoSelecionada.status === 'Solicitação Aprovada Definitivamente' || notificacaoSelecionada.status === 'Aprovado',
-                   'badge-recusado': notificacaoSelecionada.status === 'Rejeitado' || notificacaoSelecionada.status === 'Recusado'
-                 }">
+            <div class="status-badge" [ngClass]="getStatusClass(notificacaoSelecionada.status)">
               {{ obterTextoStatus(notificacaoSelecionada.status) }}
             </div>
           </div>
