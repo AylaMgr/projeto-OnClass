@@ -394,4 +394,41 @@ export class NotificacoesService {
       arquivoNome: arquivoNomeFormatado,
     };
   }
+
+  private normalizarRetornoIa(raw: any) {
+  const toIso = (val: any): string => {
+    if (!val) return '';
+    const str = String(val).trim();
+    // Já está em YYYY-MM-DD
+    const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+    // Veio em DD/MM/YYYY (padrão brasileiro)
+    const brMatch = str.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+    if (brMatch) return `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}`;
+    return '';
+  };
+
+  const dataInicio = toIso(raw.dataInicio || raw.dataEmissao);
+  const dias = Math.max(1, Number(raw.diasAfastamento) || 1);
+
+  let dataFim = toIso(raw.dataFim);
+  if (!dataFim && dataInicio) {
+    const dt = new Date(`${dataInicio}T12:00:00`);
+    dt.setDate(dt.getDate() + (dias - 1));
+    dataFim = dt.toISOString().split('T')[0];
+  }
+
+  const fmtBr = (iso: string) => (iso ? iso.split('-').reverse().join('/') : 'N/I');
+  const datasAfastamento = dataInicio
+    ? `${fmtBr(dataInicio)} até ${fmtBr(dataFim)} (${dias} ${dias === 1 ? 'dia' : 'dias'})`
+    : 'Não identificado';
+
+  return {
+    ...raw,
+    dataInicio,
+    dataFim,
+    diasAfastamento: dias,
+    datasAfastamento,
+  };
+}
 }

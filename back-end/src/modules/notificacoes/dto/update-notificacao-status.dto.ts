@@ -16,8 +16,25 @@ export class UpdateNotificacaoStatusDto {
   @IsString({ message: 'O status deve ser um texto.' })
   @IsNotEmpty({ message: 'O status é obrigatório.' })
   // No DTO de atualização de status da notificação
-@IsIn(['APROVADO', 'APROVADA', 'ACEITO', 'DEFERIDO', 'RECUSADO', 'RECUSADA', 'REJEITADO', 'INDEFERIDO'], {
-  message: 'Status inválido!',
-})
+@IsIn(
+    [
+      'Pendente',
+      'PENDENTE',
+      'APROVADO',
+      'APROVADA',
+      'APROVADO_SECRETARIA',
+      'ENCAMINHADO_PROFESSOR',
+      'SOLICITACAO_APROVADA_DEFINITIVAMENTE',
+      'ACEITO',
+      'DEFERIDO',
+      'RECUSADO',
+      'RECUSADA',
+      'REJEITADO',
+      'INDEFERIDO',
+    ],
+    {
+      message: 'Status inválido!',
+    },
+  )
 status: string;
 }
