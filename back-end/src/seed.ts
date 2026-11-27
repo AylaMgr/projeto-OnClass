@@ -1,12 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module.js';
-import { PrismaService } from './common/prisma/prisma.service.js';
+import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker/locale/pt_BR';
 
-async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(AppModule);
-  const prisma = app.get(PrismaService);
+const prisma = new PrismaClient();
 
+async function bootstrap() {
   console.log('🌱 Iniciando a Geração de Faker Usuários (OnClass)... 🌱');
 
   const turmasDisponiveis = [
@@ -20,7 +17,6 @@ async function bootstrap() {
     '9º Ano B - Tarde',
   ];
 
-  // Garante os 3 logins principais de teste com senha 123456
   const usuariosFixos = [
     {
       nome: 'Mariana Costa',
@@ -41,12 +37,12 @@ async function bootstrap() {
       turmas: faker.helpers.arrayElements(turmasDisponiveis, { min: 1, max: 5 }),
     },
     {
-      nome: 'Lucas Mendes',
-      email: 'lucas.mendes@onclass.edu.br',
+      nome: 'Ayla Margarida Sales Pessoa',
+      email: 'ayla.pessoa@onclass.edu.br',
       senha: '123456',
       dataNascimento: '123456',
       role: 'ALUNO',
-      matricula: '20260001',
+      matricula: '20260222',
       turmas: ['2º Ano A - Manhã'],
     },
   ];
@@ -59,7 +55,6 @@ async function bootstrap() {
     }
   }
 
-  // Gera o restante até completar 150 usuários (10 Secretários, 30 Professores, 110 Alunos)
   for (let i = 3; i < 150; i++) {
     let role = 'ALUNO';
     let turmasAleatorias: string[] = [];
@@ -94,14 +89,13 @@ async function bootstrap() {
       await prisma.usuario.create({
         data: usuarioFaker,
       });
-    } catch (error) {
+    } catch {
       console.log(`Pular: Erro ao Criar Usuário ${usuarioFaker.nome}! - Email ou Matrícula Duplicada`);
     }
   }
 
   console.log('✅ Banco de dados Populado com Sucesso (150 Usuários)!');
-
-  await app.close();
+  await prisma.$disconnect();
 }
 
 bootstrap();
